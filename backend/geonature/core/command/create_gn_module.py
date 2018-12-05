@@ -1,5 +1,10 @@
 '''
     Fonctions permettant d'ajouter un module tiers à GN
+    Ce module ne doit en aucun cas faire appel à des models ou au coeur de geonature
+    dans les imports d'entête de fichier pour garantir un bon fonctionnement des fonctions
+    d'administration de l'application GeoNature (génération des fichiers de configuration, des 
+    fichiers de routing du frontend etc...). Ces dernières doivent pouvoir fonctionner même si 
+    un paquet PIP du requirement GeoNature n'a pas été bien installé
 '''
 
 import os
@@ -41,7 +46,6 @@ from geonature.utils.errors import (
     ConfigError, GNModuleInstallError, GeoNatureError
 )
 from geonature.utils.utilstoml import load_and_validate_toml
-from geonature.core.gn_commons.models import TModules
 
 
 log = logging.getLogger(__name__)
@@ -71,6 +75,7 @@ def install_gn_module(module_path, url, conf_file, build, module_id):
     """
         Installation d'un module gn
     """
+    from geonature.core.gn_commons.models import TModules
     # Installation du module
     module_name = ''
     try:
@@ -122,9 +127,9 @@ def install_gn_module(module_path, url, conf_file, build, module_id):
 
                 if frontend:
                     # generation du du routing du frontend
-                    frontend_routes_templating()
+                    frontend_routes_templating(app)
                     # generation du fichier de configuration du frontend
-                    create_module_config(module_name, module_path, build=False)
+                    create_module_config(app, module_name, module_path, build=False)
                 else:
                     module = DB.session.query(TModules).filter(
                         TModules.id_module == module_id
@@ -271,13 +276,24 @@ def deactivate_gn_module(module_name, frontend, backend):
     required=False,
     default=True
 )
-def update_module_configuration(module_name, build):
+@click.option(
+    '--prod',
+    type=bool,
+    required=False,
+    default=True
+)
+def update_module_configuration(module_name, build, prod):
     """
         Génère la config frontend d'un module
 
         Example:
 
-        geonature update_module_configuration occtax
+        - geonature update_module_configuration occtax
+
+        - geonature update_module_configuration --build False --prod False occtax
+
     """
-    subprocess.call(['sudo', 'supervisorctl', 'reload'])
-    create_module_config(module_name, build=build)
+    if prod:
+        subprocess.call(['sudo', 'supervisorctl', 'reload'])
+    app = get_app_for_cmd(with_external_mods=False)
+    create_module_config(app, module_name, build=build)

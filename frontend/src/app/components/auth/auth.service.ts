@@ -5,13 +5,15 @@ import { ToastrService, ToastrConfig } from 'ngx-toastr';
 import { HttpClient } from '@angular/common/http';
 import { AppConfig } from '../../../conf/app.config';
 import { CookieService } from 'ng2-cookies';
+import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 
-export class User {
-  constructor(public userName: string, public userId: number, public organismId: number) {
-    this.userName = userName;
-    this.userId = userId;
-    this.organismId = organismId;
-  }
+export interface User {
+  user_login: string;
+  id_role: string;
+  id_organisme: string;
+  prenom_role?: string;
+  nom_role?: string;
+  nom_complet?: string;
 }
 
 @Injectable()
@@ -22,7 +24,12 @@ export class AuthService {
   toastrConfig: ToastrConfig;
   loginError: boolean;
   public isLoading = false;
-  constructor(private router: Router, private _http: HttpClient, private _cookie: CookieService) {}
+  constructor(
+    private router: Router,
+    private _http: HttpClient,
+    private _cookie: CookieService,
+    private _idle: Idle
+  ) {}
 
   setCurrentUser(user) {
     localStorage.setItem('current_user', JSON.stringify(user));
@@ -66,9 +73,12 @@ export class AuthService {
       .subscribe(
         data => {
           const userForFront = {
-            userName: data.user.identifiant,
-            userId: data.user.id_role,
-            organismId: data.user.id_organisme
+            user_login: data.user.identifiant,
+            prenom_role: data.user.prenom_role,
+            id_role: data.user.id_role,
+            nom_role: data.user.nom_role,
+            nom_complet: data.user.nom_role + ' ' + data.user.prenom_role,
+            id_organisme: data.user.id_organisme
           };
           this.setCurrentUser(userForFront);
           this.loginError = false;
@@ -103,9 +113,27 @@ export class AuthService {
     } else {
       this.router.navigate(['/login']);
     }
+    // call the logout route to delete the session
+    this._http.get<any>(`${AppConfig.API_ENDPOINT}/auth/logout_cruved`).subscribe(() => {});
   }
 
   isAuthenticated(): boolean {
     return this._cookie.get('token') !== null;
+  }
+
+  activateIdle() {
+    this._idle.setIdle(1);
+    this._idle.setTimeout(AppConfig.INACTIVITY_PERIOD_DISCONECT);
+    this._idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
+
+    this._idle.onTimeout.subscribe(() => {
+      this.logout();
+    });
+
+    this.resetIdle();
+  }
+
+  resetIdle() {
+    this._idle.watch();
   }
 }

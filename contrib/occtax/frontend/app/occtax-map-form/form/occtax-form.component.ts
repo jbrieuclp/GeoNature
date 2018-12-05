@@ -5,7 +5,9 @@ import { ToastrService } from "ngx-toastr";
 import { OcctaxFormService } from "./occtax-form.service";
 import { Router } from "@angular/router";
 import * as L from "leaflet";
-import { OcctaxService } from "../../services/occtax.service";
+import { OcctaxDataService } from "../../services/occtax-data.service";
+import { MapService } from "@geonature_common/map/map.service";
+import { AuthService } from "@geonature/components/auth/auth.service";
 
 @Component({
   selector: "pnx-occtax-form",
@@ -19,23 +21,17 @@ export class OcctaxFormComponent implements OnInit {
   constructor(
     public fs: OcctaxFormService,
     private _dateParser: NgbDateParserFormatter,
-    private _cfs: OcctaxService,
+    private _cfs: OcctaxDataService,
     private toastr: ToastrService,
     private router: Router,
-    private _commonService: CommonService
-  ) { }
+    private _commonService: CommonService,
+    private _mapService: MapService,
+    private _authService: AuthService
+  ) {}
 
   ngOnInit() {
     // set show occurrence to false:
     this.fs.showOccurrence = false;
-    // refresh the forms
-    this.fs.releveForm = this.fs.initReleveForm();
-    this.fs.occurrenceForm = this.fs.initOccurenceForm();
-    this.fs.countingForm = this.fs.initCountingArray();
-
-    // patch default values in ajax
-    this.fs.patchAllDefaultNomenclature();
-
     // reset taxon list of service
     this.fs.taxonsList = [];
     this.fs.indexOccurrence = 0;
@@ -69,12 +65,18 @@ export class OcctaxFormComponent implements OnInit {
       finalForm.properties.date_max
     );
     // set hour_min/hour_max to null
-    if (finalForm.properties.hour_min && finalForm.properties.hour_min.length == 0) {
+    if (
+      finalForm.properties.hour_min &&
+      finalForm.properties.hour_min.length == 0
+    ) {
       finalForm.properties.hour_min = null;
-    };
-    if (finalForm.properties.hour_max && finalForm.properties.hour_max.length == 0) {
+    }
+    if (
+      finalForm.properties.hour_max &&
+      finalForm.properties.hour_max.length == 0
+    ) {
       finalForm.properties.hour_max = null;
-    };
+    }
     // format nom_cite, update date, set id_releve_occtax and id_occurrence_occtax
     finalForm.properties.t_occurrences_occtax.forEach((occ, index) => {
       occ.id_releve_occtax = finalForm.properties.id_releve_occtax;
@@ -95,7 +97,7 @@ export class OcctaxFormComponent implements OnInit {
     this.disabledAfterPost = true;
     // Post
     this._cfs.postOcctax(finalForm).subscribe(
-      response => {
+      () => {
         this.disabledAfterPost = false;
         this.toastr.success("Relevé enregistré", "", {
           positionClass: "toast-top-center"
@@ -105,7 +107,8 @@ export class OcctaxFormComponent implements OnInit {
         this.fs.occurrenceForm = this.fs.initOccurenceForm();
         this.fs.patchDefaultNomenclatureOccurrence(this.fs.defaultValues);
         this.fs.countingForm = this.fs.initCountingArray();
-
+        // save the current zoom
+        this.fs.previousBoundingBox = this._mapService.map.getBounds();
         this.fs.taxonsList = [];
         this.fs.indexOccurrence = 0;
         this.fs.disabled = true;

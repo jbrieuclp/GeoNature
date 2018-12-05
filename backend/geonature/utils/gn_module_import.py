@@ -16,7 +16,6 @@ from sqlalchemy.orm.exc import NoResultFound
 from geonature.utils.config_schema import (
     GnGeneralSchemaConf,
     ManifestSchemaProdConf,
-    GnModuleProdConf
 )
 from geonature.utils import utilstoml
 from geonature.utils.errors import GeoNatureError
@@ -40,8 +39,6 @@ from geonature.utils.env import (
 from geonature.utils.config_schema import (
     ManifestSchemaConf
 )
-from geonature.core.users.models import TApplications
-from geonature.core.gn_commons.models import TModules
 
 log = logging.getLogger(__name__)
 
@@ -156,9 +153,12 @@ def gn_module_import_requirements(module_path):
 
 
 def gn_module_activate(module_name, activ_front, activ_back):
+    from geonature.core.gn_commons.models import TModules
+
     # TODO utiliser les commande os de python
     log.info("Activate module")
 
+    app = None
     # TODO gestion des erreurs
     if not (GN_EXTERNAL_MODULE / module_name).is_dir():
         raise GeoNatureError(
@@ -183,7 +183,7 @@ def gn_module_activate(module_name, activ_front, activ_back):
                 )
     log.info("Generate frontend routes")
     try:
-        frontend_routes_templating()
+        frontend_routes_templating(app)
         log.info("...%s\n", MSG_OK)
     except Exception:
         log.error('Error while generating frontend routing')
@@ -192,6 +192,8 @@ def gn_module_activate(module_name, activ_front, activ_back):
 
 def gn_module_deactivate(module_name, activ_front, activ_back):
     log.info('Desactivate module')
+    from geonature.core.gn_commons.models import TModules
+    app=None
     try:
         app = get_app_for_cmd(DEFAULT_CONFIG_FILE)
         with app.app_context():
@@ -209,7 +211,7 @@ def gn_module_deactivate(module_name, activ_front, activ_back):
         )
     log.info("Regenerate frontend routes")
     try:
-        frontend_routes_templating()
+        frontend_routes_templating(app)
         log.info("...%s\n", MSG_OK)
     except Exception as e:
         raise GeoNatureError(e)
@@ -324,9 +326,17 @@ def create_external_assets_symlink(module_path, module_name):
 
 def add_application_db(module_name, url, module_id=None):
     log.info('Register the module in t_application ... \n')
+    from geonature.core.users.models import TApplications
+    from geonature.core.gn_commons.models import TModules
     app_conf = load_config(DEFAULT_CONFIG_FILE)
     id_application_geonature = app_conf['ID_APPLICATION_GEONATURE']
     app = get_app_for_cmd(DEFAULT_CONFIG_FILE)
+    if url[0] == '/':
+        url = url[1:]
+    if url[-1:] == '/':
+        url = url[:-1]
+    # remove white space
+    url.replace(" ", "")
     with app.app_context():
         # if module_id: try to insert in t_application
         # check if the module in TApplications
@@ -358,6 +368,7 @@ def add_application_db(module_name, url, module_id=None):
             module = DB.session.query(TModules).filter(
                 TModules.module_name == module_name
             ).one()
+        # remove '/' before url_path if exist
         except NoResultFound:
             new_module = TModules(
                 id_module=module_id,
@@ -381,39 +392,40 @@ def add_application_db(module_name, url, module_id=None):
     return module_id
 
 
-def create_module_config(module_name, mod_path=None, build=True):
+def create_module_config(app, module_name, mod_path=None, build=True):
     """
         Create the frontend config
     """
-    if not mod_path:
-        mod_path = str(GN_EXTERNAL_MODULE / module_name)
-    manifest_path = os.path.join(mod_path, 'manifest.toml')
+    from geonature.core.gn_commons.models import TModules
+    with app.app_context():
+        if not mod_path:
+            mod_path = str(GN_EXTERNAL_MODULE / module_name)
 
-    # Create the frontend config for a module and rebuild if build=True
-    conf_manifest = utilstoml.load_and_validate_toml(
-        manifest_path,
-        ManifestSchemaProdConf
-    )
+        # fetch the module in the DB from its name
+        module_object = DB.session.query(TModules).filter(TModules.module_name == module_name).one()
 
-    # import du module dans le sys.path
-    module_parent_dir = str(Path(mod_path).parent)
-    module_schema_conf = "{}.config.conf_schema_toml".format(Path(mod_path).name)  # noqa
-    sys.path.insert(0, module_parent_dir)
-    module = __import__(module_schema_conf, globals=globals())
-    front_module_conf_file = os.path.join(mod_path, 'config/conf_gn_module.toml')  # noqa
-    config_module = utilstoml.load_and_validate_toml(
-        front_module_conf_file,
-        module.config.conf_schema_toml.GnModuleSchemaConf
-    )
+        # import du module dans le sys.path
+        module_parent_dir = str(Path(mod_path).parent)
+        module_schema_conf = "{}.config.conf_schema_toml".format(Path(mod_path).name)  # noqa
+        sys.path.insert(0, module_parent_dir)
+        module = __import__(module_schema_conf, globals=globals())
+        front_module_conf_file = os.path.join(mod_path, 'config/conf_gn_module.toml')  # noqa
+        config_module = utilstoml.load_and_validate_toml(
+            front_module_conf_file,
+            module.config.conf_schema_toml.GnModuleSchemaConf
+        )
+        # set id_module and module_name
+        config_module['ID_MODULE'] = module_object.id_module
+        config_module['MODULE_NAME'] = module_object.module_name
 
-    frontend_config_path = os.path.join(mod_path, 'frontend/app/module.config.ts')  # noqa
-    try:
-        with open(
-            str(ROOT_DIR / frontend_config_path), 'w'
-        ) as outputfile:
-            outputfile.write("export const ModuleConfig = ")
-            json.dump(config_module, outputfile, indent=True, sort_keys=True)
-    except FileNotFoundError:
-        log.info('No frontend config file')
-    if build:
-        build_geonature_front()
+        frontend_config_path = os.path.join(mod_path, 'frontend/app/module.config.ts')  # noqa
+        try:
+            with open(
+                str(ROOT_DIR / frontend_config_path), 'w'
+            ) as outputfile:
+                outputfile.write("export const ModuleConfig = ")
+                json.dump(config_module, outputfile, indent=True, sort_keys=True)
+        except FileNotFoundError:
+            log.info('No frontend config file')
+        if build:
+            build_geonature_front()

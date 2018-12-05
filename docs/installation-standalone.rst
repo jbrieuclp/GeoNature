@@ -9,7 +9,7 @@ Prérequis
 
 Ressources minimum serveur :
 
-- Un serveur Linux disposant d’au moins de 2 Go RAM et de 20 Go d’espace disque.
+- Un serveur Linux **architecture 64-bits** disposant d’au moins de 2 Go RAM et de 20 Go d’espace disque.
 
 GeoNature utilise les technologies suivantes:
 
@@ -65,7 +65,7 @@ Commencer la procédure en se connectant au serveur en SSH avec l'utilisateur li
     sudo apt-get install -y supervisor
     sudo apt-get install -y apache2
     
- Sur ubuntu 18 installez la version 10 de postgresql-server-dev ``sudo apt-get install postgresql-server-dev-10``
+Sur Ubuntu 18, installez la version 10 de postgresql-server-dev ``sudo apt-get install postgresql-server-dev-10``. La version est à adapter sur les autres versions de Debian ou Ubuntu
 
 Installation de l'application
 -----------------------------
@@ -191,6 +191,10 @@ Voir la doc d'installation de UsersHub : http://usershub.readthedocs.io/
 Mise à jour de l'application
 ----------------------------
 
+Attention, avec chaque mise à jour, il est important de sauvegarde l'application et sa base de données, ou de faire un snapshot du serveur pour pouvoir revenir à son état antérieure avant mise à jour en cas de problème.
+
+La mise à jour de GeoNature consiste à télécharger sa nouvelle version dans un nouveau répertoire, récupérer les fichiers de configuration et de surcouche depuis la version actuelle et de relancer l'installation dans le répertoire de la nouvelle version. 
+
 * Télécharger la dernière version de GeoNature :
 
   ::
@@ -206,7 +210,7 @@ Mise à jour de l'application
     mv GeoNature-X.Y.Z /home/`whoami`/geonature/
     cd geonature
 
-* Suivez les éventuelles notes de version décrites ici : https://github.com/PnX-SI/GeoNature/releases.
+* Suivez les éventuelles notes de version décrites ici : https://github.com/PnX-SI/GeoNature/releases. Sauf mentions contraires dans les notes de version, vous pouvez sauter des versions mais en suivant bien les différentes notes de versions et notamment les scripts de mise à jour de la base de données à exécuter successivement. 
 
 * Lancez le script de ``migration.sh`` à la racine du dossier ``geonature``:
 
@@ -234,9 +238,7 @@ Si vous avez téléchargé GeoNature zippé (via la procédure d'installation gl
     git reset HEAD
     -> vous êtes à jour sur la branche master
 
-    
-    
-    
+
 @TODO : A relire et à basculer dans DOC DEVELOPEMENT ?
 
 Editez le fichier de configuration de GeoNature (``<GEONATURE_DIRECTORY>/config/geonature_config.toml``) de la manière suivante :
@@ -246,7 +248,7 @@ Editez le fichier de configuration de GeoNature (``<GEONATURE_DIRECTORY>/config/
     URL_APPLICATION = 'http://127.0.0.1:4200'
     API_ENDPOINT = 'http://127.0.0.1:8000'
     API_TAXHUB =  'http://127.0.0.1:5000/api'
-    ID_APPLICATION_GEONATURE = 14
+    ID_APPLICATION_GEONATURE = 3
 
 Puis le fichier ``/home/<mon_user>/geonature/frontend/src/conf/app.config.ts`` :
 
@@ -255,7 +257,7 @@ Puis le fichier ``/home/<mon_user>/geonature/frontend/src/conf/app.config.ts`` :
     URL_APPLICATION: 'http://127.0.0.1:4200',
     API_ENDPOINT: 'http://127.0.0.1:8000',
     API_TAXHUB:  'http://127.0.0.1:5000/api',
-    ID_APPLICATION_GEONATURE: 14
+    ID_APPLICATION_GEONATURE: 3
 
 * Lancer le serveur de développement du frontend grâce à Angular-CLI :
 
@@ -289,4 +291,4 @@ Puis lancer le backend en mode développement :
 
 **Le serveur de développement du frontend est disponible à l'adresse 127.0.0.1:4200**.
 
-Vous pouvez vous connecter à l'application avec les identifiants 'admin/admin'.
+Vous pouvez vous connecter à l'application avec l'identifiant ``admin`` et le mot de passe ``admin``.
