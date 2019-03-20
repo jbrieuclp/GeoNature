@@ -164,12 +164,12 @@ export class DataFormService {
     return this._http.get<any>(`${AppConfig.API_ENDPOINT}/geo/municipalities`, { params: params });
   }
 
-  getAreas(id_type?, area_name?) {
+  getAreas(area_type_list: Array<number>, area_name?) {
     let params: HttpParams = new HttpParams();
 
-    if (id_type) {
-      params = params.set('id_type', id_type);
-    }
+    area_type_list.forEach(id_type => {
+      params = params.append('id_type', id_type.toString());
+    });
 
     if (area_name) {
       params = params.set('area_name', area_name);
@@ -178,8 +178,19 @@ export class DataFormService {
     return this._http.get<any>(`${AppConfig.API_ENDPOINT}/geo/areas`, { params: params });
   }
 
-  getAcquisitionFrameworks() {
-    return this._http.get<any>(`${AppConfig.API_ENDPOINT}/meta/acquisition_frameworks`);
+  getAcquisitionFrameworks(params?: any) {
+    let queryString: HttpParams = new HttpParams();
+    if (params) {
+      // tslint:disable-next-line:forin
+      for (let key in params) {
+        if (params[key] !== null) {
+          queryString = queryString.set(key, params[key]);
+        }
+      }
+    }
+    return this._http.get<any>(`${AppConfig.API_ENDPOINT}/meta/acquisition_frameworks`, {
+      params: queryString
+    });
   }
 
   getAcquisitionFramework(id_af) {
@@ -190,6 +201,10 @@ export class DataFormService {
     return this._http.get<any>(`${AppConfig.API_ENDPOINT}/users/organisms`);
   }
 
+  getOrganismsDatasets() {
+    return this._http.get<any>(`${AppConfig.API_ENDPOINT}/users/organisms_dataset_actor`);
+  }
+
   getRoles(params?: any) {
     let queryString: HttpParams = new HttpParams();
     // tslint:disable-next-line:forin
@@ -198,15 +213,36 @@ export class DataFormService {
         queryString = queryString.set(key, params[key]);
       }
     }
-    return this._http.get<any>(`${AppConfig.API_ENDPOINT}/users/roles`, { params: queryString } );
+    return this._http.get<any>(`${AppConfig.API_ENDPOINT}/users/roles`, { params: queryString });
   }
 
   getDataset(id) {
     return this._http.get<any>(`${AppConfig.API_ENDPOINT}/meta/dataset/${id}`);
   }
 
-  getModulesList() {
-    return this._http.get<any>(`${AppConfig.API_ENDPOINT}/gn_commons/modules`);
+  getModulesList(exclude: Array<string>) {
+    let queryString: HttpParams = new HttpParams();
+    exclude.forEach(mod_code => {
+      queryString = queryString.append('exclude', mod_code);
+    });
+    return this._http.get<any>(`${AppConfig.API_ENDPOINT}/gn_commons/modules`, {
+      params: queryString
+    });
   }
 
+  getModuleByCodeName(module_code) {
+    return this._http.get<any>(`${AppConfig.API_ENDPOINT}/gn_commons/modules/${module_code}`);
+  }
+
+  getCruved(modules_code?: Array<string>) {
+    let queryString: HttpParams = new HttpParams();
+    if (modules_code) {
+      modules_code.forEach(mod_code => {
+        queryString = queryString.append('module_code', mod_code);
+      });
+    }
+    return this._http.get<any>(`${AppConfig.API_ENDPOINT}/permissions/cruved`, {
+      params: queryString
+    });
+  }
 }

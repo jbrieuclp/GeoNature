@@ -42,7 +42,6 @@ class FormConfig(Schema):
     type_count = fields.Boolean(missing=True)
     count_min = fields.Boolean(missing=True)
     count_max = fields.Boolean(missing=True)
-    validation_status = fields.Boolean(missing=False)
 
 
 default_map_list_conf = [
@@ -142,6 +141,7 @@ class GnModuleSchemaConf(Schema):
     digital_proof_validator = fields.Boolean(missing=True)
     releve_map_zoom_level = fields.Integer(missing=6)
     id_taxon_list = fields.Integer(missing=100)
+    taxon_result_number = fields.Integer(missing=20)
     id_observers_list = fields.Integer(missing=1)
     default_maplist_columns = fields.List(fields.Dict(), missing=default_map_list_conf)
     available_maplist_column = fields.List(fields.Dict(), missing=available_maplist_column)

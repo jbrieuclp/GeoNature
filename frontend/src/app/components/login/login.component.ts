@@ -7,7 +7,8 @@ import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'pnx-login',
-  templateUrl: 'login.component.html'
+  templateUrl: 'login.component.html',
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
   public casLogin: boolean;
@@ -20,7 +21,7 @@ export class LoginComponent implements OnInit {
       // if token not here here, redirection to CAS login page
       const url_redirection_cas = `${AppConfig.CAS_PUBLIC.CAS_URL_LOGIN}?service=${
         AppConfig.API_ENDPOINT
-      }/auth_cas/login`;
+      }/gn_auth/login_cas`;
       document.location.href = url_redirection_cas;
     }
   }

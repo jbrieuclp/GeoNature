@@ -143,6 +143,8 @@ sudo apt-get install -y python-qt4 2> var/log/install_app.log
 # Creating PostgreSQL user
 echo "Création de l'utilisateur PostgreSQL..."
 sudo -n -u postgres -s psql -c "CREATE ROLE $user_pg WITH LOGIN PASSWORD '$user_pg_pass';"
+#restart postgresql if we launch twice the script
+sudo service postgresql restart
 
 # Apache configuration
 sudo sh -c 'echo "ServerName localhost" >> /etc/apache2/apache2.conf'
@@ -153,7 +155,6 @@ sudo apache2ctl restart
 
 # Installing GeoNature with current user
 echo "Téléchargement et installation de GeoNature ..."
-cd /tmp
 wget https://github.com/PnX-SI/GeoNature/archive/$geonature_release.zip
 unzip $geonature_release.zip
 rm $geonature_release.zip
@@ -173,6 +174,7 @@ sed -i "s/user_pg=.*$/user_pg=$user_pg/g" config/settings.ini
 sed -i "s/db_host=.*$/db_host=$pg_host/g" config/settings.ini
 sed -i "s/user_pg_pass=.*$/user_pg_pass=$user_pg_pass/g" config/settings.ini
 sed -i "s/srid_local=.*$/srid_local=$srid_local/g" config/settings.ini
+sed -i "s/install_sig_layers=.*$/install_sig_layers=$install_sig_layers/g" config/settings.ini
 sed -i "s/install_default_dem=.*$/install_default_dem=$install_default_dem/g" config/settings.ini
 sed -i "s/vectorise_dem=.*$/vectorise_dem=$vectorise_dem/g" config/settings.ini
 sed -i "s/add_sample_data=.*$/add_sample_data=$add_sample_data/g" config/settings.ini
@@ -193,6 +195,9 @@ cd install/
 cd ../
 
 # Apache configuration of GeoNature
+if [ -f  /etc/apache2/sites-available/geonature.conf ]; then
+  sudo rm  /etc/apache2/sites-available/geonature.conf
+fi
 sudo touch /etc/apache2/sites-available/geonature.conf
 
 sudo sh -c 'echo "# Configuration GeoNature" >> /etc/apache2/sites-available/geonature.conf'
@@ -213,6 +218,9 @@ sudo sh -c '#FIN Configuration GeoNature 2>" >> /etc/apache2/sites-available/geo
 sudo a2ensite geonature
 
 # Apache configuration of GeoNature maintenance page
+if [ -f  /etc/apache2/sites-available/geonature_maintenance.conf ]; then
+  sudo rm  /etc/apache2/sites-available/geonature_maintenance.conf
+fi
 sudo touch /etc/apache2/sites-available/geonature_maintenance.conf
 
 conf="Alias /geonature /home/`whoami`/geonature/frontend/src/app/maintenance"
@@ -225,7 +233,6 @@ sudo sh -c 'echo  "</Directory>">> /etc/apache2/sites-available/geonature_mainte
 
 # Installing TaxHub with current user
 echo "Téléchargement et installation de TaxHub ..."
-cd /tmp
 wget https://github.com/PnX-SI/TaxHub/archive/$taxhub_release.zip
 unzip $taxhub_release.zip
 rm $taxhub_release.zip
@@ -253,6 +260,9 @@ sed -i "s/https_cert_path=.*$/https_cert_path=$enable_https/g" settings.ini
 sed -i "s/https_key_path=.*$/https_key_path=$enable_https/g" settings.ini
 
 # Apache configuration of TaxHub
+if [ -f  /etc/apache2/sites-available/taxhub.conf ]; then
+  sudo rm  /etc/apache2/sites-available/taxhub.conf
+fi
 sudo touch /etc/apache2/sites-available/taxhub.conf
 sudo sh -c 'echo "# Configuration TaxHub" >> /etc/apache2/sites-available/taxhub.conf'
 sudo sh -c 'echo "<Location /taxhub>" >> /etc/apache2/sites-available/taxhub.conf'
@@ -269,21 +279,13 @@ sudo a2ensite taxhub
 sudo a2enmod proxy
 sudo a2enmod proxy_http
 
-# Installation og TaxHub
+# Installation of TaxHub
 ./install_app.sh
 
 # Installation and configuration of UsersHub application (if activated)
 if [ "$install_usershub_app" = true ]; then
     echo "Installation de l'application Usershub"
-    os_version=$(cat /etc/os-release |grep VERSION_ID)
-    # On Debian 9 : PHP7. On Debian 8 : PHP5
-    if [ "$OS_VERSION" == "9" ]
-    then
-        sudo apt-get install -y php7.0 libapache2-mod-php7.0 libapache2-mod-php7.0 php7.0-pgsql php7.0-gd 2> var/log/install_app.log
-    else
-        sudo apt-get install -y php5 libapache2-mod-php5 libapache2-mod-php5 php5-pgsql php5-gd 2> var/log/install_app.log
-    fi
-    cd /tmp
+
     wget https://github.com/PnEcrins/UsersHub/archive/$usershub_release.zip
     unzip $usershub_release.zip
     rm $usershub_release.zip
@@ -296,22 +298,26 @@ if [ "$install_usershub_app" = true ]; then
     sed -i "s/db_name=.*$/db_name=$geonaturedb_name/g" config/settings.ini
     sed -i "s/user_pg=.*$/user_pg=$user_pg/g" config/settings.ini
     sed -i "s/user_pg_pass=.*$/user_pg_pass=$user_pg_pass/g" config/settings.ini
+    sed -i 's#url_application=.*#url_application='$my_url'usershub#g' config/settings.ini
 
     # Installation of UsersHub application
     ./install_app.sh
 
     # Apache configuration of UsersHub
+    if [ -f  /etc/apache2/sites-available/usershub.conf ]; then
+        sudo rm /etc/apache2/sites-available/usershub.conf
+    fi
     sudo touch /etc/apache2/sites-available/usershub.conf
-    sudo sh -c 'echo  "#Configuration usershub">> /etc/apache2/sites-available/usershub.conf'
-    conf="Alias /usershub /home/`whoami`/usershub/web"
-    echo $conf | sudo tee -a /etc/apache2/sites-available/usershub.conf 
-    conf="<Directory /home/`whoami`/usershub/web>"
-    echo $conf | sudo tee -a /etc/apache2/sites-available/usershub.conf
-    sudo sh -c 'echo  "Require all granted">> /etc/apache2/sites-available/usershub.conf'
-    sudo sh -c 'echo  "</Directory>">> /etc/apache2/sites-available/usershub.conf'
+    sudo sh -c 'echo "# Configuration Usershub" >> /etc/apache2/sites-available/usershub.conf'
+    sudo sh -c 'echo "<Location /usershub>" >> /etc/apache2/sites-available/usershub.conf'
+    sudo sh -c 'echo "ProxyPass  http://127.0.0.1:5001 retry=0" >> /etc/apache2/sites-available/usershub.conf'
+    sudo sh -c 'echo "ProxyPassReverse  http://127.0.0.1:5001" >> /etc/apache2/sites-available/usershub.conf'
+    sudo sh -c 'echo "</Location>" >> /etc/apache2/sites-available/usershub.conf'
+    sudo sh -c 'echo "#FIN Configuration Usershub" >> /etc/apache2/sites-available/usershub.conf'
     sudo a2ensite usershub
 fi
 
 sudo apache2ctl restart
 
-echo "L'installation est OK!"
+
+echo "L'installation est terminée!"

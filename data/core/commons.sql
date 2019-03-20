@@ -265,15 +265,15 @@ COST 100;
 --USAGE
 --SELECT gn_commons.role_is_group(1);
 
-CREATE OR REPLACE FUNCTION get_id_module_byname(mymodule text)
+CREATE OR REPLACE FUNCTION get_id_module_bycode(mymodule text)
   RETURNS integer AS
 $BODY$
 DECLARE
 	theidmodule integer;
 BEGIN
-  --Retrouver l'id du module par son nom. L'id_module est le même que l'id_application correspondant dans utilisateurs.t_applications
+  --Retrouver l'id du module par son code
   SELECT INTO theidmodule id_module FROM gn_commons.t_modules
-	WHERE "module_name" ILIKE mymodule;
+	WHERE "module_code" ILIKE mymodule;
   RETURN theidmodule;
 END;
 $BODY$
@@ -421,8 +421,8 @@ SELECT pg_catalog.setval('t_history_actions_id_history_action_seq', 1, false);
 
 
 CREATE TABLE t_modules(
-  id_module integer NOT NULL,
-  module_name character varying(255) NOT NULL,
+  id_module serial NOT NULL,
+  module_code character varying(50) NOT NULL,
   module_label character varying(255) NOT NULL,
   module_picto character varying(255),
   module_desc text,
@@ -432,7 +432,8 @@ CREATE TABLE t_modules(
   module_target character(10),
   module_comment text,
   active_frontend boolean NOT NULL,
-  active_backend boolean NOT NULL
+  active_backend boolean NOT NULL,
+  module_doc_url character varying(255)
 );
 COMMENT ON COLUMN t_modules.id_module IS 'PK mais aussi FK vers la table "utilisateurs.t_applications". ATTENTION de ne pas utiliser l''identifiant d''une application existante dans cette table et qui ne serait pas un module de GeoNature';
 COMMENT ON COLUMN t_modules.module_target IS 'Value = NULL ou "blank". On peux ainsi référencer des modules externes et les ouvrir dans un nouvel onglet.';
@@ -491,10 +492,6 @@ ALTER TABLE ONLY t_history_actions
 --ALTER TABLE ONLY t_history_actions
     --ADD CONSTRAINT fk_t_history_actions_t_roles FOREIGN KEY (id_digitiser) REFERENCES utilisateurs.t_roles(id_role) ON UPDATE CASCADE;
 
-ALTER TABLE ONLY t_modules
-  ADD CONSTRAINT fk_t_modules_utilisateurs_t_applications FOREIGN KEY (id_module) REFERENCES utilisateurs.t_applications (id_application) ON UPDATE CASCADE;
-
-
 ---------------
 --CONSTRAINTS--
 ---------------
@@ -540,6 +537,7 @@ CREATE TRIGGER tri_insert_synthese_update_validation_status
 ---------
 --DATAS--
 ---------
+
 -- On ne défini pas d'id pour la PK, la séquence s'en charge
 INSERT INTO bib_tables_location (table_desc, schema_name, table_name, pk_field, uuid_field_name) VALUES
 ('Regroupement de tous les médias de GeoNature', 'gn_commons', 't_medias', 'id_media', 'unique_id_media')
@@ -547,9 +545,19 @@ INSERT INTO bib_tables_location (table_desc, schema_name, table_name, pk_field, 
 
 INSERT INTO t_parameters (id_organism, parameter_name, parameter_desc, parameter_value, parameter_extra_value) VALUES
 (0,'taxref_version','Version du référentiel taxonomique','Taxref V11.0',NULL)
-,(0,'local_srid','Valeur du SRID local','2154',NULL)
+,(0,'local_srid','Valeur du SRID local', MYLOCALSRID,NULL)
 ,(0,'annee_ref_commune', 'Année du référentiel géographique des communes utilisé', '2017', NULL)
 ;
+
+-- insertion du module parent à tous: GeoNature
+INSERT INTO gn_commons.t_modules(id_module, module_code, module_label, module_picto, module_desc, module_path, module_target, module_comment, active_frontend, active_backend, module_doc_url) VALUES
+(0, 'GEONATURE', 'GeoNature', '', 'Module parent de tous les modules sur lequel on peut associer un CRUVED. NB: mettre active_frontend et active_backend à false pour qu''il ne s''affiche pas dans la barre latérale des modules', '/geonature', '', '', FALSE, FALSE, 'https://geonature.readthedocs.io/fr/latest/user-manual.html')
+;
+-- insertion du module Admin
+INSERT INTO gn_commons.t_modules(module_code, module_label, module_picto, module_desc, module_path, module_target, module_comment, active_frontend, active_backend, module_doc_url) VALUES
+('ADMIN', 'Admin', 'fa-cog', 'Backoffice de GeoNature', 'admin', '_self', 'Administration des métadonnées et des nomenclatures', TRUE, FALSE, 'https://geonature.readthedocs.io/fr/latest/user-manual.html#admin')
+;
+
 
 
 ---------
@@ -583,14 +591,14 @@ FROM insert_a i
 LEFT OUTER JOIN last_update_a u ON i.uuid_attached_row = u.uuid_attached_row
 LEFT OUTER JOIN delete_a d ON i.uuid_attached_row = d.uuid_attached_row;
 
-----------
--- DATA --
-----------
---insertion du module de gestion du backoffice dans utilisateurs.t_application et gn_commons.t_modules
-INSERT INTO utilisateurs.t_applications (nom_application, desc_application, id_parent)
-SELECT 'admin', 'Application backoffice de GeoNature', id_application
-FROM utilisateurs.t_applications WHERE nom_application = 'GeoNature';
 
-INSERT INTO gn_commons.t_modules(id_module, module_name, module_label, module_picto, module_desc, module_path, module_target, module_comment, active_frontend, active_backend)
-SELECT id_application ,'admin', 'Admin', 'fa-cog', 'Backoffice de GeoNature', 'admin', '_self', '', 'true', 'true'
-FROM utilisateurs.t_applications WHERE nom_application = 'admin';
+CREATE VIEW gn_commons.v_lastest_validation AS (
+  SELECT val.*, nom.label_default
+   FROM gn_commons.t_validations val
+   JOIN ref_nomenclatures.t_nomenclatures nom ON nom.id_nomenclature = val.id_nomenclature_valid_status
+JOIN ( SELECT val_max.uuid_attached_row,
+            max(val_max.validation_date) AS max
+           FROM gn_commons.t_validations val_max
+          GROUP BY val_max.uuid_attached_row) v2 ON val.validation_date = v2.max AND v2.uuid_attached_row = val.uuid_attached_row
+
+)

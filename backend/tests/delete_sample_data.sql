@@ -6,4 +6,14 @@ TRUNCATE gn_meta.t_datasets CASCADE;
 
 TRUNCATE gn_meta.t_acquisition_frameworks CASCADE;
 
-TRUNCATE utilisateurs.cor_app_privileges CASCADE;
+TRUNCATE gn_permissions.cor_role_action_filter_module_object CASCADE;
+
+TRUNCATE gn_synthese.synthese CASCADE;
+
+TRUNCATE utilisateurs.cor_role_app_profil CASCADE;
+
+TRUNCATE taxonomie.cor_taxon_attribut;
+
+-- set the serial of synthese to 0
+SELECT pg_catalog.setval('gn_synthese.synthese_id_synthese_seq', 1, true);
+

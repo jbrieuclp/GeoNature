@@ -21,7 +21,8 @@ export class ModuleGuardService implements CanActivate {
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    const moduleName = route.data['module_name'];
+    const moduleName = route.data['module_code'];
+
     const askedModule = this._moduleService.getModule(moduleName);
     if (askedModule) {
       this._globalSubService.currentModuleSubject.next(askedModule);

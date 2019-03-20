@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import {
-  FormControl,
   FormBuilder,
   FormGroup,
   FormArray,
@@ -11,8 +10,7 @@ import { GeoJSON } from "leaflet";
 
 import { AppConfig } from "@geonature_config/app.config";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { DataFormService } from "@geonature_common/form/data-form.service";
-import { ActivatedRoute, Router } from "@angular/router";
+import { Router } from "@angular/router";
 import { ModuleConfig } from "../../module.config";
 import { AuthService, User } from "@geonature/components/auth/auth.service";
 import { FormService } from "@geonature_common/form/form.service";
@@ -23,7 +21,8 @@ import { CommonService } from "@geonature_common/service/common.service";
 export class OcctaxFormService {
   public markerCoordinates: Array<any>;
   public geojsonCoordinates: GeoJSON;
-  public previousBoundingBox: any;
+  public previousCenter: any;
+  public previousZoomLevel: any;
   public currentTaxon: Taxon;
   public indexCounting: number;
   public nbCounting: Array<string>;
@@ -39,6 +38,7 @@ export class OcctaxFormService {
   public userReleveRigth: any;
   public savedOccurrenceData: any;
   public savedCurrentTaxon: any;
+  public currentHourMax: string;
 
   public releveForm: FormGroup;
   public occurrenceForm: FormGroup;
@@ -49,7 +49,6 @@ export class OcctaxFormService {
   constructor(
     private _fb: FormBuilder,
     private _http: HttpClient,
-    private _dfs: DataFormService,
     private _router: Router,
     private _auth: AuthService,
     private _formService: FormService,
@@ -61,6 +60,7 @@ export class OcctaxFormService {
     this.showOccurrence = false;
     this.showCounting = false;
     this.isEdintingOccurrence = false;
+    this.currentHourMax = null;
 
     this._router.events.subscribe(value => {
       this.isEdintingOccurrence = false;
@@ -190,19 +190,16 @@ export class OcctaxFormService {
         1,
         Validators.compose([
           Validators.required,
-          Validators.pattern("[1-9]+[0-9]*")
+          Validators.pattern("[0-9]+[0-9]*")
         ])
       ],
       count_max: [
         1,
         Validators.compose([
           Validators.required,
-          Validators.pattern("[1-9]+[0-9]*")
+          Validators.pattern("[0-9]+[0-9]*")
         ])
-      ],
-      id_nomenclature_valid_status: null,
-      id_validator: null,
-      validation_comment: null
+      ]
     });
     countForm.setValidators([this.countingValidator]);
     return countForm;

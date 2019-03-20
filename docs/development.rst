@@ -47,6 +47,17 @@ Pour sortir une nouvelle version de GeoNature :
 - Faites la release (https://github.com/PnX-SI/GeoNature/releases) en la taguant ``X.Y.Z`` (sans ``v`` devant) et en copiant le contenu du Changelog
 - Dans la branche ``develop``, modifiez le fichier ``VERSION`` en ``X.Y.Z.dev0`` et pareil dans le fichier ``docs/CHANGELOG.rst``
 
+BDD
+----
+
+- Mette à jour le ref_geo à partir des données IGN scan express
+
+        - Télécharger le dernier millesime: http://professionnels.ign.fr/adminexpress
+        - Intégrer le fichier shape dans la base grâce à QGIS dans une table nommée ``ref_geo.temp_fr_municipalities``
+        - Générer le SQL de création de la table:  ``pg_dump --table=ref_geo.temp_fr_municipalities  --column-inserts -U <MON_USER> -h <MON_HOST> -d <MA_BASE> > fr_municipalities.sql``. Le fichier en sortie doit s'appeler ``fr_municipalities.sql``
+        - Zipper le fichier SQL et le mettre sur le serveur geonature.fr/data 
+        - Corriger le script ``install_db.sh`` pour récupérer le nouveau fichier zippé
+
 Pratiques
 ---------
 
@@ -93,7 +104,7 @@ Voici la structure minimale que le module doit comporter (voir le dossier `contr
   - ``manifest.toml`` : fichier de description du module (nom, version du module, version de GeoNature compatible)
   - ``conf_gn_module.toml`` : fichier de configuration de l'application (livré en version sample)
   - ``conf_schema_toml.py`` : schéma 'marshmallow' (https://marshmallow.readthedocs.io/en/latest/) du fichier de configuration (permet de s'assurer la conformité des paramètres renseignés par l'utilisateur). Ce fichier doit contenir une classe ``GnModuleSchemaConf`` dans laquelle toutes les configurations sont synchronisées.
-  - ``install_gn_module.py`` : script python lançant les commandes relatives à l'installation du module (Base de données, ...). Ce fichier doit comprendre une fonction ``gnmodule_install_app(gn_db, gn_app)`` qui est utilisée pour installer le module (Voir l'`exemple du module validation <https://github.com/PnX-SI/gn_module_validation/blob/master/install_gn_module.py>`__)
+  - ``install_gn_module.py`` : script python lançant les commandes relatives à l'installation du module (Base de données, ...). Ce fichier doit comprendre une fonction ``gnmodule_install_app(gn_db, gn_app)`` qui est utilisée pour installer le module (Voir l'`exemple du module CMR <https://github.com/PnX-SI/gn_module_cmr/blob/master/install_gn_module.py>`__)
  
 
 - La racine du module comportera les dossiers suivants :
@@ -132,11 +143,21 @@ Lancer ``npm init`` pour initialiser le module.
 
 - Les fichiers d'assets sont à ranger dans le dossier ``assets`` du frontend. Angular-cli impose cependant que tous les assets soient dans le répertoire mère de l'application (celui de GeoNature). Un lien symbolique est créé à l'installation du module pour faire entre le dossier d'assets du module et celui de Geonature.
 
+- Utiliser node_modules présent dans GeoNature
+
+Pour utiliser des librairies déjà installé dans GeoNature, utilisezs la synthaxe suivante:
+
+::
+
+        import { TreeModule } from "@librairies/angular-tree-component";
+
+L'alias `@librairies` pointe en effet vers le repertoire des node_modules de GeoNature
+
 Pour les utiliser à l'interieur du module, utiliser la syntaxe suivante :
 
 ::
 
-    <img src="external_assets/<MY_MODULE_NAME>/afb.png">
+    <img src="external_assets/<MY_MODULE_CODE>/afb.png">
 
 Exemple pour le module de validation :
 
@@ -145,6 +166,8 @@ Exemple pour le module de validation :
     <img src="external_assets/<gn_module_validation>/afb.png">
 
 - Installer le linter ``tslint`` dans son éditeur de texte (TODO: définir un style à utiliser) 
+
+
 
 Backend
 *******
@@ -411,7 +434,7 @@ Vérification des droits des utilisateurs
 
 
 Décorateur pour les routes : vérifie les droits de l'utilisateur et le redirige en cas de niveau insuffisant ou d'informations de session erronés
-(deprecated) Privilegier `check_auth_cruved`
+(deprecated) Privilegier `check_cruved_scope`
 
 params :
 
@@ -442,7 +465,7 @@ params :
 
 
 
-- ``pypnusershub.routes.check_auth_cruved``
+- ``geonature.core.gn_permissions.decorators.check_cruved_scope``
 
 Décorateur pour les routes : Vérifie les droits de l'utilisateur à effectuer une action sur la donnée et le redirige en cas de niveau insuffisant ou d'informations de session erronées
 
@@ -450,62 +473,75 @@ params :
 
 * action <str:['C','R','U','V','E','D']> type d'action effectuée par la route (Create, Read, Update, Validate, Export, Delete)
 * get_role <bool:False>: si True, ajoute l'id utilisateur aux kwargs de la vue
-* redirect_on_expiration <str:None> : identifiant de vue  sur laquelle rediriger l'utilisateur en cas d'expiration de sa session
-* redirect_on_invalid_token <str:None> : identifiant de vue sur laquelle rediriger l'utilisateur en cas d'informations de session invalides
+* module_code: <str:None>: Code du module (gn_commons.t_modules) sur lequel on veut récupérer le CRUVED. Si ce paramètre n'est pas passer on vérifie le cruved de GeoNature
+* redirect_on_expiration <str:None> : identifiant de vue ou URL sur laquelle rediriger l'utilisateur en cas d'expiration de sa session
+* redirect_on_invalid_token <str:None> : identifiant de vue ou URL sur laquelle rediriger l'utilisateur en cas d'informations de session invalides
 
 
     ::
 
         from flask import Blueprint
-        from pypnusershub.routes import check_auth_cruved
-        from pypnusershub.db.tools import get_or_fetch_user_cruved
+        from geonature.core.gn_permissions.tools import get_or_fetch_user_cruved
         from geonature.utils.utilssqlalchemy import json_resp
+        from geonature.core.gn_permissions import decorators as permissions
 
         blueprint = Blueprint(__name__)
 
         @blueprint.route('/mysensibleview', methods=['GET'])
-        @check_auth_cruved(
+        @permissions.check_cruved_scope(
                 'R',
                 True,
+                module_code="OCCTAX"
                 redirect_on_expiration='my_reconnexion_handler',
                 redirect_on_invalid_token='my_affreux_pirate_handler'
-                )
+        )
         @json_resp
         def my_sensible_view(info_role):
             # Récupérer l'id de l'utilisateur qui demande la route
             id_role = info_role.id_role
             # Récupérer la portée autorisée à l'utilisateur pour l'action 'R' (read)
-            read_scope = info_role.tag_object_code
+            read_scope = info_role.value_filter
             #récupérer le CRUVED complet de l'utilisateur courant
             user_cruved = get_or_fetch_user_cruved(
                     session=session,
                     id_role=info_role.id_role,
-                    id_application=ID_MODULE,
-                    id_application_parent=current_app.config['ID_APPLICATION_GEONATURE']
+                    module_code=MY_MODULE_CODE,
             )
             return {'result': 'id_role = {}'.format(info_role.id_role)}
 
 
 
-- ``pypnusershub.routes.db.tools.cruved_for_user_in_app``
+- ``geonature.core.gn_permissions.tools.cruved_scope_for_user_in_module``
 
 
-Fonction qui retourne le cruved d'un utilisateur pour une application donnée.
-Si aucun cruved n'est définit pour l'application, c'est celui de l'application mère qui est retourné.
-Le cruved de l'application enfant surcharge toujours celui de l'application mère.
+
+Fonction qui retourne le cruved d'un utilisateur pour un module et/ou un objet donné.
+Si aucun cruved n'est définit pour le module, c'est celui de GeoNature qui est retourné, sinon 0.
+Le cruved de du module enfant surcharge toujours celui du module parent.
+Le cruved sur les objets n'est lui pas hérité du module parent.
 
 params :
 * id_role <integer:None>
-* id_application: id du module surlequel on veut avoir le cruved
-* id_application_parent: id l'application parent du module
+* module_code <str:None>: code du module surlequel on veut avoir le cruved
+* object_code <str:'ALL'> : code de l'objet surlequel on veut avoir le cruved
+* get_id <boolean: False>: retourne l'id_filter et non le code_filter si True
 
-Valeur retournée : <dict> {'C': '1', 'R':'2', 'U': '1', 'V':'2', 'E':'3', 'D': '3'}
+Valeur retournée : tuple 
+A l'indice 0 du tuple: <dict{str:str}> ou <dict{str:int}>, boolean) {'C': '1', 'R':'2', 'U': '1', 'V':'2', 'E':'3', 'D': '3'}
+ ou {'C': 2, 'R':3, 'U': 4, 'V':1, 'E':2, 'D': 2} si ``get_id=True``
+A l'indice 1 du tuple: un booléan spécifiant si le cruved est hérité depuis un module parent ou non.
 
     ::
 
     from pypnusershub.db.tools import cruved_for_user_in_app
 
-    cruved = cruved_for_user_in_app(id_role=5, id_application=18, id_application_parent=14)
+    # recuperer le cruved de l'utilisateur 1 dans le module OCCTAX
+    cruved, herited = cruved_scope_for_user_in_module(
+            id_role=1
+            module_code='OCCTAX
+    )
+    # recupérer le cruved de l'utilisateur 1 sur GeoNature
+    cruved, herited = cruved_scope_for_user_in_module(id_role=1)
 
 
 Développement Frontend
@@ -636,7 +672,10 @@ Ces composants peuvent être considérés comme des "dump components" ou "presen
                 Nombre de résultat affiché (obligatoire)
 
                 *Type*: ``number``
-        
+        :``displayAdvancedFilters``:
+                Afficher ou non les filtres par regne et groupe INPN qui controle l'autocomplétion
+
+                *Type*: ``boolean``        
         **Valeur retourné par le FormControl**:
 
         Taxon séléctionné. *Type*: any

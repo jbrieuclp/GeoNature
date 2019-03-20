@@ -3,7 +3,6 @@ import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
 import { DataFormService } from '../data-form.service';
 import { NgbTypeaheadSelectItemEvent } from '@ng-bootstrap/ng-bootstrap';
-import { error } from 'util';
 import { of } from 'rxjs/observable/of';
 import { CommonService } from '@geonature_common/service/common.service';
 import { AppConfig } from '@geonature_config/app.config';
@@ -44,10 +43,13 @@ export class TaxonomyComponent implements OnInit {
   @Input() label: string;
   // api endpoint for the automplete ressource
   @Input() apiEndPoint: string;
+  // id of the taxon list from taxhub
   @Input() idList: string;
   @Input() charNumber: number;
-  @Input() listLength: number;
-  @Input() refresh: Function;
+  // number of typeahead results
+  @Input() listLength = 20;
+  // display the kindow and group filter
+  @Input() displayAdvancedFilters = false;
   searchString: any;
   filteredTaxons: any;
   regnes = new Array();
@@ -63,22 +65,26 @@ export class TaxonomyComponent implements OnInit {
   constructor(private _dfService: DataFormService, private _commonService: CommonService) {}
 
   ngOnInit() {
-    this.parentFormControl.valueChanges
-      .filter(value => value !== null && value.length === 0)
-      .subscribe(value => {
-        this.onDelete.emit();
-        this.showResultList = false;
-      });
     // set default to apiEndPoint for retrocompatibility
     this.apiEndPoint =
       this.apiEndPoint || `${AppConfig.API_TAXHUB}/taxref/allnamebylist/${this.idList}`;
-    // get regne and group2
-    this._dfService.getRegneAndGroup2Inpn().subscribe(data => {
-      this.regnesAndGroup = data;
-      for (let regne in data) {
-        this.regnes.push(regne);
-      }
-    });
+
+    if (this.displayAdvancedFilters) {
+      this.parentFormControl.valueChanges
+        .filter(value => value !== null && value.length === 0)
+        .subscribe(value => {
+          this.onDelete.emit();
+          this.showResultList = false;
+        });
+
+      // get regne and group2
+      this._dfService.getRegneAndGroup2Inpn().subscribe(data => {
+        this.regnesAndGroup = data;
+        for (let regne in data) {
+          this.regnes.push(regne);
+        }
+      });
+    }
 
     // put group to null if regne = null
     this.regneControl.valueChanges.subscribe(value => {
@@ -98,15 +104,16 @@ export class TaxonomyComponent implements OnInit {
 
   searchTaxon = (text$: Observable<string>) =>
     text$
-      .do(search_name => (this.isLoading = true))
+      .do(() => (this.isLoading = true))
       .debounceTime(400)
       .distinctUntilChanged()
       .switchMap(search_name => {
-        if (search_name.length >= this.charNumber && search_name.length <= 20) {
+        if (search_name.length >= this.charNumber) {
           return this._dfService
             .autocompleteTaxon(this.apiEndPoint, search_name, {
               regne: this.regneControl.value,
-              group2_inpn: this.groupControl.value
+              group2_inpn: this.groupControl.value,
+              limit: this.listLength.toString()
             })
             .catch(err => {
               if (err.status_code === 500) {
@@ -122,7 +129,7 @@ export class TaxonomyComponent implements OnInit {
       .map(response => {
         this.noResult = response.length === 0;
         this.isLoading = false;
-        return response.slice(0, this.listLength);
+        return response;
       });
 
   refreshAllInput() {

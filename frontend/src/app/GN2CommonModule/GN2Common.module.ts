@@ -32,6 +32,7 @@ import { LeafletDrawComponent } from './map/leaflet-draw/leaflet-draw.component'
 
 import { GPSComponent } from './map/gps/gps.component';
 import { GeojsonComponent } from './map/geojson/geojson.component';
+import { LeafletFileLayerComponent } from './map/filelayer/filelayer.component';
 import { MapListComponent } from './map-list/map-list.component';
 import { MapDataComponent } from './map-list/map-data/map-data.component';
 import { MapListGenericFiltersComponent } from './map-list/generic-filters/generic-filters.component';
@@ -58,7 +59,6 @@ import { MapListService } from './map-list/map-list.service';
 import { CommonService } from './service/common.service';
 import { FormService } from './form/form.service';
 import { NgbDatePeriodParserFormatter } from '@geonature_common/form/date/ngb-date-custom-parser-formatter';
-import { DataService } from './service/data.service';
 
 // add all rxjs operators
 import 'rxjs/Rx';
@@ -95,6 +95,7 @@ export function HttpLoaderFactory(http: Http) {
     MarkerComponent,
     GeojsonComponent,
     LeafletDrawComponent,
+    LeafletFileLayerComponent,
     GPSComponent,
     MapListComponent,
     MapDataComponent,
@@ -120,8 +121,7 @@ export function HttpLoaderFactory(http: Http) {
     CommonService,
     FormService,
     DynamicFormService,
-    NgbDatePeriodParserFormatter,
-    DataService
+    NgbDatePeriodParserFormatter
   ],
   exports: [
     MunicipalitiesComponent,
@@ -134,6 +134,7 @@ export function HttpLoaderFactory(http: Http) {
     MapComponent,
     MarkerComponent,
     LeafletDrawComponent,
+    LeafletFileLayerComponent,
     GeojsonComponent,
     GPSComponent,
     MapListComponent,

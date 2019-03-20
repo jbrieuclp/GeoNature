@@ -5,7 +5,8 @@ import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs';
 
 import * as L from 'leaflet';
-import { MAP_CONFIG } from '../../../conf/map.config';
+import 'leaflet.markercluster';
+import { AppConfig } from '@geonature_config/app.config';
 import { CommonService } from '../service/common.service';
 
 @Injectable()
@@ -15,7 +16,10 @@ export class MapService {
   private currentLayer: GeoJSON;
   public marker: Marker;
   public editingMarker = true;
-  public releveFeatureGroup: FeatureGroup;
+  public leafletDrawFeatureGroup: FeatureGroup;
+  public fileLayerFeatureGroup: FeatureGroup;
+  // boolean to control if we delete filelyaer layer when leaflet draw start
+  public fileLayerEditionMode = false;
   public modalContent: any;
   private _geojsonCoord = new Subject<any>();
   public gettingGeojson$: Observable<any> = this._geojsonCoord.asObservable();
@@ -29,6 +33,10 @@ export class MapService {
     weight: 3
   };
 
+  searchStyle = {
+    color: 'green'
+  };
+
   constructor(private http: Http, private _commonService: CommonService) {}
 
   setMap(map) {
@@ -39,60 +47,14 @@ export class MapService {
     return this.map;
   }
 
-  initializeReleveFeatureGroup() {
-    this.releveFeatureGroup = new L.FeatureGroup();
-    this.map.addLayer(this.releveFeatureGroup);
+  initializeLeafletDrawFeatureGroup() {
+    this.leafletDrawFeatureGroup = new L.FeatureGroup();
+    this.map.addLayer(this.leafletDrawFeatureGroup);
   }
 
-  search(address: string) {
-    let results = [];
-    this.http
-      .get(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          address
-        )}&format=json&limit=1&polygon_geojson=1`
-      )
-      .subscribe(
-        res => {
-          results = res.json();
-          results = results.filter(result => {
-            this.gotoLocation(result.geojson);
-          });
-        },
-        error => {
-          this._commonService.translateToaster('Warning', 'Map.LocationError');
-        }
-      );
-  }
-
-  gotoLocation(geometry) {
-    const style: any = {
-      weight: 3,
-      fillOpacity: 0
-    };
-    this.clear();
-    const featureCollection: GeoJSON.FeatureCollection<any> = {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: geometry,
-          properties: {}
-        }
-      ]
-    };
-    this.currentLayer = L.geoJSON(featureCollection, {
-      style: style
-    }).addTo(this.map);
-    this.map.fitBounds(this.currentLayer.getBounds());
-  }
-
-  // clear the marker when search
-  clear() {
-    if (this.currentLayer) {
-      this.map.removeLayer(this.currentLayer);
-      this.currentLayer = undefined;
-    }
+  initializefileLayerFeatureGroup() {
+    this.fileLayerFeatureGroup = new L.FeatureGroup();
+    this.map.addLayer(this.fileLayerFeatureGroup);
   }
 
   setGeojsonCoord(geojsonCoord) {
@@ -101,7 +63,11 @@ export class MapService {
     }
   }
 
-  setEditingMarker(isEditing) {
+  /**
+   * Function who disable marker editing (click event and control) mode via an observable
+   * @param isEditing : boolean
+   */
+  setEditingMarker(isEditing: boolean): void {
     this._isEditingMarker.next(isEditing);
   }
 
@@ -137,6 +103,27 @@ export class MapService {
     return LayerControl;
   }
 
+  addSearchBar() {
+    const control = L.Control.extend({
+      options: {
+        position: 'topright'
+      },
+      onAdd: map => {
+        const customLegend = L.DomUtil.create(
+          'input',
+          'leaflet-bar leaflet-control leaflet-control-custom'
+        );
+        // customLegend.onclick = () => {
+        //   if (func) {
+        //     func();
+        //   }
+        // };
+        return customLegend;
+      }
+    });
+    return control;
+  }
+
   createMarker(x, y, isDraggable) {
     return L.marker([y, x], {
       icon: L.icon({
@@ -148,21 +135,23 @@ export class MapService {
     });
   }
 
-  createGeojson(geojson, onEachFeature?): GeoJSON {
-    return L.geoJSON(geojson, {
-      style: (feature) => {
+  createGeojson(geojson, asCluster: boolean, onEachFeature?): GeoJSON {
+    const geojsonLayer = L.geoJSON(geojson, {
+      style: feature => {
         switch (feature.geometry.type) {
           // No color nor opacity for linestrings
-          case 'LineString': return {
-            color: '#3388ff',
-            weight: 3
-          };
-          default: return {
-            color: '#3388ff',
-            fill: true,
-            fillOpacity: 0.2,
-            weight: 3
-          };
+          case 'LineString':
+            return {
+              color: '#3388ff',
+              weight: 3
+            };
+          default:
+            return {
+              color: '#3388ff',
+              fill: true,
+              fillOpacity: 0.2,
+              weight: 3
+            };
         }
       },
       pointToLayer: (feature, latlng) => {
@@ -170,6 +159,10 @@ export class MapService {
       },
       onEachFeature: onEachFeature
     });
+    if (asCluster) {
+      return (L as any).markerClusterGroup().addLayer(geojsonLayer);
+    }
+    return geojsonLayer;
   }
 
   removeAllLayers(map, featureGroup) {
@@ -189,7 +182,7 @@ export class MapService {
       };
       this.setGeojsonCoord(geojson);
       this.marker.on('moveend', (event: MouseEvent) => {
-        if (this.map.getZoom() < MAP_CONFIG.ZOOM_LEVEL_RELEVE) {
+        if (this.map.getZoom() < AppConfig.MAPCONFIG.ZOOM_LEVEL_RELEVE) {
           this._commonService.translateToaster('warning', 'Map.ZoomWarning');
         } else {
           markerCoord = this.marker.getLatLng();
@@ -211,20 +204,20 @@ export class MapService {
           return L.latLng(point[1], point[0]);
         });
         layer = L.polyline(myLatLong);
-        this.releveFeatureGroup.addLayer(layer);
+        this.leafletDrawFeatureGroup.addLayer(layer);
       }
       if (data.geometry.type === 'Polygon') {
         const myLatLong = coordinates[0].map(point => {
           return L.latLng(point[1], point[0]);
         });
         layer = L.polygon(myLatLong);
-        this.releveFeatureGroup.addLayer(layer);
+        this.leafletDrawFeatureGroup.addLayer(layer);
       }
       this.map.fitBounds(layer.getBounds());
       // disable point event on the map
       this.setEditingMarker(false);
       // send observable
-      let geojson = this.releveFeatureGroup.toGeoJSON();
+      let geojson = this.leafletDrawFeatureGroup.toGeoJSON();
       geojson = (geojson as any).features[0];
       this.setGeojsonCoord(geojson);
     }

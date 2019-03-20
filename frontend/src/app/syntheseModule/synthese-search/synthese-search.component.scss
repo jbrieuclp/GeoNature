@@ -63,21 +63,17 @@ legend {
 }
 
 .search-btn {
+  padding: 2px;
   float: right;
-  margin-bottom: 15px;
 }
 
 .search-wrapper {
-  max-height: 92vh;
+  max-height: 88vh;
   overflow: auto;
 }
 
 .relative {
   position: relative;
-}
-
-.absolute {
-  //position: absolute;
 }
 
 :host /deep/ ngb-typeahead-window > button > span {

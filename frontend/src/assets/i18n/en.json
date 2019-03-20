@@ -26,6 +26,7 @@
   "NotAllowed": "You do not have the rights to perform this action",
   "LoginError": "Login or password incorrect",
   "DownloadData": "Download data",
+  "Downloading": "Downloading",
   "DownloadOverflow":
     "The number of items is too important to be downloaded, please modify your request or contact your administrator",
   "AllItems": "all",
@@ -48,7 +49,8 @@
   "Form": {
     "RefreshFilters": "Refresh filters",
     "AdvancedFilters": "Filtres avancés",
-    "OtherFilters": "Other filter"
+    "OtherFilters": "Other filter",
+    "Organism": "Organism(s)"
   },
   "List": {
     "Columns": "Columns",
@@ -60,7 +62,10 @@
     "AddPoint": "Locate observation (point)",
     "AddLine": "Locate observation (line)",
     "AddPolygon": "Locate observation (polygon)",
-    "ZoomWarning": "Inappropriate scale, zoom more "
+    "ZoomWarning": "Inappropriate scale, zoom more ",
+    "FileLayerInfoMessage":
+      "Right click on the shape to select your current releve. Selected layer are in red. Right click to display the layer info",
+    "FileLayerInfoSynthese": "Right click on the shape to display info"
   },
   "Releve": {
     "Releve": "Relevé",
@@ -151,7 +156,7 @@
     "Welcome in CONTACT module. It allows to record observations based on SINP Taxon Occurrencies standard.",
   "ErrorMessage": "Game over",
   "Export": {
-    "ExportModuleName": "Export module",
+    "ExportModuleName": "Export module"
   },
   "Synthese": {
     "DeleteObs": "Supprimer l'observations"

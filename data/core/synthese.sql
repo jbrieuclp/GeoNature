@@ -201,7 +201,8 @@ CREATE TABLE synthese (
     determiner character varying(1000),
     id_digitiser integer,
     id_nomenclature_determination_method integer DEFAULT gn_synthese.get_default_nomenclature_value('METH_DETERMIN'),
-    comments text,
+    comment_context text,
+    comment_description text,
     meta_validation_date timestamp without time zone,
     meta_create_date timestamp without time zone DEFAULT now(),
     meta_update_date timestamp without time zone DEFAULT now(),
@@ -219,6 +220,10 @@ COMMENT ON COLUMN gn_synthese.synthese.id_source
   IS 'Permet d''identifier la localisation de l''enregistrement correspondant dans les schémas et tables de la base';
 COMMENT ON COLUMN gn_synthese.synthese.id_module
   IS 'Permet d''identifier le module qui a permis la création de l''enregistrement. Ce champ est en lien avec utilisateurs.t_applications et permet de gérer le CRUVED grace à la table utilisateurs.cor_app_privileges';
+COMMENT ON COLUMN gn_synthese.synthese.comment_context
+  IS 'Commentaire du releve (ou regroupement)';
+COMMENT ON COLUMN gn_synthese.synthese.comment_description
+  IS 'Commentaire de l''occurrence';
 
 CREATE SEQUENCE synthese_id_synthese_seq
     START WITH 1
@@ -259,7 +264,7 @@ SELECT t.cd_nom,
 FROM (
   SELECT t_1.cd_nom,
         t_1.cd_ref,
-        concat(t_1.lb_nom, ' =  <i> ', t_1.nom_valide, '</i>' ) AS search_name,
+        concat(t_1.lb_nom, ' =  <i> ', t_1.nom_valide, '</i>', ' - [', t_1.id_rang, ' - ', t_1.cd_nom , ']' ) AS search_name,
         t_1.nom_valide,
         t_1.lb_nom,
         t_1.regne,
@@ -269,7 +274,7 @@ FROM (
   UNION
   SELECT t_1.cd_nom,
         t_1.cd_ref,
-        concat(t_1.nom_vern, ' =  <i> ', t_1.nom_valide, '</i>' ) AS search_name,
+        concat(t_1.nom_vern, ' =  <i> ', t_1.nom_valide, '</i>', ' - [', t_1.id_rang, ' - ', t_1.cd_nom , ']' ) AS search_name,
         t_1.nom_valide,
         t_1.lb_nom,
         t_1.regne,
@@ -311,7 +316,7 @@ ALTER TABLE ONLY synthese
     ADD CONSTRAINT fk_synthese_id_source FOREIGN KEY (id_source) REFERENCES t_sources(id_source) ON UPDATE CASCADE;
 
 ALTER TABLE ONLY synthese
-    ADD CONSTRAINT fk_synthese_id_module FOREIGN KEY (id_module) REFERENCES utilisateurs.t_applications(id_application) ON UPDATE CASCADE;
+    ADD CONSTRAINT fk_synthese_id_module FOREIGN KEY (id_module) REFERENCES gn_commons.t_modules(id_module) ON UPDATE CASCADE;
 
 ALTER TABLE ONLY synthese
     ADD CONSTRAINT fk_synthese_cd_nom FOREIGN KEY (cd_nom) REFERENCES taxonomie.taxref(cd_nom) ON UPDATE CASCADE;
@@ -401,6 +406,10 @@ ALTER TABLE ONLY taxons_synthese_autocomplete
 --------------
 --CONSTRAINS--
 --------------
+
+ALTER TABLE ONLY synthese
+    ADD CONSTRAINT unique_id_sinp_unique UNIQUE (unique_id_sinp);
+
 ALTER TABLE ONLY synthese
     ADD CONSTRAINT check_synthese_altitude_max CHECK (altitude_max >= altitude_min);
 
@@ -546,6 +555,12 @@ CREATE INDEX i_synthese_the_geom_point ON synthese USING gist (the_geom_point);
 CREATE UNIQUE INDEX i_unique_cd_ref_vm_min_max_for_taxons ON gn_synthese.vm_min_max_for_taxons USING btree (cd_ref);
 --REFRESH MATERIALIZED VIEW CONCURRENTLY gn_synthese.vm_min_max_for_taxons;
 
+CREATE INDEX i_taxons_synthese_autocomplete_cd_nom
+  ON taxons_synthese_autocomplete (cd_nom ASC NULLS LAST);
+
+CREATE INDEX i_tri_taxons_synthese_autocomplete_search_name 
+  ON taxons_synthese_autocomplete USING GIST (search_name gist_trgm_ops);
+
 -------------
 --FUNCTIONS--
 -------------
@@ -629,7 +644,7 @@ $BODY$
       INSERT INTO gn_synthese.taxons_synthese_autocomplete
       SELECT t.cd_nom,
               t.cd_ref,
-          concat(t.lb_nom, ' = <i>', t.nom_valide, '</i>') AS search_name,
+          concat(t.lb_nom, ' = <i>', t.nom_valide, '</i>', ' - [', t.id_rang, ' - ', t.cd_nom , ']') AS search_name,
           t.nom_valide,
           t.lb_nom,
           t.regne,
@@ -638,7 +653,7 @@ $BODY$
       INSERT INTO gn_synthese.taxons_synthese_autocomplete
       SELECT t.cd_nom,
         t.cd_ref,
-        concat(t.nom_vern, ' =  <i> ', t.nom_valide, '</i>' ) AS search_name,
+        concat(t.nom_vern, ' =  <i> ', t.nom_valide, '</i>', ' - [', t.id_rang, ' - ', t.cd_nom , ']' ) AS search_name,
         t.nom_valide,
         t.lb_nom,
         t.regne,
@@ -656,75 +671,74 @@ $BODY$
 ---------
 
 CREATE OR REPLACE VIEW gn_synthese.v_tree_taxons_synthese AS
-WITH cd_synthese AS
-	(SELECT DISTINCT cd_nom FROM gn_synthese.synthese)
+WITH 
+  cd_synthese AS(
+    SELECT DISTINCT cd_nom FROM gn_synthese.synthese
+  )
 	,taxon AS (
-         SELECT n.id_nom,
-            t_1.cd_ref,
-            t_1.lb_nom AS nom_latin,
-                CASE
-                    WHEN n.nom_francais IS NULL THEN t_1.lb_nom
-                    WHEN n.nom_francais = '' THEN t_1.lb_nom
-                    ELSE n.nom_francais
-                END AS nom_francais,
-            t_1.cd_nom,
-            t_1.id_rang,
-            t_1.regne,
-            t_1.phylum,
-            t_1.classe,
-            t_1.ordre,
-            t_1.famille,
-            t_1.lb_nom
-           FROM taxonomie.taxref t_1
-	    JOIN cd_synthese s ON s.cd_nom = t_1.cd_nom
-            LEFT JOIN taxonomie.bib_noms n ON n.cd_nom = s.cd_nom
-
-
-        ), cd_regne AS (
-         SELECT DISTINCT taxref.cd_nom,
-            taxref.regne
-           FROM taxonomie.taxref
-          WHERE taxref.id_rang::text = 'KD'::text AND taxref.cd_nom = taxref.cd_ref
-
-        )
- SELECT t.id_nom,
-    t.cd_ref,
-    t.nom_latin,
-    t.nom_francais,
-    t.id_regne,
-    t.nom_regne,
-    COALESCE(t.id_embranchement, t.id_regne) AS id_embranchement,
-    COALESCE(t.nom_embranchement, ' Sans embranchement dans taxref') AS nom_embranchement,
-    COALESCE(t.id_classe, t.id_embranchement) AS id_classe,
-    COALESCE(t.nom_classe, ' Sans classe dans taxref') AS nom_classe,
-    COALESCE(t.desc_classe, ' Sans classe dans taxref') AS desc_classe,
-    COALESCE(t.id_ordre, t.id_classe) AS id_ordre,
-    COALESCE(t.nom_ordre, ' Sans ordre dans taxref') AS nom_ordre,
-    COALESCE(t.id_famille, t.id_ordre) AS id_famille,
-    COALESCE(t.nom_famille, ' Sans famille dans taxref') AS nom_famille
-   FROM ( SELECT DISTINCT t_1.id_nom,
-            t_1.cd_ref,
-            t_1.nom_latin,
-            t_1.nom_francais,
-            ( SELECT DISTINCT r.cd_nom
-                   FROM cd_regne r
-                  WHERE r.regne = t_1.regne) AS id_regne,
-            t_1.regne AS nom_regne,
-            ph.cd_nom AS id_embranchement,
-            t_1.phylum AS nom_embranchement,
-            t_1.phylum AS desc_embranchement,
-            cl.cd_nom AS id_classe,
-            t_1.classe AS nom_classe,
-            t_1.classe AS desc_classe,
-            ord.cd_nom AS id_ordre,
-            t_1.ordre AS nom_ordre,
-            f.cd_nom AS id_famille,
-            t_1.famille AS nom_famille
-           FROM taxon t_1
-             LEFT JOIN taxonomie.taxref ph ON ph.id_rang = 'PH' AND ph.cd_nom = ph.cd_ref AND ph.lb_nom = t_1.phylum AND NOT t_1.phylum IS NULL
-             LEFT JOIN taxonomie.taxref cl ON cl.id_rang = 'CL' AND cl.cd_nom = cl.cd_ref AND cl.lb_nom = t_1.classe AND NOT t_1.classe IS NULL
-             LEFT JOIN taxonomie.taxref ord ON ord.id_rang = 'OR' AND ord.cd_nom = ord.cd_ref AND ord.lb_nom = t_1.ordre AND NOT t_1.ordre IS NULL
-             LEFT JOIN taxonomie.taxref f ON f.id_rang = 'FM' AND f.cd_nom = f.cd_ref AND f.lb_nom = t_1.famille AND f.phylum = t_1.phylum AND NOT t_1.famille IS NULL) t
+    SELECT
+      t_1.cd_ref,
+      t_1.lb_nom AS nom_latin,
+      t_1.nom_vern AS nom_francais,
+      t_1.cd_nom,
+      t_1.id_rang,
+      t_1.regne,
+      t_1.phylum,
+      t_1.classe,
+      t_1.ordre,
+      t_1.famille,
+      t_1.lb_nom
+    FROM taxonomie.taxref t_1
+    JOIN cd_synthese s ON s.cd_nom = t_1.cd_nom
+  )
+  ,cd_regne AS (
+    SELECT DISTINCT taxref.cd_nom,
+      taxref.regne
+    FROM taxonomie.taxref
+    WHERE taxref.id_rang::text = 'KD'::text 
+    AND taxref.cd_nom = taxref.cd_ref
+  )
+SELECT
+  t.cd_ref,
+  t.nom_latin,
+  t.nom_francais,
+  t.id_regne,
+  t.nom_regne,
+  COALESCE(t.id_embranchement, t.id_regne) AS id_embranchement,
+  COALESCE(t.nom_embranchement, ' Sans embranchement dans taxref') AS nom_embranchement,
+  COALESCE(t.id_classe, t.id_embranchement) AS id_classe,
+  COALESCE(t.nom_classe, ' Sans classe dans taxref') AS nom_classe,
+  COALESCE(t.desc_classe, ' Sans classe dans taxref') AS desc_classe,
+  COALESCE(t.id_ordre, t.id_classe) AS id_ordre,
+  COALESCE(t.nom_ordre, ' Sans ordre dans taxref') AS nom_ordre,
+  COALESCE(t.id_famille, t.id_ordre) AS id_famille,
+  COALESCE(t.nom_famille, ' Sans famille dans taxref') AS nom_famille
+FROM ( 
+  SELECT DISTINCT
+    t_1.cd_ref,
+    t_1.nom_latin,
+    t_1.nom_francais,
+    ( SELECT DISTINCT r.cd_nom
+      FROM cd_regne r
+      WHERE r.regne = t_1.regne
+    ) AS id_regne,
+    t_1.regne AS nom_regne,
+    ph.cd_nom AS id_embranchement,
+    t_1.phylum AS nom_embranchement,
+    t_1.phylum AS desc_embranchement,
+    cl.cd_nom AS id_classe,
+    t_1.classe AS nom_classe,
+    t_1.classe AS desc_classe,
+    ord.cd_nom AS id_ordre,
+    t_1.ordre AS nom_ordre,
+    f.cd_nom AS id_famille,
+    t_1.famille AS nom_famille
+  FROM taxon t_1
+  LEFT JOIN taxonomie.taxref ph ON ph.id_rang = 'PH' AND ph.cd_nom = ph.cd_ref AND ph.lb_nom = t_1.phylum AND NOT t_1.phylum IS NULL
+  LEFT JOIN taxonomie.taxref cl ON cl.id_rang = 'CL' AND cl.cd_nom = cl.cd_ref AND cl.lb_nom = t_1.classe AND NOT t_1.classe IS NULL
+  LEFT JOIN taxonomie.taxref ord ON ord.id_rang = 'OR' AND ord.cd_nom = ord.cd_ref AND ord.lb_nom = t_1.ordre AND NOT t_1.ordre IS NULL
+  LEFT JOIN taxonomie.taxref f ON f.id_rang = 'FM' AND f.cd_nom = f.cd_ref AND f.lb_nom = t_1.famille AND f.phylum = t_1.phylum AND NOT t_1.famille IS NULL
+) t
 ORDER BY id_regne, id_embranchement, id_classe, id_ordre, id_famille;
 
 
@@ -755,57 +769,59 @@ ref_nomenclatures.get_nomenclature_label(s.id_nomenclature_info_geo_type) AS inf
 ref_nomenclatures.get_nomenclature_label(s.id_nomenclature_determination_method) AS determination_method
 FROM gn_synthese.synthese s;
 
-CREATE VIEW gn_synthese.v_synthese_for_web_app AS
-   SELECT
-    s.id_synthese,
-    unique_id_sinp,
-    unique_id_sinp_grp,
-    s.id_source ,
-    entity_source_pk_value ,
-    count_min ,
-    count_max ,
-    nom_cite ,
-    meta_v_taxref ,
-    sample_number_proof ,
-    digital_proof ,
-    non_digital_proof ,
-    altitude_min ,
-    altitude_max ,
-    the_geom_4326,
-    date_min,
-    date_max,
-    validator ,
-    validation_comment ,
-    observers ,
-    id_digitiser,
-    determiner ,
-    comments ,
-    meta_validation_date,
+CREATE OR REPLACE VIEW gn_synthese.v_synthese_for_web_app AS 
+ SELECT s.id_synthese,
+    s.unique_id_sinp,
+    s.unique_id_sinp_grp,
+    s.id_source,
+    s.entity_source_pk_value,
+    s.count_min,
+    s.count_max,
+    s.nom_cite,
+    s.meta_v_taxref,
+    s.sample_number_proof,
+    s.digital_proof,
+    s.non_digital_proof,
+    s.altitude_min,
+    s.altitude_max,
+    s.the_geom_4326,
+    st_asgeojson(the_geom_4326),
+    s.date_min,
+    s.date_max,
+    s.validator,
+    s.validation_comment,
+    s.observers,
+    s.id_digitiser,
+    s.determiner,
+    s.comment_context,
+    s.comment_description,
+    s.meta_validation_date,
     s.meta_create_date,
     s.meta_update_date,
-    last_action,
+    s.last_action,
     d.id_dataset,
     d.dataset_name,
     d.id_acquisition_framework,
-    id_nomenclature_geo_object_nature,
-    id_nomenclature_info_geo_type,
-    id_nomenclature_grp_typ,
-    id_nomenclature_obs_meth,
-    id_nomenclature_obs_technique,
-    id_nomenclature_bio_status,
-    id_nomenclature_bio_condition,
-    id_nomenclature_naturalness,
-    id_nomenclature_exist_proof,
-    id_nomenclature_valid_status,
-    id_nomenclature_diffusion_level,
-    id_nomenclature_life_stage,
-    id_nomenclature_sex,
-    id_nomenclature_obj_count,
-    id_nomenclature_type_count,
-    id_nomenclature_sensitivity,
-    id_nomenclature_observation_status,
-    id_nomenclature_blurring,
+    s.id_nomenclature_geo_object_nature,
+    s.id_nomenclature_info_geo_type,
+    s.id_nomenclature_grp_typ,
+    s.id_nomenclature_obs_meth,
+    s.id_nomenclature_obs_technique,
+    s.id_nomenclature_bio_status,
+    s.id_nomenclature_bio_condition,
+    s.id_nomenclature_naturalness,
+    s.id_nomenclature_exist_proof,
+    s.id_nomenclature_valid_status,
+    s.id_nomenclature_diffusion_level,
+    s.id_nomenclature_life_stage,
+    s.id_nomenclature_sex,
+    s.id_nomenclature_obj_count,
+    s.id_nomenclature_type_count,
+    s.id_nomenclature_sensitivity,
+    s.id_nomenclature_observation_status,
+    s.id_nomenclature_blurring,
     s.id_nomenclature_source_status,
+    s.id_nomenclature_determination_method,
     sources.name_source,
     sources.url_source,
     t.cd_nom,
@@ -813,77 +829,136 @@ CREATE VIEW gn_synthese.v_synthese_for_web_app AS
     t.nom_valide,
     t.lb_nom,
     t.nom_vern
-  FROM gn_synthese.synthese s
-  JOIN taxonomie.taxref t ON t.cd_nom = s.cd_nom
-  JOIN gn_meta.t_datasets d ON d.id_dataset = s.id_dataset
-  JOIN gn_synthese.t_sources sources ON sources.id_source = s.id_source
-  ;
+   FROM gn_synthese.synthese s
+     JOIN taxonomie.taxref t ON t.cd_nom = s.cd_nom
+     JOIN gn_meta.t_datasets d ON d.id_dataset = s.id_dataset
+     JOIN gn_synthese.t_sources sources ON sources.id_source = s.id_source;
 
-CREATE VIEW gn_synthese.v_synthese_for_export AS
-   SELECT
-    s.id_synthese,
-    unique_id_sinp,
-    unique_id_sinp_grp,
-    s.id_source ,
-    entity_source_pk_value ,
-    count_min ,
-    count_max ,
-    nom_cite ,
-    meta_v_taxref ,
-    sample_number_proof ,
-    digital_proof ,
-    non_digital_proof ,
-    altitude_min ,
-    altitude_max ,
-    the_geom_4326,
-    the_geom_point,
-    the_geom_local,
-    st_astext(the_geom_4326) AS wkt,
-    date_min,
-    date_max,
-    validator ,
-    validation_comment ,
-    observers ,
-    id_digitiser,
-    determiner ,
-    comments ,
-    meta_validation_date,
+
+CREATE OR REPLACE VIEW gn_synthese.v_synthese_for_export AS 
+ WITH deco AS (
+         SELECT s_1.id_synthese,
+            n1.label_default AS "ObjGeoTyp",
+            n2.label_default AS "methGrp",
+            n3.label_default AS "obsMeth",
+            n4.label_default AS "obsTech",
+            n5.label_default AS "ocEtatBio",
+            n6.label_default AS "ocStatBio",
+            n7.label_default AS "ocNat",
+            n8.label_default AS "preuveOui",
+            n9.label_default AS "difNivPrec",
+            n10.label_default AS "ocStade",
+            n11.label_default AS "ocSex",
+            n12.label_default AS "objDenbr",
+            n13.label_default AS "denbrTyp",
+            n14.label_default AS "sensiNiv",
+            n15.label_default AS "statObs",
+            n16.label_default AS "dEEFlou",
+            n17.label_default AS "statSource",
+            n18.label_default AS "typInfGeo",
+            n19.label_default AS "ocMethDet"
+           FROM gn_synthese.synthese s_1
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n1 ON s_1.id_nomenclature_geo_object_nature = n1.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n2 ON s_1.id_nomenclature_grp_typ = n2.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n3 ON s_1.id_nomenclature_obs_meth = n3.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n4 ON s_1.id_nomenclature_obs_technique = n4.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n5 ON s_1.id_nomenclature_bio_status = n5.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n6 ON s_1.id_nomenclature_bio_condition = n6.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n7 ON s_1.id_nomenclature_naturalness = n7.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n8 ON s_1.id_nomenclature_exist_proof = n8.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n9 ON s_1.id_nomenclature_diffusion_level = n9.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n10 ON s_1.id_nomenclature_life_stage = n10.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n11 ON s_1.id_nomenclature_sex = n11.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n12 ON s_1.id_nomenclature_obj_count = n12.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n13 ON s_1.id_nomenclature_type_count = n13.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n14 ON s_1.id_nomenclature_sensitivity = n14.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n15 ON s_1.id_nomenclature_observation_status = n15.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n16 ON s_1.id_nomenclature_blurring = n16.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n17 ON s_1.id_nomenclature_source_status = n17.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n18 ON s_1.id_nomenclature_info_geo_type = n18.id_nomenclature
+            LEFT JOIN ref_nomenclatures.t_nomenclatures n19 ON s_1.id_nomenclature_determination_method = n19.id_nomenclature
+        )
+ SELECT s.id_synthese AS "idSynthese",
+    s.unique_id_sinp AS "permId",
+    s.unique_id_sinp_grp AS "permIdGrp",
+    s.count_min AS "denbrMin",
+    s.count_max AS "denbrMax",
+    s.meta_v_taxref AS "vTAXREF",
+    s.sample_number_proof AS "sampleNumb",
+    s.digital_proof AS "preuvNum",
+    s.non_digital_proof AS "preuvNoNum",
+    s.altitude_min AS "altMin",
+    s.altitude_max AS "altMax",
+    st_astext(s.the_geom_4326) AS wkt,
+    s.date_min AS "dateDebut",
+    s.date_max AS "dateFin",
+    s.validator AS validateur,
+    s.observers AS observer,
+    s.id_digitiser AS id_digitiser,
+    s.determiner AS detminer,
+    s.comment_context AS "obsCtx",
+    s.comment_description AS "obsDescr",
     s.meta_create_date,
     s.meta_update_date,
-    last_action,
-    d.id_dataset,
-    d.dataset_name,
+    d.id_dataset AS "jddId",
+    d.dataset_name AS "jddCode",
     d.id_acquisition_framework,
-    deco.nat_obj_geo,
-    deco.grp_typ,
-    deco.obs_method,
-    deco.obs_technique,
-    deco.bio_status,
-    deco.bio_condition,
-    deco.naturalness,
-    deco.exist_proof,
-    deco.valid_status,
-    deco.diffusion_level,
-    deco.life_stage,
-    deco.sex,
-    deco.obj_count,
-    deco.type_count,
-    deco.sensitivity,
-    deco.observation_status,
-    deco.blurring,
-    deco.source_status,
-    sources.name_source,
-    sources.url_source,
-    t.cd_nom,
-    t.cd_ref,
-    t.nom_valide,
-    t.nom_vern
-  FROM gn_synthese.synthese s
-  JOIN taxonomie.taxref t ON t.cd_nom = s.cd_nom
-  JOIN gn_meta.t_datasets d ON d.id_dataset = s.id_dataset
-  JOIN gn_synthese.t_sources sources ON sources.id_source = s.id_source
-  JOIN gn_synthese.v_synthese_decode_nomenclatures deco ON deco.id_synthese = s.id_synthese
-  ;
+    t.cd_nom AS "cdNom",
+    t.cd_ref AS "cdRef",
+    s.nom_cite AS "nomCite",
+    st_x(st_transform(s.the_geom_point, 2154)) AS x_centroid,
+    st_y(st_transform(s.the_geom_point, 2154)) AS y_centroid,
+    COALESCE(s.meta_update_date, s.meta_create_date) AS lastact,
+    st_asgeojson(s.the_geom_4326) AS geojson_4326,
+    st_asgeojson(s.the_geom_local) AS geojson_local,
+    deco."ObjGeoTyp",
+    deco."methGrp",
+    deco."obsMeth",
+    deco."obsTech",
+    deco."ocEtatBio",
+    deco."ocNat",
+    deco."preuveOui",
+    deco."difNivPrec",
+    deco."ocStade",
+    deco."ocSex",
+    deco."objDenbr",
+    deco."denbrTyp",
+    deco."sensiNiv",
+    deco."statObs",
+    deco."dEEFlou",
+    deco."statSource",
+    deco."typInfGeo"
+   FROM gn_synthese.synthese s
+     JOIN taxonomie.taxref t ON t.cd_nom = s.cd_nom
+     JOIN gn_meta.t_datasets d ON d.id_dataset = s.id_dataset
+     JOIN gn_synthese.t_sources sources ON sources.id_source = s.id_source
+     JOIN deco ON deco.id_synthese = s.id_synthese;
+
+
+
+
+CREATE OR REPLACE VIEW gn_synthese.v_metadata_for_export AS 
+ WITH count_nb_obs AS (
+         SELECT count(*) AS nb_obs,
+            synthese.id_dataset
+           FROM gn_synthese.synthese
+          GROUP BY synthese.id_dataset
+        )
+ SELECT d.dataset_name AS jeu_donnees,
+    d.id_dataset AS jdd_id,
+    d.unique_dataset_id AS jdd_uuid,
+    af.acquisition_framework_name AS cadre_acquisition,
+    string_agg(DISTINCT concat(COALESCE(orga.nom_organisme, ((roles.nom_role::text || ' '::text) || roles.prenom_role::text)::character varying), ': ', nomencl.label_default), ' | '::text) AS acteurs,
+    count_nb_obs.nb_obs AS nombre_obs
+   FROM gn_meta.t_datasets d
+     JOIN gn_meta.t_acquisition_frameworks af ON af.id_acquisition_framework = d.id_acquisition_framework
+     JOIN gn_meta.cor_dataset_actor act ON act.id_dataset = d.id_dataset
+     JOIN ref_nomenclatures.t_nomenclatures nomencl ON nomencl.id_nomenclature = act.id_nomenclature_actor_role
+     LEFT JOIN utilisateurs.bib_organismes orga ON orga.id_organisme = act.id_organism
+     LEFT JOIN utilisateurs.t_roles roles ON roles.id_role = act.id_role
+     JOIN count_nb_obs ON count_nb_obs.id_dataset = d.id_dataset
+  GROUP BY d.id_dataset, d.unique_dataset_id, d.dataset_name, af.acquisition_framework_name, count_nb_obs.nb_obs;
+
 ------------
 --TRIGGERS--
 ------------
@@ -929,12 +1004,6 @@ CREATE TRIGGER trg_refresh_taxons_forautocomplete
 --DATA--
 --------
 
--- insertion dans utilisateurs.t_applications et gn_commons.t_modules
-INSERT INTO utilisateurs.t_applications (nom_application, desc_application, id_parent)
-SELECT 'synthese', 'Application synthese de GeoNature', id_application
-FROM utilisateurs.t_applications WHERE nom_application = 'GeoNature';
-
-INSERT INTO gn_commons.t_modules (id_module, module_name, module_label, module_picto, module_desc, module_path, module_target, module_comment, active_frontend, active_backend)
-SELECT id_application ,'synthese', 'Synthese', 'fa-search', 'Application synthese', 'synthese', '_self', '', 'true', 'true'
-FROM utilisateurs.t_applications WHERE nom_application = 'synthese';
+INSERT INTO gn_commons.t_modules (module_code, module_label, module_picto, module_desc, module_path, module_target, active_frontend, active_backend) VALUES
+('SYNTHESE', 'Synthese', 'fa-search', 'Application synthese', 'synthese', '_self', 'true', 'true');
 

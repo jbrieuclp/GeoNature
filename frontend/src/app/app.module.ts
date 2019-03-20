@@ -14,7 +14,6 @@ import { ChartModule } from 'angular2-chartjs';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ToastrModule } from 'ngx-toastr';
-import { NgIdleKeepaliveModule } from '@ng-idle/keepalive';
 
 // Modules
 import { GN2CommonModule } from '@geonature_common/GN2Common.module';
@@ -38,6 +37,7 @@ import { AuthService } from './components/auth/auth.service';
 import { CookieService } from 'ng2-cookies';
 import { AuthGuard, ModuleGuardService } from '@geonature/routing/routes-guards.service';
 import { ModuleService } from './services/module.service';
+import { CruvedStoreService } from './services/cruved-store.service';
 import { SideNavService } from './components/sidenav-items/sidenav-service';
 
 import { MyCustomInterceptor } from './services/http.interceptor';
@@ -54,7 +54,6 @@ export function HttpLoaderFactory(http: Http) {
     HttpClientModule,
     BrowserAnimationsModule,
     FlexLayoutModule,
-    NgIdleKeepaliveModule.forRoot(),
     routing,
     ChartModule,
     ToastrModule.forRoot(),
@@ -86,6 +85,7 @@ export function HttpLoaderFactory(http: Http) {
     HttpClient,
     ModuleGuardService,
     SideNavService,
+    CruvedStoreService,
     { provide: HTTP_INTERCEPTORS, useClass: MyCustomInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]

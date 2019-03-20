@@ -42,6 +42,8 @@ Schéma simplifié de la BDD :
 - En bleu, les schémas des protocoles et sources de données
 - En vert, les schémas des applications pouvant interagir avec le coeur de GeoNature
 
+Depuis la version 2.0.0-rc.4, il faut noter que les droits (CRUVED) ont été retirés du schéma ``utilisateurs`` (``ref_users``) de UsersHub pour l'intégrer dans GeoNature dans un schéma ``gn_permissions``, à ajouter en rose.
+
 Modèle simplifié de la BDD (2017-12-15) : 
 
 .. image :: https://raw.githubusercontent.com/PnX-SI/GeoNature/develop/docs/2017-12-15-GN2-MCD-simplifie.jpg
@@ -55,30 +57,59 @@ Désolé pour les relations complexes entre tables...
 Gestion des droits :
 """"""""""""""""""""
 
-La gestion des droits est centralisée dans UsersHub. Dans la version 1 de GeoNature, il était possible d'attribuer des droits selon 6 niveaux à des rôles (utilisateurs ou groupes). Pour la version 2 de GeoNature, des évolutions ont été réalisées pour étendre les possibilités d'attribution de droits et les rendre plus génériques. 
+L'accès des utilisateurs à l'application GeoNature est gérée de manière centralisée dans UsersHub. 
 
-Pour cela un système d'étiquettes (``utilisateurs.t_tags``) a été mis en place. Il permet d'attribuer des étiquettes génériques à des rôles (utilisateurs ou groupes d'utilisateurs). 
+La gestion des droits (permissions), spécifique à GeoNature, est gérée dans un schéma (``gn_permissions``) et un module de GeoNature dédié. Dans la version 1 de GeoNature, il était possible d'attribuer des droits selon 6 niveaux à des rôles (utilisateurs ou groupes). Pour la version 2 de GeoNature, des évolutions ont été réalisées pour étendre les possibilités d'attribution de droits et les rendre plus génériques. 
 
-- Dans GeoNature V2 cela permet d'attribuer des actions possibles à un rôle sur une portée dans une application ou un module (définis dans ``utilisateurs.cor_app_privileges``).
+La gestion des droits dans GeoNature, comme dans beaucoup d'applications, est liée à des actions (Create / Read / Update / Delete aka CRUD). Pour les besoins  métiers de l'application nous avons rajouté deux actions : "Valider" et "Exporter", ce qui donne le CRUVED : Create / Read / Update / Validate / Export / Delete.
+
+Sur ces actions, on va pouvoir appliquer des filtres de manière générique.
+
+Le filtre le plus courant est celui de la "portée". On autorise des actions à un utilisateur sur une portée : "Ses données", "Les données de son organisme", "Toutes les données".
+
+Exemple : 
+
+- Utilisateur 1 peut effectuer l'action "DELETE" sur la portée "SES DONNEES"
+- Utilisateur Admin peut effectuer l'action "UPDATE" sur la portée "TOUTES LES DONNEES"
+
+Les autres filtres possibles sont liés à la précisions des données, les groupes taxonomiques ou des entités géographiques :
+
+Exemple :
+
+- Utilisateur 1 peut effectuer l'action "READ" sur "LES DONNES DEGRADEES"
+- Utilisateur admin peut effectuer l'action "READ" sur "LES DONNES PRECISES"
+
+Enfin ces permissions vont pouvoir s'attribuer à l'ensemble de l'application GeoNature et/ou à un module.
+
+On a donc le quatriptique : Un utilisateur / Une action / Un filtre / Un module 
+
+Pour l'instant les filtres de type groupe taxonomique, précisions et géographique existent dans la base de données mais ne sont pas implémentées au niveau de l'application GeoNature, donc ils n'ont aucun effet.
+
+Récapitulatif :
+
+- Dans GeoNature V2 on peut attribuer à une role des actions possibles, sur lesquels on peut ajouter des filtres, dans un module ou sur toute l'application GeoNature (définis dans ``gn_permissions.cor_role_action_filter_module_object``).
 - 6 actions sont possibles dans GeoNature : Create / Read / Update / Validate / Export / Delete (aka CRUVED).
-- 3 portées de ces actions sont possibles : Mes données / Les données de mon organisme / Toutes les données.
-- Une vue permet de retourner toutes les actions, leur portée et leur module de GeoNature pour tous les rôles (``utilisateurs.v_usersaction_forall_gn_modules``)
-- Des fonctions PostgreSQL ont aussi été intégrées pour faciliter la récupération de ces informations (``utilisateurs.cruved_for_user_in_module``, ``utilisateurs.can_user_do_in_module``, ...)
-- Une hiérarchie a été rendue possible entre applications et entre organismes pour permettre un système d'héritage
+- Différents types de filtre existent. Le plus courant est le filtre de type "SCOPE" (portée) : 3 portée sont attribuables à des actions: Mes données / Les données de mon organisme / Toutes les données.
+- Une vue permet de retourner toutes les actions, leur filtres et leur modules de GeoNature pour tous les rôles (``gn_permissions.v_users_permissions``)
+- Des fonctions PostgreSQL ont aussi été intégrées pour faciliter la récupération de ces informations (``gn_permissions.cruved_for_user_in_module``, ``gn_permissions.does_user_have_scope_permission``, ...)
+- Les permissions attribuées à un module surchargent les permission attribuées sur l'ensemble de l'application par un mécanisme d'héritage. Par défaut et en l'absence de permissions, tous les modules héritent des permissions de GeoNature.
 - Si un utilisateur n'a aucune action possible sur un module, alors il ne lui sera pas affiché et il ne pourra pas y accéder
 - Il est aussi possible de ne pas utiliser UsersHub pour gérer les utilisateurs et de connecter GeoNature à un CAS (voir configuration). Actuellement ce paramétrage est fonctionnel en se connectant au CAS de l'INPN (MNHN)
 
 .. image :: https://raw.githubusercontent.com/PnX-SI/GeoNature/develop/docs/images/schema_cruved.png
 
+A noter que toutes les actions et toutes les portées n'ont pas été implémentées dans tous les modules. Elles le sont en fonction des besoins de chaque module. 
+
+TODO : Lister les permissions implémentées dans chaque module.
 
 Nomenclatures :
 """""""""""""""
 
-- Toutes les listes déroulantes sont gérées dans une table générique ``ref_nomenclatures.t_nomenclatures``
+- Toutes les valeurs des listes déroulantes sont gérées dans une table générique ``ref_nomenclatures.t_nomenclatures``
 - Elles s'appuient sur les nomenclatures du SINP (http://standards-sinp.mnhn.fr/nomenclature/) qui peuvent être désactivées ou completées
-- Chaque nomenclature est associée à un type et une vue par type de nomenclature a été ajoutée pour simplifier leur usage 
+- Chaque nomenclature est associée à un type, et une vue par type de nomenclature a été ajoutée pour simplifier leur usage 
 - Ces nomenclatures sont gérées dans un sous-module pour pouvoir les réutiliser (ainsi que leur mécanisme) dans d'autres applications : https://github.com/PnX-SI/Nomenclature-api-module/
-- Les id des nomenclatures et des types de nomenclature sont des serial et ne sont pas prédéfinis lors de l'installation, ni utilisées en dur dans le code des applications. En effet, les nomenclatures peuvent varier en fonction des structures. On utilise le cd_nomenclature et le mnémonique du type de nomenclature pour retrouver dynamiquement l'id_nomenclature d'une nomenclature. C'est cependant cet id qu'on stocke au niveau des données pour garantir l'intégrité référentielle
+- Les identifiants des nomenclatures et des types de nomenclature sont des serials (entiers auto-incrémentés) et ne sont pas prédéfinis lors de l'installation, ni utilisées en dur dans le code des applications. En effet, les nomenclatures peuvent varier en fonction des structures. On utilise le ``cd_nomenclature`` et le ``mnémonique`` du type de nomenclature pour retrouver dynamiquement l'``id_nomenclature`` d'une nomenclature. C'est cependant cet identifiant qu'on stocke au niveau des données pour garantir l'intégrité référentielle
 - Chaque nomenclature peut être associée à un règne ou un group2inpn (``ref_nomenclatures.cor_taxref_nomenclature``) pour proposer des nomenclatures correspondants à un taxon
 - Les valeurs par défaut sont définies dans chaque module
 - Pour OccTax c'est dans ``pr_occtax.defaults_nomenclatures_value``. Elles peuvent être définies pour chaque type de nomenclature ainsi que par organisme, règne et/ou group2inpn
@@ -221,8 +252,29 @@ La base de données contient de nombreuses fonctions.
   --Function to return id_nomenclature depending on observation sensitivity
   --USAGE : SELECT ref_nomenclatures.calculate_sensitivity(240,21);
 
+TODO : A compléter... A voir si on mentionne les triggers ou pas...
 
-A compléter... A voir si on mentionne les triggers ou pas...
+Tables transversales :
+""""""""""""""""""""""
+
+GeoNature contient aussi des tables de stockage transversales qui peuvent être utilisées par tous les modules. C'est le cas pour la validation, l'historisation des modifications et médias. 
+
+Cela permet de ne pas avoir à mettre en place des tables et mécanismes dans chaque module, mais de s'appuyer sur un stockage, des fonctions et développements factorisés, centralisés et partagés.
+
+Voir https://github.com/PnX-SI/GeoNature/issues/339
+
+Triggers vers la synthèse : 
+"""""""""""""""""""""""""""
+
+Voir ceux mis en place de Occtax vers Synthèse.
+
+Cheminement d'une donnée Occtax :
+
+-> Formulaire Occtax
+  -> Ecriture dans la table ``cor_counting_occtax`` et génération d'un nouvel UUID 
+    -> Trigger d'écriture dans la table verticale ``t_validations`` à partir de la valeur par défaut de la nomenclature de validation (``gn_common.ref_nomenclatures.defaults_nomenclatures_value``)
+      -> Trigger d'écriture d'Occtax vers la synthese (on ne maitrise pas l'ordre de ces 2 triggers qui sont lancés en même temps)
+        -> Trigger de rapatriement du dernier statut de validation de la table verticale vers la synthese.
 
 Modularité
 ----------
@@ -435,6 +487,8 @@ Les sauvegardes de la BDD sont à faire avec l'utilisateur ``postgres``. Commenc
     mkdir /home/`whoami`/backup
     # Ajouter l'utilisateur postgres au groupe de l'utilisateur linux courant pour qu'il ait les droits d'écrire dans les mêmes répertoires
     sudo adduser postgres `whoami`
+    # ajout de droit aux groupes de l'utilisateur courant sur le répertoire `backup`
+    chmod g+rwx /home/`whoami`/backup
 
 Connectez-vous avec l'utilisateur linux ``postgres`` pour lancer une sauvegarde de la BDD :
 
@@ -483,16 +537,18 @@ Restauration
 
     ::
 
-        sudo -n -u postgres -s createdb -O theo geonature2db
+        sudo -n -u postgres -s createdb -O <MON_USER> geonature2db
         sudo -n -u postgres -s psql -d geonature2db -c "CREATE EXTENSION IF NOT EXISTS postgis;"
         sudo -n -u postgres -s psql -d geonature2db -c "CREATE EXTENSION IF NOT EXISTS hstore;"
         sudo -n -u postgres -s psql -d geonature2db -c "CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog; COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';"
         sudo -n -u postgres -s psql -d geonature2db -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
+        sudo -n -u postgres -s psql -d geonature2db -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
         
   - Restaurer la BDD à partir du backup
 
     ::
-
+    
+        sudo su postgres
         pg_restore -d geonature2db <MY_BACKUP_DIRECTORY_PATH>/201803150917-geonaturedb.backup
 
 * Restauration de la configuration et de la customisation :
@@ -524,10 +580,36 @@ Restauration
 Customisation
 -------------
 
+La customisation de l'application nécessite de relancer la compilation du frontend à chaque modification. Cette opération étant relativement longue, une solution alternative (mais avancée) consiste à passer le frontend de manière temporaire en mode 'developpement'.
+
+Pour cela exécuter la commande suivante depuis le répertoire ``frontend``
+
+::
+
+    npm run start -- --host=0.0.0.0 --disable-host-check
+
+L'application est désormais disponible sur une serveur de développement à la même addresse que précedemment, mais sur le port 4200 : http://test.geonature.fr:4200
+
+Ouvrez un nouveau terminal (pour laisser tourner le serveur de développement), puis modifier la variable ``URL_APPLICATION`` dans le fichier ``geonature_config.toml`` en mettant l'adresse ci-dessus et relancer l'application (``sudo supervisorctl restart geonature2``)
+
+A chaque modification d'un fichier du frontend, une compilation rapide est relancée et votre navigateur se rafraichit automatiquement en intégrant les dernières modifications.
+
+Une fois les modifications terminées, remodifier le fichier ``geonature_config.toml`` pour remettre l'URL initiale, relancez l'application (``sudo supervisorctl restart geonature2``), puis relancez la compliation du frontend (``npm run build``). Faites enfin un ``ctrl+c`` dans le terminal ou le frontend a été lancé pour stopper le serveur de développement.
+
+Si la manipulation vous parait compliquée, vous pouvez suivre la documentation qui suit, qui fait relancer la compilation du frontend à chaque modification.
+
 Intégrer son logo
 """""""""""""""""
 
-Le logo affiché dans la barre de navigation de GeoNature peut être modifié dans le répertoire ``geonature/frontend/src/custom/images``. Remplacez alors le fichier ``logo_structure.png`` par votre propre logo, en conservant ce nom pour le nouveau fichier. 
+Le logo affiché dans la barre de navigation de GeoNature peut être modifié dans le répertoire ``geonature/frontend/src/custom/images``. Remplacez alors le fichier ``logo_structure.png`` par votre propre logo, en conservant ce nom pour le nouveau fichier. Le bandeau fait 50px de hauteur, vous pouvez donc mettre une image faisant cette hauteur. Il est également possible de modifier la taille de l'image en CSS dans le fichier ``frontend/src/custom/custom.scss`` de la manière suivante:
+
+.. code:: css
+
+  // la balise img affichant l'image a l'id 'logo-structure
+  #logo-structure {
+        height: 50px;
+        width: 80px;
+    }
 
 Relancez la construction de l’interface :
 
@@ -602,14 +684,14 @@ GeoNature est fourni avec des données géographiques de base sur la métropôle
 **1.** Si vous souhaitez modifier le MNT pour mettre celui de votre territoire : 
 
 * Videz le contenu des tables ``ref_geo.dem`` et éventuellement ``ref_geo.dem_vector``
-* Uploadez le fichier du MNT sur le serveur
+* Uploadez le(s) fichier(s) du MNT sur le serveur
 * Suivez la procédure de chargement du MNT en l'adaptant : https://github.com/PnX-SI/GeoNature/blob/master/install/install_db.sh#L295-L299
 
 *TODO : Procédure à améliorer et simplifier : https://github.com/PnX-SI/GeoNature/issues/235*
 
 
 
-Si vous n'avez pas choisi d'intégrer le raster MNT national à 250m lors de l'installation ou que vous souhaitez le remplacer, voici les commandes qui vous permettront de le faire.
+Si vous n'avez pas choisi d'intégrer le raster MNT national à 250m fourni par défaut lors de l'installation ou que vous souhaitez le remplacer, voici les commandes qui vous permettront de le faire.
 
 Suppression du MNT par défaut (adapter le nom de la base de données : MYDBNAME).
 
@@ -618,7 +700,9 @@ Suppression du MNT par défaut (adapter le nom de la base de données : MYDBNAME
     sudo -n -u postgres -s psql -d MYDBNAME -c "TRUNCATE TABLE ref_geo.dem;"
     sudo -n -u postgres -s psql -d MYDBNAME -c "TRUNCATE TABLE ref_geo.dem_vector;"
 
-Placer votre propre fichier MNT dans le répertoire ``/tmp/geonature`` (adapter le nom du fichier et son chemin ainsi que les paramètres en majuscule). Ou télécharger le MNT par défaut.
+Placer votre propre fichier MNT (ou vos différents fichiers "dalles") dans le répertoire ``/tmp/geonature`` (adapter le nom du fichier et son chemin ainsi que les paramètres en majuscule). 
+
+Pour utiliser celui proposé par défaut :
 
 ::
 
@@ -626,6 +710,12 @@ Placer votre propre fichier MNT dans le répertoire ``/tmp/geonature`` (adapter 
     unzip /tmp/geonature/BDALTIV2_2-0_250M_ASC_LAMB93-IGN69_FRANCE_2017-06-21.zip -d /tmp/geonature
     export PGPASSWORD=MYUSERPGPASS;raster2pgsql -s MYSRID -c -C -I -M -d -t 5x5 /tmp/geonature/BDALTIV2_250M_FXX_0098_7150_MNT_LAMB93_IGN69.asc ref_geo.dem|psql -h localhost -U MYPGUSER -d MYDBNAME
     sudo -n -u postgres -s psql -d MYDBNAME -c "REINDEX INDEX ref_geo.dem_st_convexhull_idx;"
+  
+Si votre MNT source est constitué de plusieurs fichiers (dalles), assurez vous que toutes vos dalles ont le même système de projection et le même format de fichier (tiff, asc, ou img par exemple). Après avoir chargé vos fichiers dans ``tmp/geonature`` (par exemple), vous pouvez lancer la commande ``export`` en remplacant le nom des fichiers par *.asc :
+
+::
+
+    export PGPASSWORD=MYUSERPGPASS;raster2pgsql -s MYSRID -c -C -I -M -d -t 5x5 /tmp/geonature/*.asc ref_geo.dem|psql -h localhost -U MYPGUSER -d MYDBNAME
 
 Si vous souhaitez vectoriser le raster MNT pour de meilleures performances lors des calculs en masse de l'altitude à partir de la localisation des observations, vous pouvez le faire en lançant les commandes ci-dessous. Sachez que cela prendra du temps et beaucoup d'espace disque (2.8Go supplémentaires environ pour le fichier DEM France à 250m).
 
@@ -661,11 +751,14 @@ Nous présenterons ici la première solution qui est privilégiée pour disposer
 * Intégrer les données dans ces tables (avec les fonctions de ``gn_imports``, avec QGIS ou pgAdmin).
 * Pour alimenter la Synthèse à partir des tables sources, vous pouvez mettre en place des triggers (en s'inspirant de ceux de OccTax) ou bien faire une requête spécifique si les données sources ne sont plus amenées à évoluer.
 
-Pour des exemples plus précis, illustrées et commentées, vous pouvez consulter les 2 exemples d'import dans cette documentation.
+Pour des exemples plus précis, illustrées et commentées, vous pouvez consulter les 2 exemples d'import dans cette documentation (Import niveau et Import niveau 2).
 
 Vous pouvez aussi vous inspirer des exemples avancés de migration des données de GeoNature V1 vers GeoNature V2 : https://github.com/PnX-SI/GeoNature/tree/master/data/migrations/v1tov2
 
-Import depuis SICEN (ObsOcc) : https://github.com/PnX-SI/Ressources-techniques/tree/master/GeoNature/migration/sicen ou import continu : https://github.com/PnX-SI/Ressources-techniques/tree/master/GeoNature/migration/generic
+* Import depuis SICEN (ObsOcc) : https://github.com/PnX-SI/Ressources-techniques/tree/master/GeoNature/migration/sicen
+* Import depuis SERENA : https://github.com/PnX-SI/Ressources-techniques/tree/master/GeoNature/migration/serena
+* Import continu : https://github.com/PnX-SI/Ressources-techniques/tree/master/GeoNature/migration/generic
+* Import d'un CSV historique (Flavia) : https://github.com/PnX-SI/Ressources-techniques/blob/master/GeoNature/V2/2018-12-csv-vers-synthese-FLAVIA.sql
 
 Module OCCTAX
 -------------
@@ -686,9 +779,13 @@ Si vous l'avez supprimé, lancez les commandes suivantes depuis le repertoire ``
 Configuration du module
 """""""""""""""""""""""
 
-Le fichier de configuration du module se trouve ici : ``<GEONATURE_DIRECTORY>/external_modules/occtax/conf_gn_module.toml``.
+Le fichier de configuration du module se trouve ici : ``<GEONATURE_DIRECTORY>/external_modules/occtax/config/conf_gn_module.toml``.
 
-Pour voir l'ensemble des variables de configuration du module ainsi que leurs valeurs par défaut, ouvrir le fichier ``/home/<mon_user>/geonature/external_modules/occtax/config/conf_gn_module.toml``.
+Pour voir l'ensemble des variables de configuration disponibles du module ainsi que leurs valeurs par défaut, ouvrir le fichier ``/home/<mon_user>/geonature/external_modules/occtax/config/conf_gn_module.toml.example``.
+
+Les surcouches de configuration doivent être faites dans le fichier ``conf_gn_module.toml``, en ne modifiant jamais le fichier ``conf_gn_module.toml.example``.
+
+Après toute modification de la configuration d'un module, il faut regénérer le fichier de configuration du frontend comme expliqué ici : `Configuration d'un gn_module`_
 
 Afficher/masquer des champs du formulaire
 *****************************************
@@ -742,7 +839,7 @@ Modifier le champ Observateurs
 Par défaut le champ ``Observateurs`` est une liste déroulante qui pointe vers une liste du schéma ``utilisateurs``.
 Il est possible de passer ce champ en texte libre en mettant à ``true`` la variable ``observers_txt``.
 
-Le paramètre ``id_observers_list`` permet de changer la liste d'observateurs proposée dans le formulaire. Vous pouvez modifier le numéro de liste du module ou modifier le contenu de la liste dans UsersHub (``utilisateurs.t_menus`` et ``utilisateurs.cor_role_menu``)
+Le paramètre ``id_observers_list`` permet de changer la liste d'observateurs proposée dans le formulaire. Vous pouvez modifier le numéro de liste du module ou modifier le contenu de la liste dans UsersHub (``utilisateurs.t_listes`` et ``utilisateurs.cor_role_liste``)
 
 Par défaut, l'ensemble des observateurs de la liste 9 (observateurs faune/flore) sont affichés.
 
@@ -813,6 +910,27 @@ Par défaut :
 
 Voir la vue ``occtax.v_releve_list`` pour voir les champs disponibles.
 
+Ajouter une contrainte d'échelle de saisie sur la carte
+*******************************************************
+
+Il est possible de contraindre la saisie de la géométrie d'un relevé sur la carte par un seuil d'échelle minimum avec le paramètre ``releve_map_zoom_level``.
+
+Par défaut :
+
+::
+
+    # Zoom level on the map from which you can add point/line/polygon
+    releve_map_zoom_level = 6
+
+
+Il suffit de modifier la valeur qui correspond au niveau de zoom sur la carte.
+Par exemple, pour contraindre la saisie à l'affichage de la carte IGN au 1/25000e :
+
+::
+
+    releve_map_zoom_level = 15
+
+
 Gestion des exports
 """""""""""""""""""
 
@@ -852,8 +970,158 @@ La gestion des droits (CRUVED) se fait module par module. Cependant si on ne red
 
 Pour ne pas afficher le module Occtax à un utilisateur où à un groupe, il faut lui mettre l'action Read (R) à 0.
 
-Cette manipulation se fait dans la table (``utilisateurs.cor_ap_privileges``), où ``id_tag_action`` correspond à l'id du tag d'une action (CRUVED), et ``id_tag_object`` à l'id du tag de la portée pour chaque action (0,1,2,3). Voir la table ``utilisateurs.t_tags`` pour identifier la correspondance entre les tags et les actions, ainsi que les portées.
+L'administration des droits des utilisateurs pour le module Occtax se fait dans le backoffice de gestion des permissions de GeoNature.
 
-La correspondance entre ``id_tag_action``, ``id_tag_object``, ``id_application`` et ``id_role`` donnera les droits d'une personne ou d'un groupe pour une application (ou module) donnée.
 
-L'administration des droits des utilisateurs se fera bientôt dans une nouvelle version de UsersHub qui prendra en compte ce nouveau mécanisme du CRUVED.
+Module SYNTHESE
+---------------
+
+Le module Synthèse est un module du coeur de GeoNature, fourni par défaut lors de l'installation.
+
+Configuration
+""""""""""""""
+
+L'ensemble des paramètres de configuration du module se trouve dans le fichier général de configuration de GeoNature ``config/geonature_config.toml`` puisqu'il s'agit d'un module du coeur.
+
+**1.** Modifier les filtres géographiques disponibles par défaut dans l'interface de recherche.
+
+Editer la variable ``AREA_FILTERS`` en y ajoutant le label et l'ID du type d'entité géographique que vous souhaitez rajouter. Voir table ``ref_geo.bib_areas_types``. Dans l'exemple on ajoute le type ZNIEFF1 (``id_type = 3``). Attention, dans ce cas les entités géographiques correspondantes au type 3, doivent également être présentes dans la table ``ref_geo.l_areas``. 
+Attention : Si des données sont déjà présentes dans la synthèse et que l'on ajoute de nouvelles entités géographiques à ``ref_geo.l_areas``, il faut également recalculer les valeurs de la table ``gn_synthese.cor_area_synthese`` qui assure la correspondance entre les données de la synthèse et les entités géographiques.
+
+::
+
+    [SYNTHESE]
+        # Liste des entités géographiques sur lesquels les filtres
+        # géographiques de la synthese s'appuient (id_area = id de l'entité géo, table ref_geo.bib_areas_types)
+        AREA_FILTERS = [
+            { label = "Communes", id_type = 25 },
+            { label = "ZNIEFF1", id_type = 3 },
+        ]
+
+Il est aussi possible de passer plusieurs ``id_types`` regroupés dans un même filtre géographique (exemple : ``{ label = "Zonages réglementaires", id_type = [22, 23] }``).
+
+**2.** Configurer les champs des exports
+
+Dans tous les exports, l'ordre et le nom des colonnes sont basés sur la vue servant l'export. Il est possible de les modifier en éditant le SQL des vues en respectant bien les consignes ci-dessous. 
+
+**Export des observations**
+
+Les exports (CSV, GeoJson, Shapefile) sont basés sur la vue ``gn_synthese.v_synthese_for_export``.
+        
+Il est possible de masquer des champs présents dans les exports. Pour cela éditez la variable ``EXPORT_COLUMNS``.
+     
+Enlevez la ligne de la colonne que vous souhaitez désactiver. Les noms de colonne de plus de 10 caractères seront tronqués dans le fichier shapefile.
+
+::
+
+    [SYNTHESE]
+        EXPORT_COLUMNS   = [
+            "idSynthese",
+            "permId",
+            "permIdGrp",
+            "dateDebut",
+            "dateFin",
+            "observer",
+            "altMin",
+            "altMax",
+            "denbrMin",
+            "denbrMax",
+            "EchanPreuv",
+            "PreuvNum",
+            "PreuvNoNum",
+            "obsCtx",
+            "obsDescr",
+            "ObjGeoTyp",
+            "methGrp",
+            "obsMeth",
+            "ocEtatBio",
+            "ocStatBio",
+            "ocNat",
+            "preuveOui",
+            "validStat",
+            "difNivPrec",
+            "ocStade",
+            "ocSex",
+            "objDenbr",
+            "denbrTyp",
+            "sensiNiv",
+            "statObs",
+            "dEEFlou",
+            "statSource",
+            "typInfGeo",
+            "methDeterm",
+            "jddCode",
+            "cdNom",
+            "cdRef",
+            "nomCite",
+            "vTAXREF",
+            "wkt",
+            "lastAction",
+            "validateur"
+        ]
+.. note::
+    L'entête ``[SYNTHESE]`` au dessus ``EXPORT_COLUMNS`` indique simplement que cette variable appartient au bloc de configuration de la synthese. Ne pas rajouter l'entête à chaque paramètre de la synthese mais une seule fois au dessus de toutes les variables de configuration du module.
+
+Il est également possible de personnaliser ses exports en éditant le SQL de la vue ``gn_synthese.v_synthese_for_export`` (niveau SQL et administration GeoNature avancé).
+        
+Attention, certains champs sont cependant obligatoires pour assurer la réalisation des fichiers d'export (csv, geojson et shapefile) et des filtres CRUVED.
+        
+La vue doit OBLIGATOIREMENT contenir les champs :
+
+- geojson_4326
+- geojson_local
+- idSynthese,
+- jddId (l'ID du jeu de données)
+- id_digitiser
+- observer
+
+Ces champs doivent impérativement être présents dans la vue, mais ne seront pas nécessairement dans le fichier d'export si ils ne figurent pas dans la variable ``EXPORT_COLUMNS``. De manière générale, préférez rajouter des champs plutôt que d'en enlever !
+
+Le nom de ces champs peuvent cependant être modifié. Dans ce cas, modifiez le fichier ``geonature_config.toml``, section ``SYNTHESE`` parmis les variables suivantes (``EXPORT_ID_SYNTHESE_COL, EXPORT_ID_DATASET_COL, EXPORT_ID_DIGITISER_COL, EXPORT_OBSERVERS_COL, EXPORT_GEOJSON_4326_COL, EXPORT_GEOJSON_LOCAL_COL``)
+
+NB: Lorsqu'on effectue une recherche dans la synthèse, on interroge la vue ``gn_synthese.v_synthese_for_web_app``. L'interface web passe ensuite une liste d'``id_synthese`` à la vue ``gn_synthese.v_synthese_for_export``correspondant à la recherche précedemment effectuée (ce qui permet à cette seconde vue d'être totalement modifiable).
+
+La vue ``gn_synthese.v_synthese_for_web_app`` est taillée pour l'interface web, il ne faut donc PAS la modifier. 
+
+**Export des métadonnées**
+
+En plus des observations brutes, il est possible d'effectuer un export des métadonnées associées à ses observations. L'export est au format CSV et est construit à partir de la table ``gn_synthese.v_metadata_for_export``. Vous pouvez modifier le SQL de création de cette vue pour customiser votre export (niveau SQL avancé).
+
+Deux champs sont cependant obligatoire dans la vue : 
+
+- ``jdd_id`` (qui corespond à l'id du JDD de la table ``gn_meta.t_datasets``). Le nom de ce champs est modifiable. Si vous le modifiez, éditez la variable ``EXPORT_METADATA_ID_DATASET_COL``. 
+- ``acteurs``:  Le nom de ce champs est modifiable. Si vous le modifiez, éditez la variable ``EXPORT_METADATA_ACTOR_COL``
+
+**Export des statuts taxonomiques (réglementations)**
+        
+Cet export n'est pas basé sur une vue, il n'est donc pas possible de l'adapter.
+
+**3.** Configurer les seuils du nombre de données pour la recherche et les exports
+
+Par défaut et pour des questions de performance (du navigateur et du serveur) on limite à 50000 le nombre de résultat affiché sur la carte et le nombre d'observations dans les exports.
+
+Ces seuils sont modifiables respectivement par les variables ``NB_MAX_OBS_MAP`` et ``NB_MAX_OBS_EXPORT`` :
+
+Le mode cluster activé par défaut peut être désactivé via le paramètre ``ENABLE_LEAFLET_CLUSTER``. Dans ce cas, il est conseillé de repasser le paramètre `NB_MAX_OBS_MAP` à 10000.
+
+::
+
+    [SYNTHESE]
+        # Nombre d'observation maximum à afficher sur la carte après une recherche
+        NB_MAX_OBS_MAP = 10000
+        # Nombre max d'observation dans les exports
+        NB_MAX_OBS_EXPORT = 40000
+
+**4.** Désactiver des filtres génériques 
+
+L'interface de recherche de la synthèse permet de filtrer sur l'ensemble des nomenclatures de la table ``gn_synthese``, il est cependant possible de désactiver les filtres de certains champs.
+
+Modifiez la variable ``EXCLUDED_COLUMNS``
+
+::
+
+    [SYNTHESE]
+        EXCLUDED_COLUMNS = ['non_digital_proof'] # pour enlever le filtre 'preuve non numérique'
+
+
+D'autres élements sont paramètrables dans le module synthese. La liste complète est disponible dans le fichier ``config/geonature_config.toml`` rubrique ``SYNTHESE``.

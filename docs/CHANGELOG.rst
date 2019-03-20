@@ -2,30 +2,209 @@
 CHANGELOG
 =========
 
-2.0.0-rc.4 (unreleased)
------------------------
+2.0.1 (2019-03-18)
+------------------
+
+**Nouveautés**
+
+* Développement : ajout d'une fonction de génération dynamique de requête SQL (avec vérification et cast des types)
+* Synthese : Ajout d'un message indiquant que le module affiche les dernières observations par défaut
 
 **Corrections**
 
-* Correction de l'id_digitiser lors de la mise à jour #481
-* Corrections multiples de la prise en compte du CRUVED #496
-* Deconnexion apres inactivité de l'utilisateur #490
-* Suppression des heures au niveau des dates de l'export occtax #485
-* Correction du message d'erreur quand on n'a pas de JDD #479
-* Correction du champs commentaire dans les exports d'Occtax séparé entre relevé et occurrence #478
-* Correction des paramètres de la fonction ``GenericQuery.build_query_filter()`` (merci @patkap)
-* Correction de l'administration des métadonnées #466 #420
+* Synthese : correction du filtre CRUVED pour les portées 1 et 2 sur la route ``synthese/for_web`` (#584)
+* Synthese : correction du bug lorsque la géométrie est null (#580)
+* Synthese : Correction de la redirection vers le module de saisie (#586)
+* Synthese : Correction de la valeur par défaut de la nomenclature ``STATUT_OBS`` (``Présent`` au lieu de ``NSP``)
+* Configuration carto : correction du bug d'arrondissement des coordonnées géographiques (#582)
+* Correction du trigger de calcul de la geom locale
+* Recréation de la vue ``pr_occtax.export_occtax_sinp`` qui avait été supprimée lors de la migration RC3 vers RC4
+* Correction de la vue ``pr_occtax.v_releve_list``
+* Correction ajout rang et cd_nom sur l'autocomplete de la synthese, absent dans le script de migration
+* DEPOBIO : Correction de la déconnexion au CAS INPN
+* Occtax et Metadata: correction lors de la mise à jour d'un élement (Merge mal géré par SQLAlchemy lorsqu'on n'a pas une valeur NULL) (#588)
+* Composant "jeu de données" : retour à l'affichage du nom long (#588)
+* Amélioration du style du composant multiselect
+* Metadata : formulaire cadre d'acquisition - listage uniquement des cadres d'acquisition parent pour ne pas avoir de cadres d'acquisition imbriqués
+* Ajouts de tests automatisés complémentaires
+
+**Notes de version**
+
+* Vous pouvez passer directement à cette version, mais en suivant les notes des versions intermédiaires
+* Exécuter le script de migration SQL du sous-module Nomenclatures (https://github.com/PnX-SI/Nomenclature-api-module/blob/1.2.4/data/update1.2.3to1.2.4.sql)
+* Exécuter le script de migration SQL de GeoNature (https://github.com/PnX-SI/GeoNature/blob/master/data/migrations/2.0.0to2.0.1.sql)
+* Suivez ensuite la procédure classique de mise à jour de GeoNature (https://geonature.readthedocs.io/fr/latest/installation-standalone.html#mise-a-jour-de-l-application)
+
+2.0.0 (2019-02-28)
+------------------
+
+La version 2 de GeoNature est une refonte complète de l'application.
+
+* Refonte technologique en migrant de PHP/Symfony/ExtJS/Openlayers à Python3/Flask/Angular4/Leaflet
+* Refonte de l'architecture du code pour rendre GeoNature plus générique et modulaire
+* Refonte de la base de données pour la rendre plus standardisée, plus générique et modulaire
+* Refonte ergonomique pour moderniser l'application
+
+.. image :: http://geonature.fr/img/gn-login.jpg
+
+Pour plus de détails sur les évolutions apportées dans la version 2, consultez les détails des versions RC (Release Candidate) ci-dessous.
+
+**Nouveautés**
+
+* Possibilité de charger un fichier (GPX, GeoJson ou KML) sur la carte pour la saisie dans le module Occtax (#256)
+* Ajout d'un moteur de recherche de lieu (basé sur l'API OpenStreetMap Nominatim) sur les modules cartographiques (#476)
+* Intégration du plugin leaflet markerCluster permettant d'afficher d'avantage d'observations sur les cartes et de gérer leurs superposition (#559)
+* Synthèse : possibilité de grouper plusieurs types de zonages dans le composant ``pnx-areas``
+* Design de la page de login
+* Intégration d'un bloc stat sur la page d'accueil
+* Ajout d'un export des métadonnées dans la synthèse
+* Centralisation de la configuration cartographique dans la configuration globale de GeoNature (``geonature_config.toml``)
+* Cartographie : zoom sur l'emprise des résultats après une recherche
+* Migration de la gestion des métadonnées dans un module à part : 'METADATA' (#550)
+* Export vue synthèse customisable (voir doc)
+* Lien vers doc par module (customisables dans ``gn_commons.t_modules``) (#556)
+* Ajout du code du département dans les filtres par commune (#555)
+* Ajout du rang taxonomique et du cd_nom après les noms de taxons dans la recherche taxonomique (#549)
+* Mise à jour des communes fournies lors de l'installation (IGN admin express 2019) (#537)
+* Synthèse : Ajout du filtre par organisme (#531), affichage des acteurs dans les fiches détail et les exports
+* Synthese: possibilité de filtrer dans les listes déroulantes des jeux de données et cadres d'acquisition
+* Filtre de la recherche taxonomique par règne et groupe INPN retiré des formulaires de recherche (#531)
+* Suppression du champ validation dans le schéma de BDD Occtax car cette information est stockée dans la table verticale ``gn_commons.t_validations`` + affichage du statut de validation dans les fiches Occtax et Synthèse
+* Ajout d'une vue ``gn_commons.v_lastest_validation`` pour faciliter la récupération du dernier statut de validation d'une observation
+* Suppression de toutes les références à ``taxonomie.bib_noms`` en vue de le supprimer de TaxHub
+* Séparation des commentaires sur l'observation et sur le contexte (relevé) dans la Synthèse et simplification des triggers de Occtax vers Synthèse (#478)
+* Nouveau logo GeoNature (#346)
+
+**Corrections**
+
+* Améliorations importantes des performances de la synthèse (#560)
+* Synthèse : correction liée aux filtres multiples et aux filtres géographiques de type cercle
+* Ajout d'une contrainte ``DELETE CASCADE`` entre ``ref_geo.li_municialities`` et ``ref_geo.l_areas`` (#554)
+* Occtax : possibilité de saisir un dénombrement égal à 0 (cas des occurrences d'absence)
+* Occtax : retour à l'emprise cartographique précédente lorsqu'on enchaine les relevés (#570)
+* Occtax : correction de l'automplissage du champ ``hour_max`` lors de l'édition d'un relevé
+* Divers compléments de la documentation (merci @jbdesbas, @xavyeah39 et @DonovanMaillard)
+* Ajout de contraintes d'unicité sur les UUID_SINP pour empêcher les doublons (#536)
+* Corrections et compléments des tests automatiques
+* Amélioration de l'installation des modules GeoNature
+
+**Notes de version**
+
+**1.** Pour les utilisateurs utilisant la version 1 de GeoNature : 
+
+Il ne s'agit pas de mettre à jour GeoNature mais d'en installer une nouvelle version. En effet, il s'agit d'une refonte complète. 
+
+* Sauvegarder toutes ses données car l'opération est complexe et non-automatisée
+* Passer à la dernière version 1 de GeoNature (1.9.1)
+* Passer aux dernières versions de UsersHub et TaxHub
+* Installer GeoNature standalone ou refaire une installation complète
+* Adaptez les scripts présents dans ``/data/migrations/v1tov2`` et exécutez-les pas à pas. Attention ces scripts ont été faits pour la version 2.0.0-rc.1 et sont donc à ajuster, tester, compléter et adapter à votre contexte
+
+**2.** Pour les utilisateurs utilisant une version RC de GeoNature 2 : 
+
+Veuillez bien lire ces quelques consignes avant de vous lancer dans la migration.
+
+* Vous pouvez passer directement à cette version, mais en suivant les notes des versions intermédiaires.
+* Les personnes ayant configuré leur fichier ``map.config.ts`` devront le répercuter dans ``geonature_config.toml``, suite à la centralisation de la configuration cartographique (voir https://github.com/PnX-SI/GeoNature/blob/2.0.0/config/default_config.toml.example section ``[MAPCONFIG]``).
+* La configuration des exports du module synthèse a été modifiée (voir https://geonature.readthedocs.io/fr/latest/admin-manual.html#module-synthese). Supprimer la variable``[SYNTHESE.EXPORT_COLUMNS]`` dans le fichier ``geonature_config.toml``. Voir l'exemple dans le fichier (voir https://github.com/PnX-SI/GeoNature/blob/2.0.0/config/default_config.toml.example section) pour configurer les exports.
+* Supprimer la variable ``COLUMNS_API_SYNTHESE_WEB_APP`` si elle a été ajoutée dans le fichier ``geonature_config.toml``.
+* Pour simplifier son édition, le template personalisable de la page d'accueil (``frontend/src/custom/components/introduction/introduction.component.html``) a été modifié (la carte des 100 dernière observations n'y figure plus). Veuillez supprimer tout ce qui se situe à partir de la ligne 21 (``<div class="row row-0">``) dans ce fichier.
+* Exécuter le script de migration SQL: https://github.com/PnX-SI/GeoNature/blob/2.0.0/data/migrations/2.0.0rc4.2to2.0.0.sql.
+* Le backoffice de gestion des métadonnées est dorénavant un module GeoNature à part. Le script migration précédemment lancé prévoit de mettre un CRUVED au groupe_admin et groupe_en_poste pour le nouveau module METADATA. Les groupes nouvellement créés par les administrateurs et n'ayant de CRUVED pour l'objet METADATA (du module Admin), se retrouvent avec le CRUVED hérité de GeoNature. L'administrateur devra changer lui-même le CRUVED de ces groupes pour le nouveau module METADATA via le backoffice des permissions.
+* Suivez ensuite la procédure classique de mise à jour de GeoNature (https://geonature.readthedocs.io/fr/latest/installation-standalone.html#mise-a-jour-de-l-application).
+
+
+2.0.0-rc.4.2 (2019-01-23)
+-------------------------
+
+**Nouveautés**
+
+* Mise en place de logs rotatifs pour éviter de surcharger le serveur
+* Centralisation des logs applicatifs dans le dossier ``var/log/gn_errors.log`` de GeoNature
+
+**Corrections**
+
+* Synthèse - Correction et amélioration de la gestion des dates (#540)
+* Amélioration des tests automatisés
+* Correction et complément ds scripts d'installation des modules GeoNature
+* Remplacement de ``gn_monitoring.cor_site_application`` par ``gn_monitoring.cor_site_module``
+* Complément des documentations de customisation, d'administration et de développement
+* Ajout d'une documentation de migration de données Serena vers GeoNature (https://github.com/PnX-SI/Ressources-techniques/tree/master/GeoNature/migration/serena) par @xavyeah39
+
+**Note de version**
+
+* Vous pouvez passer directement à cette version, mais en suivant les notes des versions intermédiaires
+* Exécutez la mise à jour de la BDD GeoNature (``data/migrations/2.0.0rc4.1to2.0.0rc4.2.sql``)
+* Depuis la version 2.0.0-rc.4, on ne stocke plus les modules de GeoNature dans ``utilisateurs.t_applications``. On ne peut donc plus associer les sites de suivi de ``gn_monitoring`` à des applications, utilisé par les modules de suivi (Flore, habitat, chiro). Le mécanisme est remplacé par une association des sites de suivi aux modules. La création de la nouvelle table est automatisée (``data/migrations/2.0.0rc4.1to2.0.0rc4.2.sql``), mais pas la migration des éventuelles données existantes de ``gn_monitoring.cor_site_application`` vers ``gn_monitoring.cor_site_module``, à faire manuellement.
+* Afin que les logs de l'application soient tous écrits au même endroit, modifier le fichier ``geonature-service.conf`` (``sudo nano /etc/supervisor/conf.d/geonature-service.conf``). A la ligne ``stdout_logfile``, remplacer la ligne existante par ``stdout_logfile = /home/<MON_USER>/geonature/var/log/gn_errors.log`` (en remplaçant <MON_USER> par votre utilisateur linux).
+* Vous pouvez également mettre en place un système de logs rotatifs (système permettant d'archiver les fichiers de logs afin qu'ils ne surchargent pas le serveur - conseillé si votre serveur a une capacité disque limitée). Créer le fichier suivant ``sudo nano /etc/logrotate.d/geonature`` puis copiez les lignes suivantes dans le fichier nouvellement créé (en remplaçant <MON_USER> par votre utilisateur linux)
+
+  ::
+
+    /home/<MON_USER>/geonature/var/log/*.log {
+    daily
+    rotate 8
+    size 100M
+    create
+    compress
+    }
+
+  Exécutez ensuite la commande ``sudo logrotate -f /etc/logrotate.conf``
+* Suivez ensuite la procédure classique de mise à jour de GeoNature (https://geonature.readthedocs.io/fr/latest/installation-standalone.html#mise-a-jour-de-l-application)
+
+
+2.0.0-rc.4.1 (2019-01-21)
+-------------------------
+
+**Corrections**
+
+* Mise à jour des paquets du frontend (#538)
+* Correction d'un conflit entre Marker et Leaflet-draw
+* Utilisation du paramètre ``ID_APP`` au niveau de l'application
+* Corrections mineures diverses
+
+**Note de version**
+
+* Sortie de versions correctives de UsersHub (2.0.2 - https://github.com/PnEcrins/UsersHub/releases) et TaxHub (1.6.1 - https://github.com/PnX-SI/TaxHub/releases) à appliquer aussi
+* Vous pouvez vous référer à la documentation globale de mise à jour de GeoNature RC3 vers RC4 par @DonovanMaillard (https://github.com/PnX-SI/GeoNature/blob/master/docs/update-all-RC3-to-RC4.rst)
+
+
+2.0.0-rc.4 (2019-01-15)
+-----------------------
+
+**Nouveautés**
+
+* Intégration de la gestion des permissions (CRUVED) dans la BDD de GeoNature, géré via une interface d'administration dédié (#517)
+* Mise en place d'un système de permissions plus fin par module et par objet (#517)
+* Mise en place d'un mécanimse générique pour la gestion des permissions via des filtres : filtre de type portée (SCOPE), taxonomique, géographique etc... (#517)
+* Compatibilité avec UsersHub version 2
+* L'administration des permissions ne propose que les rôles qui sont actif et qui ont un profil dans GeoNature
+* Ajout du composant Leaflet.FileLayer dans le module Synthèse pour pouvoir charger un GeoJSON, un GPS ou KML sur la carte comme géométrie de recherche (#256)
+* Ajout et utilisation de l'extension PostgreSQL ``pg_tgrm`` permettant d'améliorer l'API d'autocomplétion de taxon dans la synthèse, en utilisant l'algorithme des trigrammes (http://si.ecrins-parcnational.com/blog/2019-01-fuzzy-search-taxons.html), fonctionnel aussi dans les autres modules si vous mettez à jour TaxHub en version 1.6.0.
+* Nouvel exemple d'import de données historiques vers GeoNature V2 : https://github.com/PnX-SI/Ressources-techniques/blob/master/GeoNature/V2/2018-12-csv-vers-synthese-FLAVIA.sql (par @DonovanMaillard)
+* Complément de la documentation HTTPS et ajout d'une documentation Apache (par @DonovanMaillard, @RomainBaghi et @lpofredc)
+
+**Corrections**
+
+* Correction de l'id_digitiser lors de la mise à jour (#481)
+* Corrections multiples de la prise en compte du CRUVED (#496)
+* Deconnexion apres inactivité de l'utilisateur (#490)
+* Suppression des heures au niveau des dates de l'export occtax (#485)
+* Correction du message d'erreur quand on n'a pas de JDD (#479)
+* Correction du champs commentaire dans les exports d'Occtax séparé entre relevé et occurrence (#478)
+* Correction des paramètres de la fonction ``GenericQuery.build_query_filter()`` (par @patkap)
+* Correction de l'administration des métadonnées (#466 #420)
 * Métadonnées (JDD et CA) : ne pas afficher les utilisateurs qui sont des groupes dans les acteurs
-* Ajout d'un champs dans la Synthèse permettant de stocker de quel module provient une occurrence et fonctions SQL associées #412
+* Ajout d'un champs dans la Synthèse permettant de stocker de quel module provient une occurrence et fonctions SQL associées (#412)
 * Amélioration du style des champs obligatoires
 * Améliorations mineures de l'ergonomie d'Occtax
-* Correction du spinner qui tournait en boucle lors de l'export CSV de la Synthèse #451
+* Correction du spinner qui tournait en boucle lors de l'export CSV de la Synthèse (#451)
 * Correction des tests automatisés
 * Amélioration des performances des intersections avec les zonages de ``ref_geo.l_areas``
-* Diverses autres corrections et améliorations mineures
 * Complément de la documentation de développement
 * Simplification de la configuration des gn_modules
-* Occtax : ordonnancement des observation par date #467
+* Occtax : ordonnancement des observation par date (#467)
+* Occtax : Remplissage automatique de l'heure_max à partir de l'heure_min (#522)
 * Suppression des warnings lors du build du frontend
 * Correction de l'installation des modules GeoNature
 * Ajout d'un message quand on n'a pas accès à une donnée d'un module
@@ -33,12 +212,26 @@ CHANGELOG
 * Correction des outils cartographiques dans Occtax
 * Correction complémentaire des styles des lignes sans remplissage (#458)
 * MaplistService : correction du zoom sur les polygones et polylignes
+* Composant Areas et Municipalities : remise à zéro de la liste déroulante quand on efface la recherche ou remet à jour les filtres
+* Composant Taxonomy : la recherche autocompletée est lancée même si on tape plus de 20 caractères. Le nombre de résultat renvoyé est désormais paramétrable (#518)
+* Limitation du nombre de connexions à la BDD en partageant l'instance ``DB`` avec les sous-modules
+* Installation : utilisation d'un répertoire ``tmp`` local et non plus au niveau système pour limiter les problèmes de droits (#503)
+* Evolution du template d'exemple de module GeoNature (https://github.com/PnX-SI/GeoNature/tree/master/contrib/module_example) pour utiliser l'instance DB et utiliser les nouveaux décorateurs de permissions (CRUVED)
 
 **Note de version**
 
-* MAJ BDD GN (update...)
-* MAJ BDD sous-modules
-* Evolution pour les sous-modules >> Utiliser instance DB de GN pour lancer scripts (#498) et ne plus avoir d'id_application dans la conf du module + Utilisation du CRUVED
+* Si vous effectuez une migration de GeoNature RC3 vers cette nouvelle version, il est nécessaire d'avoir installé UsersHub version 2.x au préalable. Suivez donc sa documentation (https://github.com/PnEcrins/UsersHub/releases) avant de procéder à la montée de version de GeoNature.
+* Exécuter la commande suivante pour ajouter l'extension ``pg_trgm``, en remplaçant la variable ``$db_name`` par le nom de votre BDD : ``sudo -n -u postgres -s psql -d $db_name -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"``
+* Mettez à jour TaxHub en version 1.6.0 pour bénéficier de l'amélioration de la recherche taxonomique dans tous les modules
+* Exécutez la mise à jour de la BDD GeoNature (``data/migrations/2.0.0rc3.1-to-2.0.0rc4.sql``)
+* Suivez ensuite la procédure classique de mise à jour de GeoNature (https://geonature.readthedocs.io/fr/latest/installation-standalone.html#mise-a-jour-de-l-application)
+
+**Note développeurs**
+
+* Vous pouvez faire évoluer les modules GeoNature en utilisant l'instance ``DB`` de GeoNature pour lancer les scripts d'installation (#498)
+* Il n'est plus nécéssaire de définir un ``id_application`` dans la configuration des modules GeoNature.
+* La gestion des permissions a été revue et est désormais internalisée dans GeoNature (voir https://geonature.readthedocs.io/fr/develop/development.html#developpement-backend), il est donc necessaire d'utiliser les nouveaux décorateurs décrit dans la doc pour récupérer le CRUVED.
+
 
 2.0.0-rc.3.1 (2018-10-21)
 -------------------------
@@ -58,8 +251,6 @@ CHANGELOG
 
 2.0.0-rc.3 (2018-10-18)
 -----------------------
-
-**Nouveautés**
 
 * Possibilité d'utiliser le MNT en raster ou en vecteur dans la BDD (+ doc MNT) #439 (merci @mathieubossaert)
 * INSTALL_ALL - gestion du format date du serveur PostgreSQL (#435)

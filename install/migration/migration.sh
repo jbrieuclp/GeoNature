@@ -24,8 +24,8 @@ echo "OK, let's migrate GeoNature version..."
 
 cp $myrootpath/geonature_old/config/settings.ini config/settings.ini
 cp $myrootpath/geonature_old/config/geonature_config.toml config/geonature_config.toml
-cp $myrootpath/geonature_old/frontend/src/conf/map.config.ts frontend/src/conf/map.config.ts
 cp -r $myrootpath/geonature_old/frontend/src/custom/* frontend/src/custom/
+cp $myrootpath/geonature_old/frontend/src/favicon.ico frontend/src/favicon.ico
 cp -r $myrootpath/geonature_old/external_modules/* external_modules
 # On supprime le lien symbolique qui pointe vers geonature_old/contrib/occtax
 rm -r external_modules/occtax
@@ -64,6 +64,10 @@ fi
 
 cd $myrootpath/$currentdir/frontend
 npm install
+
+# lien symbolique vers le dossier static du backend (pour le backoffice)
+ln -s $myrootpath/$currentdir/frontend/node_modules $myrootpath/$currentdir/backend/static
+
 
 cd $myrootpath/$currentdir/backend
 

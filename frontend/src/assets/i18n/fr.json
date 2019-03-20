@@ -25,6 +25,7 @@
   "Delete": "Supprimer",
   "NotAllowed": "Vous n'avez pas les droits pour effectuer cette action",
   "LoginError": "Identifiant ou mot de passe incorrect",
+  "Downloading": "Téléchargement en cours",
   "DownloadData": "Télécharger les données",
   "DownloadOverflow":
     "Le nombre d'élément est trop important pour être téléchargé, veuillez affiner votre recherche ou contacter votre administrateur",
@@ -35,7 +36,10 @@
     "AddPoint": "Localisez l'observation (point)",
     "AddLine": "Localisez l'observation (ligne)",
     "AddPolygon": "Localisez l'observation (polygone)",
-    "ZoomWarning": "Echelle de saisie inadaptée, veuillez zoomer davantage pour pointer le relevé"
+    "ZoomWarning": "Echelle de saisie inadaptée, veuillez zoomer davantage pour pointer le relevé",
+    "FileLayerInfoMessage":
+      "Cliquer sur la couche (point/ligne/polygone) pour en faire le pointage de votre releve. La couche selectionné apparait en rouge sur la carte. Clic droit pour afficher les infos de la couche ",
+    "FileLayerInfoSynthese": "Fichier importé. Clic droit sur une couche pour afficher ses infos"
   },
   "MetaData": {
     "JddError": "Erreur lors de la récupération des jeux de données",
@@ -43,16 +47,17 @@
     "NoJDD": "Aucun jeu de données n'a été trouvé, contactez votre administrateur",
     "NoJDDMTD":
       "Aucun jeu de données n'a été trouvé, veuillez d'abord les saisir dans l'application MTD",
-      "Datasetadded": "Jeu de donnée ajouté avec succès",
-      "AFadded": "Cadre d'acquisition ajouté avec succès",
-      "Programs": "Programmes",
-      "Datasets": "Jeux de données",
-      "AcquisitionFramework": "Cadre d'acquisition"
+    "Datasetadded": "Jeu de donnée ajouté avec succès",
+    "AFadded": "Cadre d'acquisition ajouté avec succès",
+    "Programs": "Programmes",
+    "Datasets": "Jeux de données",
+    "AcquisitionFramework": "Cadre d'acquisition"
   },
   "Form": {
     "RefreshFilters": "Rafraichir les filtres",
     "AdvancedFilters": "Filtres avancés",
-    "OtherFilters": "Autres filtres"
+    "OtherFilters": "Autres filtres",
+    "Organism": "Organisme(s)"
   },
   "List": {
     "Columns": "Colonnes",

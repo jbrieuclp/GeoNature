@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { Map, Marker } from 'leaflet';
 import { MapService } from '../map.service';
-import { MAP_CONFIG } from '../../../../conf/map.config';
+import { AppConfig } from '@geonature_config/app.config';
 import * as L from 'leaflet';
 import { CommonService } from '../../service/common.service';
 
@@ -19,7 +19,7 @@ export class MarkerComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.map = this.mapservice.map;
-    this.zoomLevel = this.zoomLevel || MAP_CONFIG.ZOOM_LEVEL_RELEVE;
+    this.zoomLevel = this.zoomLevel || AppConfig.MAPCONFIG.ZOOM_LEVEL_RELEVE;
     this.setMarkerLegend();
     this.enableMarkerOnClick();
 
@@ -101,7 +101,8 @@ export class MarkerComponent implements OnInit, OnChanges {
         this.map.removeLayer(this.mapservice.marker);
       }
     } else {
-      this.mapservice.removeAllLayers(this.map, this.mapservice.releveFeatureGroup);
+      this.mapservice.removeAllLayers(this.map, this.mapservice.leafletDrawFeatureGroup);
+      this.mapservice.removeAllLayers(this.map, this.mapservice.fileLayerFeatureGroup);
       this.enableMarkerOnClick();
     }
   }

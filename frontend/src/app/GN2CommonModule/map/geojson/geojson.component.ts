@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { Map } from 'leaflet';
 import { MapService } from '../map.service';
-import { MapListService } from '../../map-list/map-list.service';
 import * as L from 'leaflet';
 import { Observable } from 'rxjs';
 import { Subject } from 'rxjs/Subject';
@@ -17,6 +16,8 @@ export class GeojsonComponent implements OnInit, OnChanges {
   @Input() geojson: any;
   @Input() onEachFeature: any;
   @Input() style: any;
+  // display the geojsons as cluster or not
+  @Input() asCluster = false;
   public geojsonCharged = new Subject<any>();
   public currentGeoJson$: Observable<L.Layer> = this.geojsonCharged.asObservable();
 
@@ -27,9 +28,13 @@ export class GeojsonComponent implements OnInit, OnChanges {
   }
 
   loadGeojson(geojson) {
-    this.currentGeojson = this.mapservice.createGeojson(geojson, this.onEachFeature);
+    this.currentGeojson = this.mapservice.createGeojson(
+      geojson,
+      this.asCluster,
+      this.onEachFeature
+    );
     this.geojsonCharged.next(this.currentGeojson);
-    this.mapservice.layerGroup = new L.LayerGroup();
+    this.mapservice.layerGroup = new L.FeatureGroup();
     this.mapservice.map.addLayer(this.mapservice.layerGroup);
     this.mapservice.layerGroup.addLayer(this.currentGeojson);
   }
@@ -40,6 +45,17 @@ export class GeojsonComponent implements OnInit, OnChanges {
         this.mapservice.map.removeLayer(this.currentGeojson);
       }
       this.loadGeojson(changes.geojson.currentValue);
+      // zoom on layer extend after fisrt search
+      if (changes.geojson.previousValue !== undefined) {
+        // try to fit bound on layer. catch error if no layer in feature group
+
+        try {
+          this.map.fitBounds(this.mapservice.layerGroup.getBounds());
+        } catch (error) {
+          console.log('no layer in featuregroup');
+        }
+        //
+      }
     }
   }
 }

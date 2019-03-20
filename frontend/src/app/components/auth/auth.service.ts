@@ -5,7 +5,6 @@ import { ToastrService, ToastrConfig } from 'ngx-toastr';
 import { HttpClient } from '@angular/common/http';
 import { AppConfig } from '../../../conf/app.config';
 import { CookieService } from 'ng2-cookies';
-import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 
 export interface User {
   user_login: string;
@@ -24,12 +23,7 @@ export class AuthService {
   toastrConfig: ToastrConfig;
   loginError: boolean;
   public isLoading = false;
-  constructor(
-    private router: Router,
-    private _http: HttpClient,
-    private _cookie: CookieService,
-    private _idle: Idle
-  ) {}
+  constructor(private router: Router, private _http: HttpClient, private _cookie: CookieService) {}
 
   setCurrentUser(user) {
     localStorage.setItem('current_user', JSON.stringify(user));
@@ -64,8 +58,7 @@ export class AuthService {
     const user = {
       login: username,
       password: password,
-      id_application: AppConfig.ID_APPLICATION_GEONATURE,
-      with_cruved: true
+      id_application: AppConfig.ID_APPLICATION_GEONATURE
     };
     this._http
       .post<any>(`${AppConfig.API_ENDPOINT}/auth/login`, user)
@@ -84,7 +77,8 @@ export class AuthService {
           this.loginError = false;
           this.router.navigate(['']);
         },
-        error => {
+        // error callback
+        () => {
           this.loginError = true;
         }
       );
@@ -101,39 +95,30 @@ export class AuthService {
     return val.replace(/\\\\/g, '\\');
   }
 
-  deleteTokenCookie() {
-    document.cookie = 'token=; path=/; expires' + new Date(0).toUTCString();
+  deleteAllCookies() {
+    document.cookie.split(';').forEach(c => {
+      document.cookie = c
+        .replace(/^ +/, '')
+        .replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
+    });
   }
 
   logout() {
-    this._cookie.delete('token', '/');
+    this.deleteAllCookies();
     if (AppConfig.CAS_PUBLIC.CAS_AUTHENTIFICATION) {
-      this.deleteTokenCookie();
       document.location.href = AppConfig.CAS_PUBLIC.CAS_URL_LOGOUT;
     } else {
       this.router.navigate(['/login']);
+      // call the logout route to delete the session
+      // TODO: in case of different cruved user in DEPOBIO context must run this routes
+      // but actually make bug the INPN CAS deconnexion
+      this._http.get<any>(`${AppConfig.API_ENDPOINT}/gn_auth/logout_cruved`).subscribe(() => {});
+      // refresh the page to refresh all the shared service to avoid cruved conflict
+      location.reload();
     }
-    // call the logout route to delete the session
-    this._http.get<any>(`${AppConfig.API_ENDPOINT}/auth/logout_cruved`).subscribe(() => {});
   }
 
   isAuthenticated(): boolean {
     return this._cookie.get('token') !== null;
-  }
-
-  activateIdle() {
-    this._idle.setIdle(1);
-    this._idle.setTimeout(AppConfig.INACTIVITY_PERIOD_DISCONECT);
-    this._idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
-
-    this._idle.onTimeout.subscribe(() => {
-      this.logout();
-    });
-
-    this.resetIdle();
-  }
-
-  resetIdle() {
-    this._idle.watch();
   }
 }

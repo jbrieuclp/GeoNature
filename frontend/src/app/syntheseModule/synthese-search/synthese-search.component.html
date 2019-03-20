@@ -1,10 +1,8 @@
-<div class="relative">
   <div class="card search-wrapper">
-    <div class="absolute">
-      <fieldset class="absolute">
+      <fieldset >
         <legend> Quoi ?</legend>
         <pnx-taxonomy label="{{'Taxon.Taxon' | translate }} " [parentFormControl]="formService.searchForm.controls.cd_nom"
-          [idList]="500" [charNumber]="3" [listLength]="20" [apiEndPoint]="taxonApiEndPoint" (onChange)=formService.getCurrentTaxon($event)>
+          [idList]="500" [charNumber]="3" [listLength]="AppConfig.SYNTHESE.TAXON_RESULT_NUMBER" [apiEndPoint]="taxonApiEndPoint" (onChange)=formService.getCurrentTaxon($event)>
         </pnx-taxonomy>
         <div class="alert alert-warning taxon-alert" *ngIf="formService.selectedtaxonFromComponent.length > 0">
           <p class="taxon-list">
@@ -20,24 +18,10 @@
           (Taxonomie)
         </button>
 
-        <button class="btn btn-xs btn-outline-secondary advanced" data-toggle="collapse" data-target="#OccAdvanved"
-          aria-expanded="false" aria-controls="OccAdvanved">
-          Avancé (Occurrence de taxon)
-        </button>
         <br>
         <span *ngIf="formService.selectedCdRefFromTree.length > 0">
           <b> {{formService.selectedCdRefFromTree.length}} taxons séléctionnés</b>
         </span>
-
-        <div class="collapse advanced" id="OccAdvanved">
-          <div class="card card-body padding-sm">
-            <small> Sélectionner un filtre </small>
-            <pnx-dynamic-form-generator [formGroup]="formService.searchForm" [formsDefinition]="formService.dynamycFormDef">
-            </pnx-dynamic-form-generator>
-
-          </div>
-        </div>
-
 
       </fieldset>
 
@@ -79,12 +63,11 @@
 
       <fieldset>
         <legend> Ou ?</legend>
-        <!-- <pnx-municipalities label="Communes" [searchBar]="true" [parentFormControl]="formService.searchForm.controls.municipalities"></pnx-municipalities> -->
 
         <div *ngIf="formService.formBuilded">
-          <div *ngFor="let area of AppConfig.SYNTHESE.AREA_FILTERS; let i = index;">
+          <div *ngFor="let area of areaFilters; let i = index;">
             {{areas}}
-            <pnx-areas [searchBar]="true" [parentFormControl]="area.control" [label]="area.label" [idType]="area.id_type">
+            <pnx-areas [searchBar]="true" [parentFormControl]="area.control" [label]="area.label" [idTypes]="area.id_type_array">
             </pnx-areas>
           </div>
         </div>
@@ -99,6 +82,11 @@
         <pnx-observers-text label=" {{'Releve.Observer' | translate }} " [parentFormControl]="formService.searchForm.controls.observers">
         </pnx-observers-text>
 
+        
+        <pnx-multiselect [values]="organisms" [parentFormControl]="formService.searchForm.controls.id_organism" keyLabel="nom_organisme" keyValue="id_organisme"
+        [label]="'Form.Organism' | translate" debounceTime="500" [searchBar]="false"
+        [disabled]="disabled">
+      </pnx-multiselect>
         <!-- TODO: Organisme -->
       </fieldset>
 
@@ -106,35 +94,33 @@
       <fieldset>
         <legend> Comment ?</legend>
 
-        <pnx-acquisition-frameworks [multiSelect]='true' [displayAll]="true" [parentFormControl]="formService.searchForm.controls.id_acquisition_frameworks"
-          label="{{ 'MetaData.AcquisitionFramework' | translate}}">
+        <pnx-acquisition-frameworks [multiSelect]='true' [displayAll]="true" [searchBar]="true" [parentFormControl]="formService.searchForm.controls.id_acquisition_framework"
+          label="{{ 'MetaData.AcquisitionFramework' | translate}}" >
         </pnx-acquisition-frameworks>
 
 
-        <pnx-datasets [displayOnlyActive]="false" [idAcquisitionFrameworks]="formService.searchForm.controls.id_acquisition_frameworks.value"
-          [multiSelect]='true' [displayAll]="true" [parentFormControl]="formService.searchForm.controls.id_dataset"
-          label="{{ 'MetaData.Datasets' | translate}}">
+        <pnx-datasets [displayOnlyActive]="false" [idAcquisitionFrameworks]="formService.searchForm.controls.id_acquisition_framework.value"
+          [multiSelect]='true' [displayAll]="true" [searchBar]="true" [parentFormControl]="formService.searchForm.controls.id_dataset"
+          label="{{ 'MetaData.Datasets' | translate}}" >
         </pnx-datasets>
 
       </fieldset>
 
+      <fieldset>
+          <legend> Filtres avancés </legend>
+              <small> Ajouter un filtre </small>
+              <pnx-dynamic-form-generator [formGroup]="formService.searchForm" [formsDefinition]="formService.dynamycFormDef">
+              </pnx-dynamic-form-generator>  
+        </fieldset>
 
-      <!-- <pre>form value: <br>{{formService.searchForm.controls.period_start.valid | json}}</pre> -->
-      <div class="card-body">
-        <div class="search-btn">
-          <button (click)="refreshFilters()" class="btn btn-sm btn-danger" matTooltip="{{ 'Form.RefreshFilters' | translate }}">
-            <i class="fa fa-trash-o"></i>
-          </button>
-          <button class="btn btn-sm btn-success" (click)="onSubmitForm()">Rechercher</button>
-        </div>
 
-      </div>
-
-    </div>
+      <!-- <pre>form value: <br>{{formService.searchForm.value | json}}</pre> -->
 
   </div>
 
-  <!-- {{formService.searchForm.value | json}} -->
-
-
-</div>
+  <div class="search-btn">
+      <button (click)="refreshFilters()" class="btn btn-sm btn-danger box-shadow" matTooltip="{{ 'Form.RefreshFilters' | translate }}">
+        <i class="fa fa-trash-o"></i>
+      </button>
+      <button class="btn btn-sm btn-success box-shadow" (click)="onSubmitForm()">Rechercher</button>
+    </div>

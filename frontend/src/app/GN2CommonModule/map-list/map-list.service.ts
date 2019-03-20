@@ -13,6 +13,8 @@ import { Map } from 'leaflet';
 export class MapListService {
   public tableSelected = new Subject<any>();
   public mapSelected = new Subject<any>();
+  public onMapClik$: Observable<string> = this.mapSelected.asObservable();
+  public onTableClick$: Observable<number> = this.tableSelected.asObservable();
   public selectedRow = [];
   public data: any;
   public tableData = new Array();
@@ -21,8 +23,7 @@ export class MapListService {
   public columns = [];
   public layerDict = {};
   public selectedLayer: any;
-  public onMapClik$: Observable<string> = this.mapSelected.asObservable();
-  public onTableClick$: Observable<number> = this.tableSelected.asObservable();
+
   public urlQuery: HttpParams = new HttpParams();
   public page = new Page();
   public genericFilterInput = new FormControl();
@@ -218,7 +219,7 @@ export class MapListService {
       if (zoom >= 12) {
         map.setView(latlng, zoom);
       } else {
-        map.setView(latlng, 12);
+        map.setView(latlng, 16);
       }
     }
   }
@@ -229,15 +230,23 @@ export class MapListService {
 
   loadTableData(data, customCallBack?) {
     this.tableData = [];
-    data.features.forEach(feature => {
-      let newFeature = null;
-      if (customCallBack) {
-        newFeature = customCallBack(feature);
-      } else {
+    if (customCallBack) {
+      data.features.forEach(feature => {
+        let newFeature = null;
+        if (customCallBack) {
+          newFeature = customCallBack(feature);
+        } else {
+          newFeature = this.deFaultCustomColumns(feature);
+        }
+        this.tableData.push(newFeature.properties);
+      });
+    } else {
+      data.features.forEach(feature => {
+        let newFeature = null;
         newFeature = this.deFaultCustomColumns(feature);
-      }
-      this.tableData.push(newFeature.properties);
-    });
+        this.tableData.push(newFeature.properties);
+      });
+    }
   }
 }
 

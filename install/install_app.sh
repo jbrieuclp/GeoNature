@@ -124,6 +124,13 @@ cp gunicorn_start.sh.sample gunicorn_start.sh
 sudo -s sed -i "s%APP_PATH%${BASE_DIR}%" gunicorn_start.sh
 sudo -s cp geonature-service.conf /etc/supervisor/conf.d/
 sudo -s sed -i "s%APP_PATH%${DIR}%" /etc/supervisor/conf.d/geonature-service.conf
+sudo -s sed -i "s%ROOT_DIR%${BASE_DIR}%" /etc/supervisor/conf.d/geonature-service.conf
+
+
+#création d'un fichier rotation des logs
+sudo cp $DIR/log_rotate /etc/logrotate.d/geonature
+sudo -s sed -i "s%APP_PATH%${BASE_DIR}%" /etc/logrotate.d/geonature
+sudo logrotate -f /etc/logrotate.conf
 
 echo "Lancement de l'application api backend..."
 sudo -s supervisorctl reread
@@ -141,7 +148,10 @@ nvm install 8.1.1
 
 echo " ############"
 echo "Installation des paquets npm"
-npm install
+npm install --only=prod
+
+# lien symbolique vers le dossier static du backend (pour le backoffice)
+ln -s ${BASE_DIR}/frontend/node_modules ${BASE_DIR}/backend/static
 
 # Creation du dossier des assets externes
 mkdir src/external_assets

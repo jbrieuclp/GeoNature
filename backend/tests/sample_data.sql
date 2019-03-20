@@ -8,6 +8,118 @@ SET client_min_messages = warning;
 ---------
 --DATAS--
 ---------
+
+-- utilisateurs et permissions
+
+-- Ajout d'un utiliseur 'socle 1' avec l'id 10
+DELETE FROM utilisateurs.t_roles WHERE id_role=10;
+INSERT INTO utilisateurs.t_roles(id_role, groupe, nom_role) VALUES
+(10, TRUE, 'groupe_socle_1');
+
+-- ajout d'un utilisateur pour le test des permissions
+DELETE FROM utilisateurs.t_roles WHERE id_role=15;
+INSERT INTO utilisateurs.t_roles(id_role, groupe, nom_role) VALUES
+(15, FALSE, 'test_gn_permissions');
+
+-- ajout d'un utilisateur au CRUVED R2 dans l'organisme 1
+DELETE FROM utilisateurs.t_roles WHERE id_role=16;
+INSERT INTO utilisateurs.t_roles(id_role, groupe, nom_role, identifiant, id_organisme) VALUES
+(16, FALSE, 'test_cruved_r2', 'test_cruved_r2', 1);
+
+
+-- set mdp="admin" pour tous les utilisateurs utilisé dans les test
+UPDATE utilisateurs.t_roles SET pass_plus = '$2y$13$TMuRXgvIg6/aAez0lXLLFu0lyPk4m8N55NDhvLoUHh/Ar3rFzjFT.' WHERE id_role IN (2,3,16);
+
+
+-- Ajout dans cor_rol_app_profil pour qu'il puisse se connecter
+INSERT INTO utilisateurs.cor_role_app_profil VALUES
+  (1,3,1),
+  (2,3,1),
+  (3,3,1),
+  (7,3,1),
+  (9,3,1),
+  (16,3,1)
+;
+
+
+-- Reset original privileges
+INSERT INTO gn_permissions.cor_role_action_filter_module_object
+    (
+    id_role,
+    id_action,
+    id_filter,
+    id_module,
+    id_object
+    )
+VALUES
+    -- Groupe Admin
+    (9, 1, 4, 0, 1),
+    (9, 2, 4, 0, 1),
+    (9, 3, 4, 0, 1),
+    (9, 4, 4, 0, 1),
+    (9, 5, 4, 0, 1),
+    (9, 6, 4, 0, 1),
+    --Validateur général sur tout GeoNature
+    (5, 4, 4, 0, 1 ),
+    --CRUVED du groupe en poste (id=7) sur tout GeoNature 
+    (7, 1, 4, 0, 1),
+    (7, 2, 3, 0, 1),
+    (7, 3, 2, 0, 1),
+    (7, 4, 1, 0, 1),
+    (7, 5, 3, 0, 1),
+    (7, 6, 2, 0, 1),
+    -- Groupe admin a tous les droit dans METADATA
+    (9, 1, 4, 2, 1),
+    (9, 2, 4, 2, 1),
+    (9, 3, 4, 2, 1),
+    (9, 4, 4, 2, 1),
+    (9, 5, 4, 2, 1),
+    (9, 6, 4, 2, 1),
+    -- Groupe en poste acces limité a dans METADATA
+    (7, 1, 1, 2, 1),
+    (7, 2, 3, 2, 1),
+    (7, 3, 1, 2, 1),
+    (7, 4, 1, 2, 1),
+    (7, 5, 3, 2, 1),
+    (7, 6, 1, 2, 1),
+    -- Groupe en poste, n'a pas accès à l'admin
+    (7, 1, 1, 1, 1),
+    (7, 2, 1, 1, 1),
+    (7, 3, 1, 1, 1),
+    (7, 4, 1, 1, 1),
+    (7, 5, 1, 1, 1),
+    (7, 6, 1, 1, 1),
+    -- Groupe en admin a tous les droits sur l'admin
+    (9, 1, 4, 1, 1),
+    (9, 2, 4, 1, 1),
+    (9, 3, 4, 1, 1),
+    (9, 4, 4, 1, 1),
+    (9, 5, 4, 1, 1),
+    (9, 6, 4, 1, 1),
+    -- Groupe ADMIN peut gérer les permissions depuis le backoffice
+    (9, 1, 4, 1, 2),
+    (9, 2, 4, 1, 2),
+    (9, 3, 4, 1, 2),
+    (9, 4, 4, 1, 2),
+    (9, 5, 4, 1, 2),
+    (9, 6, 4, 1, 2),
+    -- Groupe ADMIN peut gérer les nomenclatures depuis le backoffice
+    (9, 1, 4, 1, 3),
+    (9, 2, 4, 1, 3),
+    (9, 3, 4, 1, 3),
+    (9, 4, 4, 1, 3),
+    (9, 5, 4, 1, 3),
+    (9, 6, 4, 1, 3),
+    -- partenaire peut lire sur geonature
+    (3, 2, 2, 0, 1),
+    -- test_cruved_r2 a un R de 2 sur geonature - synthese par héritage
+    (16, 2, 3, 0, 1) 
+;
+
+
+
+-- Metadata
+
 INSERT INTO gn_meta.t_acquisition_frameworks (id_acquisition_framework, unique_acquisition_framework_id, acquisition_framework_name, acquisition_framework_desc, id_nomenclature_territorial_level, territory_desc, keywords, id_nomenclature_financing_type, target_description, ecologic_or_geologic_target, acquisition_framework_parent_id, is_parent, acquisition_framework_start_date, acquisition_framework_end_date, meta_create_date, meta_update_date) VALUES
 (1, '57b7d0f2-4183-4b7b-8f08-6e105d476dc5', 'Données d''observation de la faune, de la Flore et de la fonge du parc nationl des Ecrins','Données d''observation de la faune, de la Flore et de la fonge du parc nationl des Ecrins', ref_nomenclatures.get_id_nomenclature('NIVEAU_TERRITORIAL', '3' ),'Territoire du parc national des Ecrins correspondant au massif alpin des Ecrins','Ecrins, parc national, faune, flore, fonge',ref_nomenclatures.get_id_nomenclature('TYPE_FINANCEMENT', '1'),'Tous les taxons',null,null,true,'1973-03-27', null,'2017-05-01 10:35:08', null)
 ;
@@ -43,60 +155,6 @@ INSERT INTO gn_meta.cor_dataset_actor (id_cda, id_dataset, id_role, id_organism,
 ;
 SELECT pg_catalog.setval('gn_meta.cor_dataset_actor_id_cda_seq', (SELECT max(id_cda)+1 FROM gn_meta.cor_dataset_actor), true);
 
-
--- Utilisateurs
-UPDATE utilisateurs.t_roles SET pass_plus = '$2y$13$TMuRXgvIg6/aAez0lXLLFu0lyPk4m8N55NDhvLoUHh/Ar3rFzjFT.' WHERE id_role IN (2,3);
--- Ajout d'un utilisateurs partenaire avec comme cruved R=1
-INSERT INTO utilisateurs.cor_app_privileges(id_tag_action, id_tag_object, id_application, id_role) VALUES
-(12,21,3,3);
-
--- Reset original privileges
-INSERT INTO utilisateurs.cor_app_privileges (id_tag_action, id_tag_object, id_application, id_role) VALUES
---Administrateur sur UsersHub et TaxHub / Non utilisé
-(6,23,1,1)
-,(6,23,2,1)
---- Groupe administrateur sur UsersHub et TaxHub / Non utilisé
-,(6,23,1,9)
-,(6,23,2,9)
---Administrateur sur GeoNature
-,(11, 23, 3, 1)
-,(12, 23, 3, 1)
-,(13, 23, 3, 1)
-,(14, 23, 3, 1)
-,(15, 23, 3, 1)
-,(16, 23, 3, 1)
---- Groupe administrateur sur GeoNature
-,(11, 23, 3, 9)
-,(12, 23, 3, 9)
-,(13, 23, 3, 9)
-,(14, 23, 3, 9)
-,(15, 23, 3, 9)
-,(16, 23, 3, 9)
---Validateur général sur tout GeoNature
-,(14, 23, 3, 5)
---Validateur pour son organisme sur Occtax
---,(14, 22, 4, 4) -- Droits Occtax supprimés car c'est l'installation du module qui créé l'application
---CRUVED du groupe en poste sur tout GeoNature
-,(11, 23, 3, 7)
-,(12, 22, 3, 7)
-,(13, 21, 3, 7)
-,(15, 22, 3, 7)
-,(16, 21, 3, 7)
---Groupe bureau d''étude socle 2 sur tout GeoNature
-,(11, 23, 3, 6)
-,(12, 22, 3, 6)
-,(13, 21, 3, 6)
-,(15, 22, 3, 6)
-,(16, 21, 3, 6)
---Groupe bureau d''étude socle 1 sur tout GeoNature
-,(11, 23, 3, 8)
-,(12, 21, 3, 8)
-,(13, 21, 3, 8)
-,(15, 21, 3, 8)
-,(16, 21, 3, 8)
-;
-
-
 INSERT INTO gn_meta.cor_dataset_territory (id_dataset, id_nomenclature_territory, territory_desc) VALUES
 (1, ref_nomenclatures.get_id_nomenclature('TERRITOIRE', 'METROP') ,'Territoire du parc national des Ecrins et de ses environs immédiats')
 ,(2, ref_nomenclatures.get_id_nomenclature('TERRITOIRE', 'METROP'),'Réserve intégrale de lauvitel')
@@ -109,6 +167,10 @@ INSERT INTO gn_meta.cor_dataset_protocol (id_dataset, id_protocol) VALUES
 SELECT pg_catalog.setval('gn_meta.sinp_datatype_protocols_id_protocol_seq', (SELECT max(id_protocol)+1 FROM gn_meta.cor_dataset_protocol), true);
 
 
+
+
+-- Insertion dans Occtax et par trigger dans la synthese
+-- dans le JDD 1 dont l'organisme 1 est acteur
 INSERT INTO pr_occtax.t_releves_occtax (id_releve_occtax,id_dataset,id_digitiser,observers_txt,id_nomenclature_obs_technique,id_nomenclature_grp_typ,date_min,date_max,hour_min,hour_max,altitude_min,altitude_max,meta_device_entry,comment,geom_local,geom_4326,precision) VALUES 
 (1,1,1,NULL,ref_nomenclatures.get_id_nomenclature('TECHNIQUE_OBS', '133'),ref_nomenclatures.get_id_nomenclature('TYP_GRP', 'OBS'),'2017-01-01','2017-01-01','12:05:02','12:05:02',1500,1565,'web','Exemple test','01010000206A0800002E988D737BCC2D41ECFA38A659805841','0101000020E61000000000000000001A40CDCCCCCCCC6C4640',10)
 ,(2,1,1,NULL,ref_nomenclatures.get_id_nomenclature('TECHNIQUE_OBS', '133'),ref_nomenclatures.get_id_nomenclature('TYP_GRP', 'OBS'),'2017-01-08','2017-01-08','20:00:00','23:00:00',1600,1600,'web','Autre exemple test','01010000206A0800002E988D737BCC2D41ECFA38A659805841','0101000020E61000000000000000001A40CDCCCCCCCC6C4640',100)
@@ -171,8 +233,8 @@ VALUES
     ref_nomenclatures.get_id_nomenclature('DEE_FLOU', 'NON'),
     'Gil D',
     ref_nomenclatures.get_id_nomenclature('METH_DETERMIN', '2'),
-    351,
-    'Grenouille rousse',
+    713776,
+    'Trichopria Ashmead, 1893',
     'Taxref V9.0',
     '',
     '',
@@ -273,3 +335,16 @@ INSERT INTO  pr_occtax.cor_counting_occtax (
 
 
 SELECT pg_catalog.setval('pr_occtax.cor_counting_occtax_id_counting_occtax_seq', (SELECT max(id_counting_occtax)+1 FROM pr_occtax.cor_counting_occtax), true);
+
+
+-- taxonomie
+-- insertion d'un attribut sur taxon pour test de la recherche par attrs
+INSERT INTO taxonomie.cor_taxon_attribut VALUES (102, 'eau', 209902);
+
+-- Insertion de données en synthese sans passer par un module et sans cor_observer_synthese
+-- dans le dataset 1 ou l'utilisateur test_cruved_r2 est acteur via son organisme
+-- test d'une donnée sans geom
+INSERT INTO gn_synthese.synthese (id_dataset, nom_cite, date_min, date_max, the_geom_4326) VALUES 
+  (1, 'test', '01-01-2018', '01-01-2018', NULL),
+  (1 ,'test', '01-01-2018', '01-01-2018', '0101000020E61000000000000000001A40CDCCCCCCCC6C4640')
+;

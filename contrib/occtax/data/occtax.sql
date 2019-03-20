@@ -103,7 +103,6 @@ occurrence RECORD;
 releve RECORD;
 id_source integer;
 id_module integer;
-validation RECORD;
 id_nomenclature_source_status integer;
 myobservers RECORD;
 id_role_loop integer;
@@ -122,13 +121,8 @@ SELECT INTO releve * FROM pr_occtax.t_releves_occtax rel WHERE occurrence.id_rel
 SELECT INTO id_source s.id_source FROM gn_synthese.t_sources s WHERE name_source ILIKE 'occtax';
 
 -- Récupération de l'id_module
-SELECT INTO id_module gn_commons.get_id_module_byname('occtax');
+SELECT INTO id_module gn_commons.get_id_module_bycode('OCCTAX');
 
--- Récupération du status de validation du counting dans la table t_validation
-SELECT INTO validation v.*, CONCAT(r.nom_role, r.prenom_role) as validator_full_name
-FROM gn_commons.t_validations v
-LEFT JOIN utilisateurs.t_roles r ON v.id_validator = r.id_role
-WHERE uuid_attached_row = new_count.unique_id_sinp_occtax;
 
 -- Récupération du status_source depuis le JDD
 SELECT INTO id_nomenclature_source_status d.id_nomenclature_source_status FROM gn_meta.t_datasets d WHERE id_dataset = releve.id_dataset;
@@ -156,7 +150,6 @@ id_nomenclature_bio_status,
 id_nomenclature_bio_condition,
 id_nomenclature_naturalness,
 id_nomenclature_exist_proof,
-id_nomenclature_valid_status,
 id_nomenclature_diffusion_level,
 id_nomenclature_life_stage,
 id_nomenclature_sex,
@@ -181,13 +174,12 @@ the_geom_point,
 the_geom_local,
 date_min,
 date_max,
-validator,
-validation_comment,
 observers,
 determiner,
 id_digitiser,
 id_nomenclature_determination_method,
-comments,
+comment_context,
+comment_description,
 last_action
 )
 VALUES(
@@ -206,8 +198,6 @@ VALUES(
   occurrence.id_nomenclature_bio_condition,
   occurrence.id_nomenclature_naturalness,
   occurrence.id_nomenclature_exist_proof,
-    -- statut de validation récupérer à partir de gn_commons.t_validations
-  validation.id_nomenclature_valid_status,
   occurrence.id_nomenclature_diffusion_level,
   new_count.id_nomenclature_life_stage,
   new_count.id_nomenclature_sex,
@@ -234,13 +224,12 @@ VALUES(
   releve.geom_local,
   (to_char(releve.date_min, 'DD/MM/YYYY') || ' ' || COALESCE(to_char(releve.hour_min, 'HH24:MI:SS'),'00:00:00'))::timestamp,
   (to_char(releve.date_max, 'DD/MM/YYYY') || ' ' || COALESCE(to_char(releve.hour_max, 'HH24:MI:SS'),'00:00:00'))::timestamp,
-  validation.validator_full_name,
-  validation.validation_comment,
   COALESCE (myobservers.observers_name, releve.observers_txt),
   occurrence.determiner,
   releve.id_digitiser,
   occurrence.id_nomenclature_determination_method,
-  CONCAT(COALESCE('Relevé : '||releve.comment || ' / ', NULL ), COALESCE('Occurrence : '||occurrence.comment, NULL)),
+  releve.comment,
+  occurrence.comment,
   'I'
 );
 
@@ -362,7 +351,7 @@ CREATE SEQUENCE cor_counting_occtax_id_counting_occtax_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-ALTER SEQUENCE cor_counting_occtax_id_counting_occtax_seq OWNED BY t_occurrences_occtax.id_occurrence_occtax;
+ALTER SEQUENCE cor_counting_occtax_id_counting_occtax_seq OWNED BY cor_counting_occtax.id_counting_occtax;
 ALTER TABLE ONLY cor_counting_occtax ALTER COLUMN id_counting_occtax SET DEFAULT nextval('cor_counting_occtax_id_counting_occtax_seq'::regclass);
 SELECT pg_catalog.setval('cor_counting_occtax_id_counting_occtax_seq', 1, false);
 
@@ -504,9 +493,6 @@ ALTER TABLE t_releves_occtax
 ALTER TABLE t_releves_occtax
   ADD CONSTRAINT check_t_releves_occtax_regroupement_typ CHECK (ref_nomenclatures.check_nomenclature_type_by_mnemonique(id_nomenclature_grp_typ,'TYP_GRP')) NOT VALID;
 
-ALTER TABLE ONLY t_occurrences_occtax
-    ADD CONSTRAINT check_t_occurrences_occtax_cd_nom_isinbib_noms CHECK (taxonomie.check_is_inbibnoms(cd_nom)) NOT VALID;
-
 ALTER TABLE t_occurrences_occtax
   ADD CONSTRAINT check_t_occurrences_occtax_obs_meth CHECK (ref_nomenclatures.check_nomenclature_type_by_mnemonique(id_nomenclature_obs_meth,'METH_OBS')) NOT VALID;
 
@@ -537,6 +523,10 @@ ALTER TABLE t_occurrences_occtax
 ALTER TABLE t_occurrences_occtax
   ADD CONSTRAINT check_t_occurrences_occtax_determination_method CHECK (ref_nomenclatures.check_nomenclature_type_by_mnemonique(id_nomenclature_determination_method,'METH_DETERMIN')) NOT VALID;
 
+
+ALTER TABLE ONLY cor_counting_occtax
+    ADD CONSTRAINT unique_id_sinp_occtax_unique UNIQUE (unique_id_sinp_occtax);
+
 ALTER TABLE cor_counting_occtax
   ADD CONSTRAINT check_cor_counting_occtax_life_stage CHECK (ref_nomenclatures.check_nomenclature_type_by_mnemonique(id_nomenclature_life_stage,'STADE_VIE')) NOT VALID;
 
@@ -550,10 +540,10 @@ ALTER TABLE cor_counting_occtax
   ADD CONSTRAINT check_cor_counting_occtax_type_count CHECK (ref_nomenclatures.check_nomenclature_type_by_mnemonique(id_nomenclature_type_count,'TYP_DENBR')) NOT VALID;
 
 ALTER TABLE cor_counting_occtax
-    ADD CONSTRAINT check_cor_counting_occtax_count_min CHECK (count_min > 0);
+    ADD CONSTRAINT check_cor_counting_occtax_count_min CHECK (count_min >= 0);
 
 ALTER TABLE cor_counting_occtax
-    ADD CONSTRAINT check_cor_counting_occtax_count_max CHECK (count_max >= count_min AND count_max > 0);
+    ADD CONSTRAINT check_cor_counting_occtax_count_max CHECK (count_max >= count_min AND count_max >= 0);
 
 ALTER TABLE ONLY defaults_nomenclatures_value
     ADD CONSTRAINT check_pr_occtax_defaults_nomenclatures_value_is_nomenclature_in_type CHECK (ref_nomenclatures.check_nomenclature_type_by_mnemonique(id_nomenclature, mnemonique_type)) NOT VALID;
@@ -702,12 +692,7 @@ CREATE OR REPLACE FUNCTION fct_tri_synthese_update_occ()
   RETURNS trigger AS
 $BODY$
 DECLARE
-  releve RECORD;
 BEGIN
-  -- récupération du releve pour le commentaire à concatener
-  SELECT INTO releve * FROM pr_occtax.t_releves_occtax WHERE id_releve_occtax = NEW.id_releve_occtax;
-  IF releve.comment = '' THEN releve.comment = NULL; END IF;
-  IF NEW.comment = '' THEN NEW.comment = NULL; END IF;
   UPDATE gn_synthese.synthese SET
     id_nomenclature_obs_meth = NEW.id_nomenclature_obs_meth,
     id_nomenclature_bio_condition = NEW.id_nomenclature_bio_condition,
@@ -726,7 +711,7 @@ BEGIN
     sample_number_proof = NEW.sample_number_proof,
     digital_proof = NEW.digital_proof,
     non_digital_proof = NEW.non_digital_proof,
-    comments  = CONCAT(COALESCE('Relevé : '||releve.comment || ' / ', NULL ), COALESCE('Occurrence: '||NEW.comment, NULL)),
+    comment_description = NEW.comment,
     last_action = 'U'
   WHERE unique_id_sinp IN (SELECT unique_id_sinp_occtax FROM pr_occtax.cor_counting_occtax WHERE id_occurrence_occtax = NEW.id_occurrence_occtax);
   RETURN NULL;
@@ -775,7 +760,6 @@ CREATE OR REPLACE FUNCTION fct_tri_synthese_update_releve()
   RETURNS trigger AS
 $BODY$
 DECLARE
-  theoccurrence RECORD;
   myobservers text;
 BEGIN
   --calcul de l'observateur. On privilégie le ou les observateur(s) de cor_role_releves_occtax
@@ -800,18 +784,9 @@ BEGIN
       altitude_max = NEW.altitude_max,
       the_geom_4326 = NEW.geom_4326,
       the_geom_point = ST_CENTROID(NEW.geom_4326),
-      last_action = 'U'
+      last_action = 'U',
+      comment_context = NEW.comment
   WHERE unique_id_sinp IN (SELECT unnest(pr_occtax.get_unique_id_sinp_from_id_releve(NEW.id_releve_occtax::integer)));
-  -- récupération de l'occurrence pour le releve et mise à jour des commentaires avec celui de l'occurence seulement si le commentaire à changé
-  IF NEW.comment = '' THEN NEW.comment = NULL; END IF;
-  IF(NEW.comment IS DISTINCT FROM OLD.comment) THEN
-      FOR theoccurrence IN SELECT * FROM pr_occtax.t_occurrences_occtax WHERE id_releve_occtax = NEW.id_releve_occtax
-      LOOP
-          UPDATE gn_synthese.synthese SET
-                comments = CONCAT(COALESCE('Relevé : '||NEW.comment || ' / ', NULL ), COALESCE('Occurrence: '||theoccurrence.comment, NULL))
-          WHERE unique_id_sinp IN (SELECT unnest(pr_occtax.get_unique_id_sinp_from_id_releve(NEW.id_releve_occtax::integer)));
-      END LOOP;
-  END IF;
   RETURN NULL;
 END;
 $BODY$
@@ -1084,8 +1059,8 @@ CREATE OR REPLACE VIEW pr_occtax.v_releve_list AS
     rel.geom_4326,
     rel."precision",
    dataset.dataset_name,
-    string_agg(DISTINCT t.nom_valide::text, ','::text) AS taxons,
-    (((string_agg(DISTINCT t.nom_valide::text, ','::text) || '<br/>'::text) || rel.date_min::date) || '<br/>'::text) || COALESCE(string_agg(DISTINCT(obs.nom_role::text || ' '::text) || obs.prenom_role::text, ', '::text), rel.observers_txt::text) AS leaflet_popup,
+    string_agg(t.nom_valide::text, ','::text) AS taxons,
+    (((string_agg(t.nom_valide::text, ','::text) || '<br/>'::text) || rel.date_min::date) || '<br/>'::text) || COALESCE(string_agg(DISTINCT(obs.nom_role::text || ' '::text) || obs.prenom_role::text, ', '::text), rel.observers_txt::text) AS leaflet_popup,
     COALESCE(string_agg(DISTINCT(obs.nom_role::text || ' '::text) || obs.prenom_role::text, ', '::text), rel.observers_txt::text) AS observateurs
    FROM pr_occtax.t_releves_occtax rel
      LEFT JOIN pr_occtax.t_occurrences_occtax occ ON rel.id_releve_occtax = occ.id_releve_occtax
@@ -1116,7 +1091,6 @@ INSERT INTO pr_occtax.defaults_nomenclatures_value (mnemonique_type, id_organism
 ,('STATUT_BIO',0,0,0, ref_nomenclatures.get_id_nomenclature('STATUT_BIO', '1'))
 ,('NATURALITE',0,0,0, ref_nomenclatures.get_id_nomenclature('NATURALITE', '1'))
 ,('PREUVE_EXIST',0,0,0, ref_nomenclatures.get_id_nomenclature('PREUVE_EXIST', '0'))
-,('STATUT_VALID',0,0,0, ref_nomenclatures.get_id_nomenclature('STATUT_VALID', '0'))
 ,('METH_DETERMIN',0,0,0, ref_nomenclatures.get_id_nomenclature('METH_DETERMIN', '1'))
 ,('STADE_VIE',0,0,0, ref_nomenclatures.get_id_nomenclature('STADE_VIE', '0'))
 ,('SEXE',0,0,0, ref_nomenclatures.get_id_nomenclature('SEXE', '6'))
@@ -1131,12 +1105,21 @@ INSERT INTO pr_occtax.defaults_nomenclatures_value (mnemonique_type, id_organism
 
 ;
 
--- @TODO fait dans l'install du schéma utilisateurs - a trancher
+-- Creation d'une liste 'observateur occtax'
+INSERT INTO utilisateurs.t_listes (code_liste, nom_liste, desc_liste)
+VALUES('obsocctax','Observateurs Occtax','Liste des observateurs du module Occtax');
 
--- INSERT INTO utilisateurs.t_menus (nom_menu, desc_menu, id_application) VALUES
--- ('Occtax observateur', 'Liste des observateurs du module Occtax de GeoNature', 
--- (SELECT id_application FROM utilisateurs.t_applications WHERE nom_application = 'GeoNature') )
--- ;
+-- Ajout de l'utilsateur admin dans la liste
+INSERT INTO utilisateurs.cor_role_liste (id_liste, id_role)
+SELECT id_liste, 7
+FROM utilisateurs.t_listes
+WHERE code_liste = 'obsocctax';
+
 
 INSERT INTO gn_synthese.t_sources ( name_source, desc_source, entity_source_pk_field, url_source)
  VALUES ('Occtax', 'Données issues du module Occtax', 'pr_occtax.cor_counting_occtax.id_counting_occtax', '#/occtax/info/id_counting');
+
+INSERT INTO gn_permissions.cor_object_module (id_object, id_module)
+SELECT o.id_object, t.id_module
+FROM gn_permissions.t_objects o, gn_commons.t_modules t
+WHERE o.code_object = 'TDatasets' AND t.module_code = 'OCCTAX';
