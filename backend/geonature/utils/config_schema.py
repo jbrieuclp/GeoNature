@@ -184,6 +184,7 @@ class MapConfig(Schema):
 # class a utiliser pour les paramètres que l'on veut passer au frontend
 class GnGeneralSchemaConf(Schema):
     appName = fields.String(missing="GeoNature2")
+    appLogoPath = fields.String(missing="custom/images/logo_structure.png")
     GEONATURE_VERSION = fields.String(missing=GEONATURE_VERSION.strip())
     DEFAULT_LANGUAGE = fields.String(missing="fr")
     PASS_METHOD = fields.String(missing="hash", validate=OneOf(["hash", "md5"]))
