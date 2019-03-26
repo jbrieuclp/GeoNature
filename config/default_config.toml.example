@@ -12,7 +12,7 @@ SQLALCHEMY_TRACK_MODIFICATIONS = false
 # Application
 
 appName = 'GeoNature 2'                               # Application name in the home page
-appLogo = 'test'                                      # Organisme logo in the navbar
+appLogoPath = 'custom/images/logo_structure.png'      # Organisme logo in the navbar
 DEFAULT_LANGUAGE = 'fr'
 PASS_METHOD = 'hash'                                  # Authentification password encoding method (hash or md5)
 DEBUG = true

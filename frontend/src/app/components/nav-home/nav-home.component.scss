@@ -1,3 +1,6 @@
+@import '../../../conf/names_variables.scss';
+@import '../../../custom/custom.scss';
+
 .toolbar-icon {
     padding: 0 15px;
 }
@@ -22,6 +25,16 @@ mat-menu > li {
 
 mat-icon {
     margin: 10px;
+    vertical-align: middle;
+}
+
+.menu-button {
+    margin-right: 10px;
+    background-color: $navbar-color;
+}
+
+.menu-button mat-icon.menu-icon {
+    margin: 0;
 }
 
 .module-name {
@@ -29,5 +42,9 @@ mat-icon {
 }
 
 #module-name{
-    margin-right: 15px;;
+    margin-right: 15px;
+}
+
+.toolbar-color {
+    background-color: $navbar-color;
 }
