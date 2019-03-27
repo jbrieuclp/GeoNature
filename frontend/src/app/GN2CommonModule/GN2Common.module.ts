@@ -8,7 +8,9 @@ import {
   MatListModule,
   MatIconModule,
   MatToolbarModule,
-  MatButtonModule
+  MatButtonModule,
+  MatExpansionModule,
+  MatPaginatorModule
 } from '@angular/material';
 
 import { HttpClient } from '@angular/common/http';
@@ -78,6 +80,8 @@ import { MultiSelectComponent } from './form/multiselect/multiselect.component';
     MatListModule,
     MatToolbarModule,
     MatButtonModule,
+    MatExpansionModule,
+    MatPaginatorModule,
     FormsModule,
     ReactiveFormsModule,
     NgxDatatableModule,
@@ -154,6 +158,8 @@ import { MultiSelectComponent } from './form/multiselect/multiselect.component';
     MatListModule,
     MatToolbarModule,
     MatButtonModule,
+    MatExpansionModule,
+    MatPaginatorModule,
     NgxDatatableModule,
     NgbModule,
     TranslateModule,
