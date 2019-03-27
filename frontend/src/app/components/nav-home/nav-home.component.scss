@@ -38,3 +38,12 @@ mat-icon {
 #module-name{
     margin-right: 15px;;
 }
+
+.menu-button {
+    margin-right: 10px;
+    background-color: $navbar-color;
+}
+
+.menu-button mat-icon.menu-icon {
+    margin: 0;
+}

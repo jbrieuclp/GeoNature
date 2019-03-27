@@ -8,15 +8,16 @@
   <mat-sidenav-content>
     <mat-toolbar id="app-toolbar" class="row">
 
-      <mat-icon (click)="closeSideBar()" class="icon-toolbar clickable">apps</mat-icon>
+      <button class="menu-button" mat-fab color="primary" (click)="closeSideBar()">
+        <mat-icon class="menu-icon" aria-label="Ouvrir le menu">menu</mat-icon>
+      </button>
       <span id="module-name"> {{moduleName}}</span>
-      <img id="logo-structure" src="custom/images/{{appConfig.LOGO_STRUCTURE_FILE}}" alt="">
       <span class="toolbar-spacer"></span>
       <div>
 
       </div>
       <span id="appName">
-        <h3> {{appConfig.appName}}</h3>
+        <h3><img id="logo-structure" src="custom/images/{{appConfig.LOGO_STRUCTURE_FILE}}" alt=""> {{appConfig.appName}}</h3>
       </span>
       <span class="toolbar-spacer"></span>
       <span style="font-size:15px" class="toolbar-rigth"> {{currentUser?.user_login}} </span>
