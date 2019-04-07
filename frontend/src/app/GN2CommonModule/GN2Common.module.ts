@@ -69,6 +69,7 @@ import { NgbDatePeriodParserFormatter } from '@geonature_common/form/date/ngb-da
 import 'rxjs/Rx';
 import { MultiSelectComponent } from './form/multiselect/multiselect.component';
 
+
 @NgModule({
   imports: [
     CommonModule,
