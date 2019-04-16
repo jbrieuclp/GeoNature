@@ -267,17 +267,7 @@ class VReleveList(ReleveModel):
     leaflet_popup = DB.Column(DB.Unicode)
     observateurs = DB.Column(DB.Unicode)
     dataset_name = DB.Column(DB.Unicode)
-    observers_txt = DB.Column(DB.Unicode)
-    observers = DB.relationship(
-        User,
-        secondary=corRoleRelevesOccurrence,
-        primaryjoin=(corRoleRelevesOccurrence.c.id_releve_occtax == id_releve_occtax),
-        secondaryjoin=(corRoleRelevesOccurrence.c.id_role == User.id_role),
-        foreign_keys=[
-            corRoleRelevesOccurrence.c.id_releve_occtax,
-            corRoleRelevesOccurrence.c.id_role,
-        ],
-    )
+    observateurs = DB.Column(DB.Unicode)
 
     def get_geofeature(self, recursif=True):
 
