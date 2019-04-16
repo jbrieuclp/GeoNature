@@ -219,6 +219,10 @@ def get_query_occtax_filters(args, mappedView, q, from_generic_table=False):
         observers_query = "%{}%".format(params.pop("observers_txt"))
         q = q.filter(mappedView.observers_txt.ilike(observers_query))
 
+    if "observateurs" in params:
+        observateurs_query = "%{}%".format(params.pop("observateurs"))
+        q = q.filter(mappedView.observateurs.ilike(observateurs_query))
+
     if from_generic_table:
         table_columns = mappedView
     else:
