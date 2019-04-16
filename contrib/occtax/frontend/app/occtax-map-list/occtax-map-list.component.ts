@@ -65,7 +65,7 @@ export class OcctaxMapListComponent implements OnInit, OnDestroy {
       cd_nom: null,
       observers: null,
       dataset: null,
-      observers_txt: null,
+      observateurs: null,
       id_dataset: null,
       date_up: null,
       date_low: null,
