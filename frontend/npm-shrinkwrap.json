@@ -4892,6 +4892,11 @@
       "integrity": "sha512-aUjdRFISbuFOl0EIZc+9e4FfZp0bDZgAdOOf30bJmw8VM9v84SHyVyxDfbWxpGYbdZD/9XoKxfHVNmxPkhwyGw==",
       "dev": true
     },
+    "almond": {
+      "version": "0.3.3",
+      "resolved": "https://registry.npmjs.org/almond/-/almond-0.3.3.tgz",
+      "integrity": "sha1-oOfJWsdiTWQXtElLHmi/9pMWiiA="
+    },
     "amdefine": {
       "version": "1.0.1",
       "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz",
@@ -9773,6 +9778,11 @@
       "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.3.1.tgz",
       "integrity": "sha512-Ubldcmxp5np52/ENotGxlLe6aGMvmF4R8S6tZjsP6Knsaxd/xp3Zrh50cG93lR6nPXyUFwzN3ZSOQI0wRJNdGg=="
     },
+    "jquery-mousewheel": {
+      "version": "3.1.13",
+      "resolved": "https://registry.npmjs.org/jquery-mousewheel/-/jquery-mousewheel-3.1.13.tgz",
+      "integrity": "sha1-BvAzXxbjU6aV5yBr9QUDy1I6buU="
+    },
     "js-base64": {
       "version": "2.5.1",
       "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.5.1.tgz",
@@ -10723,6 +10733,14 @@
       "resolved": "https://registry.npmjs.org/neo-async/-/neo-async-2.6.0.tgz",
       "integrity": "sha512-MFh0d/Wa7vkKO3Y3LlacqAEeHK0mckVqzDieUKTT+KGxi+zIpeVsFxymkIiRpbpDziHc290Xr9A1O4Om7otoRA==",
       "dev": true
+    },
+    "ng-select2": {
+      "version": "1.0.8",
+      "resolved": "https://registry.npmjs.org/ng-select2/-/ng-select2-1.0.8.tgz",
+      "integrity": "sha512-cMonV4RMKmJGw4MSuTJumLDDaZao3r8slGu53GlrdyOSAEMsrjuHKeWQxMlcBFTAqiSwImugYPulfZSXPmlO2w==",
+      "requires": {
+        "tslib": "^1.9.0"
+      }
     },
     "ng2-cookies": {
       "version": "1.0.12",
@@ -12698,6 +12716,15 @@
       "resolved": "https://registry.npmjs.org/select-hose/-/select-hose-2.0.0.tgz",
       "integrity": "sha1-Yl2GWPhlr0Psliv8N2o3NZpJlMo=",
       "dev": true
+    },
+    "select2": {
+      "version": "4.0.5",
+      "resolved": "https://registry.npmjs.org/select2/-/select2-4.0.5.tgz",
+      "integrity": "sha1-eqxQaSVhmFs007guxV4ib4lg1Ao=",
+      "requires": {
+        "almond": "~0.3.1",
+        "jquery-mousewheel": "~3.1.13"
+      }
     },
     "selenium-webdriver": {
       "version": "3.6.0",
