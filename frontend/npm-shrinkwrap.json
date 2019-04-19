@@ -2933,6 +2933,14 @@
         "tslib": "^1.9.0"
       }
     },
+    "@ng-select/ng-select": {
+      "version": "2.17.0",
+      "resolved": "https://registry.npmjs.org/@ng-select/ng-select/-/ng-select-2.17.0.tgz",
+      "integrity": "sha512-hCZIcg4tACYp8tKRLZnD9CEZJcVJbKWkVrS++8dh0cJv580SCiKTQ10CJ1qzWWvmC4tIbCRyLzrUuKQRdkRWpA==",
+      "requires": {
+        "tslib": "^1.9.0"
+      }
+    },
     "@ngtools/webpack": {
       "version": "7.3.8",
       "resolved": "https://registry.npmjs.org/@ngtools/webpack/-/webpack-7.3.8.tgz",
@@ -10417,14 +10425,6 @@
       "resolved": "https://registry.npmjs.org/neo-async/-/neo-async-2.6.0.tgz",
       "integrity": "sha512-MFh0d/Wa7vkKO3Y3LlacqAEeHK0mckVqzDieUKTT+KGxi+zIpeVsFxymkIiRpbpDziHc290Xr9A1O4Om7otoRA==",
       "dev": true
-    },
-    "ng-select2": {
-      "version": "1.0.8",
-      "resolved": "https://registry.npmjs.org/ng-select2/-/ng-select2-1.0.8.tgz",
-      "integrity": "sha512-cMonV4RMKmJGw4MSuTJumLDDaZao3r8slGu53GlrdyOSAEMsrjuHKeWQxMlcBFTAqiSwImugYPulfZSXPmlO2w==",
-      "requires": {
-        "tslib": "^1.9.0"
-      }
     },
     "ng2-cookies": {
       "version": "1.0.12",
