@@ -4,14 +4,15 @@
             <pnx-marker [coordinates]="fs.markerCoordinates" [zoomLevel]="occtaxConfig.releve_map_zoom_level"
                 (markerChanged)="sendGeoInfo($event)">
             </pnx-marker>
+            <pnx-gps (markerChanged)="sendGeoInfo($event)"> </pnx-gps>
             <pnx-leaflet-draw [geojson]="fs.geojsonCoordinates" [options]="leafletDrawOptions" [zoomLevel]="occtaxConfig.releve_map_zoom_level"
                 (layerDrawed)="sendGeoInfo($event)">
             </pnx-leaflet-draw>
-            <pnx-leaflet-filelayer
+            <!--pnx-leaflet-filelayer
               [editMode]="true"
               (onLoad)="infoMessageFileLayer()"
               [style]="{'color': 'green'}"
-            ></pnx-leaflet-filelayer>  
+            ></pnx-leaflet-filelayer-->  
 
         </pnx-map>
     </div>

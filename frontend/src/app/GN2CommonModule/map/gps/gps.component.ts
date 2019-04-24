@@ -25,7 +25,7 @@ export class GPSComponent extends MarkerComponent implements OnInit  {
     this.map.addControl(new GPSLegend());
     const gpsElement: HTMLElement = document.getElementById('GPSLegend');
     L.DomEvent.disableClickPropagation(gpsElement);
-    gpsElement.innerHTML = '<span> <b> GPS </span> <b>';
+    gpsElement.innerHTML = '<span><b> GPS </b></span>';
     gpsElement.style.paddingLeft = '3px';
     gpsElement.onclick = () => {
       this.modalService.open(this.modalContent);
