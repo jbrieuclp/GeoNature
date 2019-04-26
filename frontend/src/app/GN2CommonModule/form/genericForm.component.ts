@@ -5,6 +5,9 @@ import {
   Output,
   EventEmitter,
   AfterViewInit,
+  OnChanges,
+  SimpleChanges, 
+  SimpleChange,
   OnDestroy
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
@@ -14,12 +17,14 @@ import { Subscription } from 'rxjs';
   selector: 'pnx-generic-form',
   template: ''
 })
-export class GenericFormComponent implements OnInit, AfterViewInit, OnDestroy {
+export class GenericFormComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @Input() parentFormControl: FormControl;
   @Input() label: string;
+  @Input() class: string; 
   @Input() disabled: boolean = false;
   @Input() debounceTime: number;
   @Input() multiSelect: boolean = false;
+  @Input() clearable: boolean = true;
   @Input() searchBar: boolean = false;
   @Input() displayAll: boolean = false; // param to display the field 'all' in the list, default at false
   @Output() onChange = new EventEmitter<any>();
@@ -29,11 +34,18 @@ export class GenericFormComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor() {}
 
   ngOnInit() {
-    this.disabled ? this.parentFormControl.enable() : this.parentFormControl.disable();
     this.debounceTime = this.debounceTime || 0;
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    const disabled: SimpleChange = changes.disabled;
+    if (disabled !== undefined && disabled.previousValue !== disabled.currentValue) {
+      this.setDisabled();
+    }
+  }
+
   ngAfterViewInit() {
+    this.setDisabled();
     this.sub = this.parentFormControl.valueChanges
       .distinctUntilChanged()
       .debounceTime(this.debounceTime)
@@ -44,6 +56,10 @@ export class GenericFormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.onChange.emit(value);
         }
       });
+  }
+
+  setDisabled() {
+    this.disabled ? this.parentFormControl.disable() : this.parentFormControl.enable();
   }
 
   filterItems(event, savedItems, itemKey) {

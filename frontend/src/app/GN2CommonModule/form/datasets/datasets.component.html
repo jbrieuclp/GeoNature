@@ -1,9 +1,11 @@
 <small> {{label }} </small>
-<ng-select class="pnx"
+<ng-select [ngClass]="class"
 		[items]="dataSets | async"
 		bindLabel="dataset_name"
 		bindValue="id_dataset"
 		placeholder="Jeux de données"
+		[multiple]="multiSelect"
+		[clearable]="clearable"
 		[virtualScroll]="true"
 		[formControl]="parentFormControl">
 </ng-select>
