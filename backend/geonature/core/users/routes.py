@@ -119,6 +119,35 @@ def confirmation():
     if r.status_code != 200:
         return Response(r), r.status_code
 
+    role = r.json()
+    #Creation d'un JDD pour le l'utilisateur
+    dataset = TDatasets(
+        id_acquisition_framework=65,
+        dataset_name="Données personnelles "+role['prenom_role'].title()+" "+role['nom_role'].title(),
+        dataset_shortname="Données personnelles",
+        dataset_desc="Données personnelles de "+role['prenom_role'].title()+" "+role['nom_role'].title(),
+        id_nomenclature_data_type=325,
+        keywords="",
+        marine_domain=True,
+        terrestrial_domain=True,
+        id_nomenclature_dataset_objectif=443,
+        id_nomenclature_collecting_method=402,
+        id_nomenclature_data_origin=77,
+        id_nomenclature_source_status=75,
+        id_nomenclature_resource_type=323,
+        default_validity=True,
+        active=True
+    )
+    cor_dataset_actor = CorDatasetActor(
+        id_role=role['id_role'],
+        id_nomenclature_actor_role=370
+    )
+    dataset.cor_dataset_actor.append(cor_dataset_actor)
+
+    DB.session.add(dataset)
+    DB.session.commit()
+    DB.session.flush()
+
     return redirect(config['URL_APPLICATION'], code=302)
 
 

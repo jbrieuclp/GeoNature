@@ -23,7 +23,9 @@
 
       <ng-container *ngIf="!appConfig.CAS_PUBLIC.CAS_AUTHENTIFICATION; else connexionBlock">
         <button 
-          class="btn btn-sm toolbar-rigth"
+          mat-raised-button
+          color="primary"
+          class="green-button toolbar-rigth"
           matTooltip="Ouvrir le menu" 
           data-toggle="dropdown" 
           aria-haspopup="true" 
