@@ -10,7 +10,7 @@ import {
   MatToolbarModule,
   MatButtonModule,
   MatExpansionModule,
-  MatPaginatorModule
+  MatPaginatorModule,
 } from '@angular/material';
 
 import { HttpClient } from '@angular/common/http';
@@ -177,4 +177,4 @@ import { MultiSelectComponent } from './form/multiselect/multiselect.component';
     PeriodComponent
   ]
 })
-export class GN2CommonModule {}
+export class GN2CommonModule { }
