@@ -12,8 +12,7 @@ import {
   MatExpansionModule,
   MatPaginatorModule,
   MatStepperModule,
-  MatProgressSpinnerModule,
-  MatButtonModule
+  MatProgressSpinnerModule
 } from '@angular/material';
 
 import { HttpClient } from '@angular/common/http';
@@ -89,7 +88,6 @@ import { MultiSelectComponent } from './form/multiselect/multiselect.component';
     MatPaginatorModule,
     MatStepperModule,
     MatProgressSpinnerModule,
-    MatButtonModule,
     FormsModule,
     ReactiveFormsModule,
     NgxDatatableModule,
@@ -173,7 +171,6 @@ import { MultiSelectComponent } from './form/multiselect/multiselect.component';
     NgSelectModule,
     MatStepperModule,
     MatProgressSpinnerModule,
-    MatButtonModule,
     NgbModule,
     TranslateModule,
     MapListGenericFiltersComponent,
