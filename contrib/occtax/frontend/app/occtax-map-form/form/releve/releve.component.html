@@ -125,7 +125,7 @@
 
   <div class="row row-0">
 
-    <div *ngIf="occtaxConfig.form_fields.obs_technique" class="col-xs-3 col-sm-3 col-md-3 col-lg-3 padding-sm">
+    <div *ngIf="occtaxConfig.form_fields.obs_technique" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-sm">
       <pnx-nomenclature class="sm" label="{{ 'Releve.ObsTechnique' | translate }}" [parentFormControl]="releveForm.get('properties').get('id_nomenclature_obs_technique')"
         codeNomenclatureType="TECHNIQUE_OBS" [disabled]="fs.disabled">
       </pnx-nomenclature>
