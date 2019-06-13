@@ -43,7 +43,7 @@ def get_datasets_list():
 # TODO: quel cruved on recupère sur une route comme celle là
 # celui du module admin (meta) ou celui de geonature (route utilisé dans tous les modules...)
 @routes.route("/datasets", methods=["GET"])
-@permissions.check_cruved_scope("R", True)
+@permissions.check_cruved_scope("R", True, module_code="METADATA")
 @json_resp
 def get_datasets(info_role):
     """

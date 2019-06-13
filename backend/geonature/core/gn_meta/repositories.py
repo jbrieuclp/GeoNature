@@ -32,13 +32,19 @@ def get_datasets_cruved(info_role, params=dict()):
             q = q.filter(
                 or_(
                     CorDatasetActor.id_organism == info_role.id_organisme,
+                    CorDatasetActor.id_organism == 0,
                     CorDatasetActor.id_role == info_role.id_role,
                 )
             )
     elif info_role.value_filter == "1":
         q = q.join(
             CorDatasetActor, CorDatasetActor.id_dataset == TDatasets.id_dataset
-        ).filter(CorDatasetActor.id_role == info_role.id_role)
+        ).filter(
+            or_(
+                CorDatasetActor.id_organism == 0,
+                CorDatasetActor.id_role == info_role.id_role,
+            )
+        )
 
     # filters query string
     if "active" in request.args:

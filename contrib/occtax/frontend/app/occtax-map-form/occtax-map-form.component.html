@@ -8,12 +8,9 @@
             <pnx-leaflet-draw [geojson]="fs.geojsonCoordinates" [options]="leafletDrawOptions" [zoomLevel]="occtaxConfig.releve_map_zoom_level"
                 (layerDrawed)="sendGeoInfo($event)">
             </pnx-leaflet-draw>
-<<<<<<< HEAD
             <!--pnx-leaflet-filelayer
-=======
-            <pnx-leaflet-filelayer
               *ngIf="occtaxConfig.ENABLE_UPLOAD_TOOL"
->>>>>>> ang4-ang7
+
               [editMode]="true"
               (onLoad)="infoMessageFileLayer()"
               [style]="{'color': 'green'}"
