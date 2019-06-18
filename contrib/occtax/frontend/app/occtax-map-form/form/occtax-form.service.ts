@@ -112,6 +112,7 @@ export class OcctaxFormService {
         altitude_max: null,
         meta_device_entry: "web",
         comment: null,
+        habitat: null,
         id_nomenclature_obs_technique: [null, Validators.required],
         observers: [
           null,
@@ -167,6 +168,7 @@ export class OcctaxFormService {
       digital_proof: [{ value: null, disabled: true }],
       non_digital_proof: [{ value: null, disabled: true }],
       comment: null,
+      micro_habitat: null,
       cor_counting_occtax: ""
     });
 

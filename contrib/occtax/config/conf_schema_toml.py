@@ -36,6 +36,8 @@ class FormConfig(Schema):
     non_digital_proof = fields.Boolean(missing=True)
     source_status = fields.Boolean(missing=False)
     comment_occ = fields.Boolean(missing=True)
+    habitat = fields.Boolean(missing=False)
+    micro_habitat = fields.Boolean(missing=False)
     life_stage = fields.Boolean(missing=True)
     sex = fields.Boolean(missing=True)
     obj_count = fields.Boolean(missing=True)
