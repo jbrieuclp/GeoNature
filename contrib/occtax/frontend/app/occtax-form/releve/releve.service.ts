@@ -77,7 +77,8 @@ export class OcctaxFormReleveService {
       id_nomenclature_obs_technique: [null, Validators.required],
       observers: [null, (!ModuleConfig.observers_txt ? Validators.required : null)],
       observers_txt: [ null, (ModuleConfig.observers_txt ? Validators.required : null)],
-      id_nomenclature_grp_typ: null
+      id_nomenclature_grp_typ: null,
+      habitat: null
     });
 
     this.propertiesForm.patchValue(this.initialValues);
@@ -212,7 +213,8 @@ export class OcctaxFormReleveService {
                           observers: this.occtaxParamS.get('releve.observers')||[this.occtaxFormService.currentUser],
                           observers_txt: this.occtaxParamS.get('releve.observers_txt'),
                           id_nomenclature_grp_typ: this.occtaxParamS.get('releve.id_nomenclature_grp_typ')||data["TYP_GRP"],
-                          id_nomenclature_obs_technique: this.occtaxParamS.get('releve.id_nomenclature_obs_technique')||data["TECHNIQUE_OBS"]
+                          id_nomenclature_obs_technique: this.occtaxParamS.get('releve.id_nomenclature_obs_technique')||data["TECHNIQUE_OBS"],
+                          habitat: this.occtaxParamS.get('releve.habitat')
                         };
                       })
                     );

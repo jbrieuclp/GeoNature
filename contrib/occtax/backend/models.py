@@ -269,6 +269,7 @@ class TOccurrencesOccurrence(OcctaxModel):
     digital_proof = DB.Column(DB.Unicode)
     non_digital_proof = DB.Column(DB.Unicode)
     comment = DB.Column(DB.Unicode)
+    micro_habitat = DB.Column(DB.Unicode)
 
     cor_counting_occtax = relationship(
         "CorCountingOccurrence",
@@ -310,6 +311,7 @@ class TRelevesOccurrence(ReleveModel):
     geom_4326 = DB.Column(Geometry("GEOMETRY", 4326))
     geom_local = DB.Column(
         Geometry("GEOMETRY", current_app.config["LOCAL_SRID"]))
+    habitat = DB.Column(DB.Unicode)
 
     t_occurrences_occtax = relationship(
         "TOccurrencesOccurrence", lazy="joined", cascade="all, delete-orphan"

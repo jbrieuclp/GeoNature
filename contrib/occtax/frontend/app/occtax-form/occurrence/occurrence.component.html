@@ -82,6 +82,16 @@
 
 <div [@detailExpand]='advanced'>
   <div class="row">
+
+    <div 
+      *ngIf="occtaxConfig.form_fields.micro_habitat" 
+      class="col-lg-4 col-sm-6">
+      <small> {{ 'Taxon.MicroHabitat' | translate }} </small>
+      <input 
+        class="form-control form-control-sm" 
+        [formControl]="occurrenceForm.get('micro_habitat')">
+    </div>
+
     <div 
       *ngIf="occtaxConfig.form_fields.observation_status"
       class="col-lg-4 col-sm-6">

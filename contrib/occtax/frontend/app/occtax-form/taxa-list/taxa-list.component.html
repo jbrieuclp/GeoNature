@@ -71,6 +71,11 @@
               </div>
 
               <div>
+                <div class="label">{{ 'Taxon.MicroHabitat' | translate }} :</div>
+                <div class="value">{{ occurrence?.micro_habitat || "-" }}</div>
+              </div>
+
+              <div>
                 <div class="label">{{ 'Taxon.ObservationStatus' | translate }} :</div>
                 <div class="value">{{ occtaxTaxaListService.getLibelleByID(occurrence?.id_nomenclature_observation_status) || "-" }}</div>
               </div>

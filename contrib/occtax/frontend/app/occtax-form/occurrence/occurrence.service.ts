@@ -53,6 +53,7 @@ export class OcctaxFormOccurrenceService {
       digital_proof: null,
       non_digital_proof: null,
       comment: null,
+      micro_habitat: null,
       cor_counting_occtax: this.fb.array([], Validators.required)
     });
   }
@@ -154,7 +155,8 @@ export class OcctaxFormOccurrenceService {
                           id_nomenclature_observation_status: this.occtaxParamS.get('occurrence.id_nomenclature_observation_status')||DATA["STATUT_OBS"],
                           id_nomenclature_diffusion_level: this.occtaxParamS.get('occurrence.id_nomenclature_diffusion_level')||DATA["NIV_PRECIS"],
                           id_nomenclature_blurring: this.occtaxParamS.get('occurrence.id_nomenclature_blurring')||DATA["DEE_FLOU"],
-                          id_nomenclature_source_status: this.occtaxParamS.get('occurrence.id_nomenclature_source_status')||DATA["STATUT_SOURCE"]
+                          id_nomenclature_source_status: this.occtaxParamS.get('occurrence.id_nomenclature_source_status')||DATA["STATUT_SOURCE"],
+                          micro_habitat: this.occtaxParamS.get('occurrence.micro_habitat')
                         };
                       })
                     );

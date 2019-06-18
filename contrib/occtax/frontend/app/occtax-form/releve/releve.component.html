@@ -201,7 +201,12 @@
 </pnx-nomenclature>
 
 
-
+<div *ngIf="occtaxConfig.form_fields.habitat" class="padding-sm">
+  <small> {{ 'Releve.Habitat' | translate }} </small>
+  <input 
+    class="form-control form-control-sm" 
+    [formControl]="propertiesForm.get('habitat')">
+</div>
 
 
 <!-- COMMENTAIRE -->

@@ -18,7 +18,8 @@ interface OCCTAX_FORM_PARAM {
     id_nomenclature_obs_technique?: number,
     observers?: Array<any>,
     observers_txt?: string,
-    id_nomenclature_grp_typ?: number
+    id_nomenclature_grp_typ?: number,
+    habitat?: string
   },
   occurrence?: {
     id_nomenclature_obs_meth?: number,
@@ -33,7 +34,8 @@ interface OCCTAX_FORM_PARAM {
     determiner?: string,
     id_nomenclature_determination_method?: number,
     sample_number_proof?: string,
-    comment?: string
+    comment?: string,
+    micro_habitat?: string
   },
   counting?: {
     id_nomenclature_life_stage: number,
@@ -65,7 +67,8 @@ export class OcctaxFormParamService {
                                       id_nomenclature_obs_technique: null,
                                       observers: null,
                                       observers_txt: null,
-                                      id_nomenclature_grp_typ: null
+                                      id_nomenclature_grp_typ: null,
+                                      habitat: null
                                     },
                                     occurrence: {
                                       id_nomenclature_obs_meth: null,
@@ -80,7 +83,8 @@ export class OcctaxFormParamService {
                                       determiner: null,
                                       id_nomenclature_determination_method: null,
                                       sample_number_proof: null,
-                                      comment: null
+                                      comment: null,
+                                      micro_habitat: null
                                     },
                                     counting: {
                                       id_nomenclature_life_stage: null,
