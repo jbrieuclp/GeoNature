@@ -35,6 +35,7 @@ interface OCCTAX_FORM_PARAM {
     id_nomenclature_determination_method?: number;
     sample_number_proof?: string;
     comment?: string;
+    micro_habitat?: string;
   };
   counting?: {
     id_nomenclature_life_stage: number;
@@ -82,6 +83,7 @@ export class OcctaxFormParamService {
       id_nomenclature_determination_method: null,
       sample_number_proof: null,
       comment: null,
+      micro_habitat: null
     },
     counting: {
       id_nomenclature_life_stage: null,

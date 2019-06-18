@@ -59,7 +59,8 @@ export class OcctaxFormOccurrenceService {
       digital_proof: null,
       non_digital_proof: null,
       comment: null,
-      cor_counting_occtax: this.fb.array([], Validators.required),
+      micro_habitat: null,
+      cor_counting_occtax: this.fb.array([], Validators.required)
     });
   }
 
@@ -212,6 +213,7 @@ export class OcctaxFormOccurrenceService {
               this.occtaxParamS.get(
                 "occurrence.id_nomenclature_behaviour"
               ) || DATA["OCC_COMPORTEMENT"],
+            micro_habitat: this.occtaxParamS.get('occurrence.micro_habitat')
           };
         })
       );

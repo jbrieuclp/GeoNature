@@ -233,6 +233,12 @@
     >
     </pnx-nomenclature>
 
+		<div *ngIf="occtaxConfig.form_fields.habitat" class="padding-sm">
+		  <small> {{ 'Releve.Habitat' | translate }} </small>
+		  <input 
+		    class="form-control form-control-sm" 
+		    [formControl]="propertiesForm.get('habitat')">
+		</div>
 
     <div *ngIf="occtaxConfig.form_fields.comment_releve">
       <small> {{ 'Releve.Comment' | translate }} </small>
@@ -310,6 +316,15 @@
           codeNomenclatureType="METH_OBS"
         >
         </pnx-nomenclature>
+      </div>
+
+      <div 
+        *ngIf="occtaxConfig.form_fields.micro_habitat" 
+        class="col-lg-4 col-sm-6">
+        <small> {{ 'Taxon.MicroHabitat' | translate }} </small>
+        <input 
+          class="form-control form-control-sm" 
+          [formControl]="occurrenceParamForm.get('micro_habitat')">
       </div>
 
       <div

@@ -174,6 +174,7 @@ class TOccurrencesOccurrence(DB.Model):
     digital_proof = DB.Column(DB.Unicode)
     non_digital_proof = DB.Column(DB.Unicode)
     comment = DB.Column(DB.Unicode)
+    micro_habitat = DB.Column(DB.Unicode)
     unique_id_occurence_occtax = DB.Column(
         UUID(as_uuid=True),
         default=select([func.uuid_generate_v4()]),

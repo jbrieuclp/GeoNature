@@ -129,6 +129,11 @@
                   </div>
                 </div>
 
+                <div>
+                  <div class="label">{{ 'Taxon.MicroHabitat' | translate }} :</div>
+                  <div class="value">{{ occurrence?.micro_habitat || "-" }}</div>
+                </div>
+
                 <div *ngIf="ModuleConfig.form_fields.bio_condition">
                   <div class="label">{{ 'Taxon.BiologicalCondition' | translate }} :</div>
                   <div class="value">
