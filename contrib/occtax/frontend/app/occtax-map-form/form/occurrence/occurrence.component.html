@@ -54,10 +54,17 @@
     </div>
 
     <div class="row row-0">
-      <div *ngIf="occtaxConfig.form_fields.determiner" class="col-xs-4 col-sm-4 col-md-4 col-lg-4 padding-sm">
+      <div *ngIf="occtaxConfig.form_fields.determiner" class="col-xs-12 col-sm-6 padding-sm">
         <small> {{ 'Taxon.Determiner' | translate }} </small>
         <input class="form-control form-control-sm" [formControl]="occurrenceForm.get('determiner')" type="text">
       </div>
+
+      <div *ngIf="occtaxConfig.form_fields.micro_habitat" class="col-xs-12 col-sm-6 padding-sm">
+        <small> {{ 'Taxon.MicroHabitat' | translate }} </small>
+        <input class="form-control form-control-sm" type="text" [formControl]="occurrenceForm.get('micro_habitat')"
+          [disableControl]="fs.disabled">
+      </div>
+
     </div>
 
     <div class="row row-0">
