@@ -36,17 +36,17 @@
 
   <div class="collapse" id="collapseAvance">
     <div class="row row-0">
-      <div *ngIf="occtaxConfig.form_fields.determination_method" class="col-xs-12 col-sm-12 col-md-12 col-lg-4 padding-sm">
+      <div *ngIf="occtaxConfig.form_fields.determination_method" class="col-xs-12 col-md-6 padding-sm">
         <pnx-nomenclature class="sm" label="{{ 'Taxon.DeterminationMethod' | translate }}" [parentFormControl]="occurrenceForm.get('id_nomenclature_determination_method')"
           codeNomenclatureType="METH_DETERMIN" [regne]="fs.currentTaxon.regne" [group2Inpn]="fs.currentTaxon.group2_inpn">
         </pnx-nomenclature>
       </div>
-      <div *ngIf="occtaxConfig.form_fields.bio_status" class="col-xs-12 col-sm-12 col-md-12 col-lg-4 padding-sm">
+      <div *ngIf="occtaxConfig.form_fields.bio_status" class="col-xs-12 col-md-6 padding-sm">
         <pnx-nomenclature class="sm" label="{{ 'Taxon.BiologicalStatus' | translate }}" [parentFormControl]="occurrenceForm.get('id_nomenclature_bio_status')"
           codeNomenclatureType="STATUT_BIO" [regne]="fs.currentTaxon.regne" [group2Inpn]="fs.currentTaxon.group2_inpn">
         </pnx-nomenclature>
       </div>
-      <div *ngIf="occtaxConfig.form_fields.naturalness" class="col-xs-12 col-sm-12 col-md-12 col-lg-4 padding-sm">
+      <div *ngIf="occtaxConfig.form_fields.naturalness" class="col-xs-12 col-md-6 padding-sm">
         <pnx-nomenclature class="sm" label="{{ 'Taxon.Naturalness' | translate }}" [parentFormControl]="occurrenceForm.get('id_nomenclature_naturalness')"
           codeNomenclatureType="NATURALITE" [regne]="fs.currentTaxon.regne" [group2Inpn]="fs.currentTaxon.group2_inpn">
         </pnx-nomenclature>
@@ -54,12 +54,12 @@
     </div>
 
     <div class="row row-0">
-      <div *ngIf="occtaxConfig.form_fields.determiner" class="col-xs-12 col-sm-6 padding-sm">
+      <div *ngIf="occtaxConfig.form_fields.determiner" class="col-xs-12 col-md-6 padding-sm">
         <small> {{ 'Taxon.Determiner' | translate }} </small>
         <input class="form-control form-control-sm" [formControl]="occurrenceForm.get('determiner')" type="text">
       </div>
 
-      <div *ngIf="occtaxConfig.form_fields.micro_habitat" class="col-xs-12 col-sm-6 padding-sm">
+      <div *ngIf="occtaxConfig.form_fields.micro_habitat" class="col-xs-12 col-md-6 padding-sm">
         <small> {{ 'Taxon.MicroHabitat' | translate }} </small>
         <input class="form-control form-control-sm" type="text" [formControl]="occurrenceForm.get('micro_habitat')"
           [disableControl]="fs.disabled">
