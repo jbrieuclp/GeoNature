@@ -129,6 +129,9 @@ def get_app(config, _app=None, with_external_mods=True, with_flask_admin=True):
 
         app.register_blueprint(routes, url_prefix="/gn_commons")
 
+        from pypnusershub import routes_register
+        app.register_blueprint(routes_register.bp, url_prefix='/pypn/register')
+
         # errors
         from geonature.core.errors import routes
 
@@ -143,6 +146,7 @@ def get_app(config, _app=None, with_external_mods=True, with_flask_admin=True):
             conf.update(app.config["MAIL_CONFIG"])
             app.config = conf
             MAIL.init_app(app)
+
 
         # Chargement des mosdules tiers
         if with_external_mods:
