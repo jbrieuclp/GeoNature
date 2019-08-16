@@ -252,7 +252,7 @@ def getViewReleveList(info_role):
 
     params = request.args.to_dict()
 
-    nbResultsWithoutFilter = VReleveList.query.count()
+#    nbResultsWithoutFilter = VReleveList.query.count()
 
     limit = int(params.get("limit")) if params.get("limit") else 100
     page = int(params.get("offset")) if params.get("offset") else 0
@@ -277,7 +277,8 @@ def getViewReleveList(info_role):
         feature["properties"]["rights"] = releve_cruved
         featureCollection.append(feature)
     return {
-        "total": nbResultsWithoutFilter,
+#        "total": nbResultsWithoutFilter,
+        "total": 0,
         "total_filtered": nbResults,
         "page": page,
         "limit": limit,
