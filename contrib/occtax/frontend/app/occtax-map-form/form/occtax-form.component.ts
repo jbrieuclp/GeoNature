@@ -1,7 +1,6 @@
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { CommonService } from "@geonature_common/service/common.service";
 import { NgbDateParserFormatter } from "@ng-bootstrap/ng-bootstrap";
-/** TODO Bug ToastConfig import { ToastrService } from "ngx-toastr"; */
 import { OcctaxFormService } from "./occtax-form.service";
 import { Router } from "@angular/router";
 import * as L from "leaflet";
@@ -21,7 +20,6 @@ export class OcctaxFormComponent implements OnInit {
     public fs: OcctaxFormService,
     private _dateParser: NgbDateParserFormatter,
     private _cfs: OcctaxDataService,
-/** TODO Bug ToastConfig i    private toastr: ToastrService, */
     private router: Router,
     private _commonService: CommonService,
     private _mapService: MapService
@@ -92,13 +90,15 @@ export class OcctaxFormComponent implements OnInit {
     }
     // disable button
     this.disabledAfterPost = true;
-    console.log(JSON.stringify(finalForm));
+    //console.log(JSON.stringify(finalForm));
+    // set true to display the control to stay on the form
+    this.fs.displayStayOnFormInterface = true;
 
     // Post
     this._cfs.postOcctax(finalForm).subscribe(
       () => {
         this.disabledAfterPost = false;
-/** TODO Bug ToastConfig       this.toastr.success("Relevé enregistré", ""); */
+        this._commonService.translateToaster("success", "Relevé enregistré");
         // resert the forms
         this.fs.releveForm.reset();
         this.fs.patchDefaultNomenclatureOccurrence(this.fs.defaultValues);
