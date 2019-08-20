@@ -194,7 +194,7 @@ def confirmation():
         id_nomenclature_data_origin=77,
         id_nomenclature_source_status=75,
         id_nomenclature_resource_type=323,
-        default_validity=True,
+        validable=True,
         active=True
     )
     cor_dataset_actor = CorDatasetActor(
