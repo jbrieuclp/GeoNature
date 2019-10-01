@@ -40,7 +40,7 @@ export class OcctaxMapListComponent implements OnInit, OnDestroy {
   public taxonomyComponent: TaxonomyComponent;
   @ViewChild("dynamicForm")
   public dynamicForm: GenericFormGeneratorComponent;
-  @ViewChild('table', { static: false }) table: any;
+  @ViewChild('table') table: any;
 
   constructor(
     public mapListService: MapListService,
