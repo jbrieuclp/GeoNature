@@ -44,22 +44,22 @@ class ReleveRepository:
         releve = releve.get_releve_if_allowed(info_user)
         rel_as_geojson = releve.get_geofeature()
         # add the last validation status
-#        for occ in rel_as_geojson["properties"]["t_occurrences_occtax"]:
-#            for count in occ.get("cor_counting_occtax", []):
-#                try:
-#                    validation_status = (
-#                        DB.session.query(VLatestValidations)
-#                        .filter(
-#                            VLatestValidations.uuid_attached_row
-#                            == count["unique_id_sinp_occtax"]
-#                        )
-#                        .one()
-#                    )
-#                except NoResultFound:
-#                    return releve, rel_as_geojson
-#                count["validation_status"] = validation_status.as_dict(
-#                    columns=["mnemonique", "validation_date"]
-#                )
+        for occ in rel_as_geojson["properties"]["t_occurrences_occtax"]:
+            for count in occ.get("cor_counting_occtax", []):
+                try:
+                    validation_status = (
+                        DB.session.query(VLatestValidations)
+                        .filter(
+                            VLatestValidations.uuid_attached_row
+                            == count["unique_id_sinp_occtax"]
+                        )
+                        .one()
+                    )
+                except NoResultFound:
+                    return releve, rel_as_geojson
+                count["validation_status"] = validation_status.as_dict(
+                    columns=["mnemonique", "validation_date"]
+                )
         return releve, rel_as_geojson
 
     def update(self, releve, info_user, geom):
