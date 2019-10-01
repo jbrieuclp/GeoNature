@@ -61,25 +61,23 @@ export class AuthService {
     return this._http.post<any>(`${AppConfig.API_ENDPOINT}/auth/login/check`, options);
   }
 
-  loginRecovery(data: any): Observable<any> {
+  loginOrPwdRecovery(data: any): Observable<any> {
     return this._http.post<any>(`${AppConfig.API_ENDPOINT}/users/login/recovery`, data);
   }
 
-  passwordRecovery(data: any): Observable<any> {
-    return this._http.post<any>(`${AppConfig.API_ENDPOINT}/users/password/recovery`, data);
-  }
-
   passwordChange(data: any): Observable<any> {
-    return this._http.post<any>(`${AppConfig.API_ENDPOINT}/users/password/change`, data);
+    return this._http.put<any>(`${AppConfig.API_ENDPOINT}/users/password/new`, data);
   }
 
   signinUser(user: any) {
     this.isLoading = true;
+
     const options = {
-      login: user.identifiant,
+      login: user.username,
       password: user.password,
       id_application: AppConfig.ID_APPLICATION_GEONATURE
     };
+
     this._http
       .post<any>(`${AppConfig.API_ENDPOINT}/auth/login`, options)
       .finally(() => (this.isLoading = false))
@@ -104,10 +102,9 @@ export class AuthService {
       );
   }
 
-  signupUser(data: any): Observable<any> {  
+  signupUser(data: any): Observable<any> {
     const options = data;
-    return this._http
-      .post<any>(`${AppConfig.API_ENDPOINT}/users/inscription`, options);
+    return this._http.post<any>(`${AppConfig.API_ENDPOINT}/users/inscription`, options);
   }
 
   decodeObjectCookies(val) {

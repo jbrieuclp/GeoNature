@@ -8,11 +8,11 @@ import {
   MatListModule,
   MatIconModule,
   MatToolbarModule,
-  MatButtonModule,
   MatExpansionModule,
   MatPaginatorModule,
   MatStepperModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
+  MatButtonModule
 } from '@angular/material';
 
 import { HttpClient } from '@angular/common/http';

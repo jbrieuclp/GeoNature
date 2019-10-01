@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { AppConfig } from '@geonature_config/app.config';
-import { UserDataService} from '../services/user-data.service';
+import { UserDataService } from '../services/user-data.service';
 import { ToastrService, ToastrConfig } from 'ngx-toastr';
 import { similarValidator } from '@geonature/services/validators';
 
@@ -13,13 +11,12 @@ import { similarValidator } from '@geonature/services/validators';
   styleUrls: ['./password.component.scss']
 })
 export class PasswordComponent implements OnInit {
-
-	form: FormGroup;
+  form: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-  	private userService: UserDataService,
+    private userService: UserDataService,
     private _toasterService: ToastrService
   ) {}
 
@@ -31,39 +28,30 @@ export class PasswordComponent implements OnInit {
     this.form = this.fb.group({
       init_password: ['', Validators.required],
       password: ['', Validators.required],
-      password_confirmation: ['', [Validators.required, similarValidator('password')]]
+      password_confirmation: ['', Validators.required]
     });
+    this.form.setValidators([similarValidator('password', 'password_confirmation')]);
   }
 
-	save() {
-		if (this.form.valid) {
-			this.userService
-            .putPassword(this.form.value)
-            .subscribe(
-              res => {
-                this._toasterService.info(
-                  res.msg,
-                  '',
-                  {
-                    positionClass: 'toast-top-center',
-                    tapToDismiss: true,
-                    timeOut: 5000
-                  }
-                );
-                this.router.navigate(['/user']);
-              },
-              error => {
-                this._toasterService.error(
-                  error.error.msg,
-                  '',
-                  {
-                    positionClass: 'toast-top-center',
-                    tapToDismiss: true,
-                    timeOut: 5000
-                  }
-                );
-              }
-            );
-		}
-	}
+  save() {
+    if (this.form.valid) {
+      this.userService.putPassword(this.form.value).subscribe(
+        res => {
+          this._toasterService.info(res.msg, '', {
+            positionClass: 'toast-top-center',
+            tapToDismiss: true,
+            timeOut: 5000
+          });
+          this.router.navigate(['/user']);
+        },
+        error => {
+          this._toasterService.error(error.error.msg, '', {
+            positionClass: 'toast-top-center',
+            tapToDismiss: true,
+            timeOut: 5000
+          });
+        }
+      );
+    }
+  }
 }
