@@ -16,6 +16,7 @@
     </div>
     <ng-template #elseBlock>
       <pnx-observers 
+        class="auto"
         label="{{ 'Releve.Observers' | translate }}"
         [parentFormControl]="dynamicFormGroup.controls.observers" 
         [idMenu]="occtaxConfig.id_observers_list">
@@ -24,6 +25,7 @@
   </div>
   <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 padding-sm">
     <pnx-datasets 
+      class="auto"
       label="{{ 'Releve.Dataset' | translate }}" 
       appId="14"
       [displayAll]="true" 
