@@ -52,11 +52,15 @@ def validate_temp_user(data):
         additional_fields = [
             {"key": key, "value": value} for key, value in user_dict["champs_addi"].items()
         ]
+
     msg_html = render_template(
         template,
         url_validation=url_validation,
         user=user_dict,
-        additional_fields=additional_fields,
+        additional_fields=[
+            {"key": key, "value": value}
+            for key, value in (user_dict.get("champs_addi") or {}).items()
+        ],
     )
 
     send_mail(recipients, subject, msg_html)
