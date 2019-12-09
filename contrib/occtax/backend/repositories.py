@@ -383,4 +383,6 @@ def get_query_occtax_order(orderby, mappedView, q, from_generic_table=False):
                 orderCol = orderCol.desc()
         q = q.order_by(orderCol)
 
+    q = q.order_by(getattr(mappedView.__table__.columns, "id_releve_occtax").desc())
+
     return q

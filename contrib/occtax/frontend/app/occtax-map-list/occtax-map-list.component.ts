@@ -48,11 +48,7 @@ export class OcctaxMapListComponent implements OnInit, OnDestroy {
   public taxonomyComponent: TaxonomyComponent;
   @ViewChild("dynamicForm")
   public dynamicForm: GenericFormGeneratorComponent;
-<<<<<<< HEAD
-  @ViewChild('table') table: any;
-=======
   @ViewChild("table") table: DatatableComponent;
->>>>>>> occtax-select2
 
   constructor(
     public mapListService: MapListService,
