@@ -27,9 +27,10 @@
     <pnx-datasets 
       class="auto"
       label="{{ 'Releve.Dataset' | translate }}" 
-      appId="14"
       [displayAll]="true" 
-      [parentFormControl]="dynamicFormGroup.controls.id_dataset">
+      [displayOnlyActive]="false"
+      [parentFormControl]="dynamicFormGroup.controls.id_dataset"
+      moduleCode="OCCTAX">
     </pnx-datasets>
   </div>
   <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 padding-sm">

@@ -47,9 +47,9 @@ class FormConfig(Schema):
 
 
 default_map_list_conf = [
+    {"prop": "taxons", "name": "Taxon(s)"},
     {"prop": "observateurs", "name": "Observateurs"},
     {"prop": "date", "name": "Date"},
-    {"prop": "nb_taxons", "name": "Nb. taxon"},
     {"prop": "dataset", "name": "Jeu de données"},
 ]
 
@@ -148,7 +148,7 @@ class GnModuleSchemaConf(Schema):
     export_message = fields.String(missing=export_message)
     list_messages = fields.Dict(missing=list_messages)
     digital_proof_validator = fields.Boolean(missing=True)
-    releve_map_zoom_level = fields.Integer(missing=6)
+    releve_map_zoom_level = fields.Integer()
     id_taxon_list = fields.Integer(missing=100)
     taxon_result_number = fields.Integer(missing=20)
     id_observers_list = fields.Integer(missing=1)
