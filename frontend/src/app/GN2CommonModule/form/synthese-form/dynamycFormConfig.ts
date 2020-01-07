@@ -198,4 +198,18 @@ export const DYNAMIC_FORM_DEF = [
     attribut_name: 'determiner',
     required: false
   }
+  // AJOUT GRETIA
+  ,
+  {
+    type_widget: 'text',
+    attribut_label: 'Habitat',
+    attribut_name: 'habitat',
+    required: false
+  },
+  {
+    type_widget: 'text',
+    attribut_label: 'Micro-habitat - plante-hôte',
+    attribut_name: 'habitat',
+    required: false
+  }
 ];
