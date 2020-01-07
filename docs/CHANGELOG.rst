@@ -10,6 +10,12 @@ CHANGELOG
 
 * Ajout d'un reference de l'objet Leaflet `L` afin qu'il soit utilisé dans les modules
 
+**🚀 Nouveautés**
+
+* SYNTHESE FILTRE : Ajout de la possibilité d'activer la recherche par observateur à travers une liste
+* SYNTHESE FILTRE : Amélioration de la recherche des observateurs. Non prise en compte de l'ordre des noms saisis
+* SYNTHESE FILTRE : filtre avancés : ajout de la possibilité de rechercher dans les commentaires, par digitiser ou determinateur
+
 
 2.3.0 - Occhab de Noël (2019-12-27)
 -----------------------------------
