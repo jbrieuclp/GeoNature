@@ -9,8 +9,8 @@ echo "$(dirname $0)/config/settings.ini"
 echo $APP_DIR
 . $APP_DIR/config/settings.ini
 
-export HTTP_PROXY="'$proxy_http'"
-export HTTPS_PROXY="'$proxy_https'"
+#export HTTP_PROXY="'$proxy_http'"
+#export HTTPS_PROXY="'$proxy_https'"
 
 # activate the virtualenv
 source $FLASKDIR/$venv_dir/bin/activate
