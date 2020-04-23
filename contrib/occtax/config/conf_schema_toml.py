@@ -36,12 +36,15 @@ class FormConfig(Schema):
     non_digital_proof = fields.Boolean(missing=True)
     source_status = fields.Boolean(missing=False)
     comment_occ = fields.Boolean(missing=True)
+    habitat = fields.Boolean(missing=False)
+    micro_habitat = fields.Boolean(missing=False)
     life_stage = fields.Boolean(missing=True)
     sex = fields.Boolean(missing=True)
     obj_count = fields.Boolean(missing=True)
     type_count = fields.Boolean(missing=True)
     count_min = fields.Boolean(missing=True)
     count_max = fields.Boolean(missing=True)
+    display_nom_valide = fields.Boolean(missing=True)
 
 
 default_map_list_conf = [
@@ -161,3 +164,4 @@ class GnModuleSchemaConf(Schema):
     ENABLE_GPS_TOOL = fields.Boolean(missing=True)
     ENABLE_UPLOAD_TOOL = fields.Boolean(missing=True)
     DATE_FORM_WITH_TODAY = fields.Boolean(missing=True)
+    DISPLAY_SETTINGS_TOOLS = fields.Boolean(missing=True)

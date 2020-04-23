@@ -12,12 +12,15 @@ import {
   MatPaginatorModule,
   MatStepperModule,
   MatProgressSpinnerModule,
-  MatButtonModule
+  MatButtonModule,
+  MatDialogModule,
+  MatBadgeModule
 } from '@angular/material';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/primeng';
+import { NgSelectModule } from '@ng-select/ng-select';
 import { TreeModule } from 'angular-tree-component';
 
 // Components
@@ -51,6 +54,7 @@ import { GenericFormComponent } from '@geonature_common/form/genericForm.compone
 import { AreasComponent } from '@geonature_common/form/areas/areas.component';
 import { AcquisitionFrameworksComponent } from '@geonature_common/form/acquisition-frameworks/acquisition-frameworks.component';
 import { ModalDownloadComponent } from '@geonature_common/others/modal-download/modal-download.component';
+import { ConfirmationDialog } from '@geonature_common/others/modal-confirmation/confirmation.dialog';
 import { PeriodComponent } from '@geonature_common/form/date/period.component';
 import { AutoCompleteComponent } from '@geonature_common/form/autocomplete/autocomplete.component';
 import { SyntheseSearchComponent } from '@geonature_common/form/synthese-form/synthese-form.component';
@@ -59,6 +63,7 @@ import { DumbSelectComponent } from '@geonature_common/form/dumb-select/dumb-sel
 
 // directive
 import { DisableControlDirective } from './form/disable-control.directive';
+import { DisplayMouseOverDirective } from './directive/display-mouse-over.directive';
 
 // pipe
 import { ReadablePropertiePipe } from './pipe/readable-propertie.pipe';
@@ -91,9 +96,12 @@ import { MultiSelectComponent } from './form/multiselect/multiselect.component';
     MatStepperModule,
     MatProgressSpinnerModule,
     MatButtonModule,
+    MatDialogModule,
+    MatBadgeModule,
     FormsModule,
     ReactiveFormsModule,
     NgxDatatableModule,
+    NgSelectModule,
     TranslateModule.forChild(),
     NgbModule.forRoot(),
     AutoCompleteModule,
@@ -115,6 +123,7 @@ import { MultiSelectComponent } from './form/multiselect/multiselect.component';
     MapListComponent,
     MapDataComponent,
     DisableControlDirective,
+    DisplayMouseOverDirective,
     ReadablePropertiePipe,
     DatasetsComponent,
     MapListGenericFiltersComponent,
@@ -132,7 +141,8 @@ import { MultiSelectComponent } from './form/multiselect/multiselect.component';
     SyntheseSearchComponent,
     TaxonAdvancedModalComponent,
     DumbSelectComponent,
-    GeometryFormComponent
+    GeometryFormComponent,
+    ConfirmationDialog
   ],
   providers: [
     TranslateService,
@@ -145,7 +155,10 @@ import { MultiSelectComponent } from './form/multiselect/multiselect.component';
     NgbDatePeriodParserFormatter,
     SyntheseDataService
   ],
-  entryComponents: [TaxonAdvancedModalComponent],
+  entryComponents: [
+    TaxonAdvancedModalComponent,
+    ConfirmationDialog
+  ],
   exports: [
     MunicipalitiesComponent,
     DynamicFormComponent,
@@ -164,6 +177,7 @@ import { MultiSelectComponent } from './form/multiselect/multiselect.component';
     MapListComponent,
     MapDataComponent,
     DisableControlDirective,
+    DisplayMouseOverDirective,
     ReadablePropertiePipe,
     DatasetsComponent,
     ModalDownloadComponent,
@@ -179,9 +193,12 @@ import { MultiSelectComponent } from './form/multiselect/multiselect.component';
     MatExpansionModule,
     MatPaginatorModule,
     NgxDatatableModule,
+    NgSelectModule,
     MatStepperModule,
     MatProgressSpinnerModule,
     MatButtonModule,
+    MatDialogModule,
+    MatBadgeModule,
     NgbModule,
     TranslateModule,
     MapListGenericFiltersComponent,
@@ -196,7 +213,8 @@ import { MultiSelectComponent } from './form/multiselect/multiselect.component';
     SyntheseSearchComponent,
     TaxonAdvancedModalComponent,
     DumbSelectComponent,
-    GeometryFormComponent
+    GeometryFormComponent,
+    ConfirmationDialog
   ]
 })
 export class GN2CommonModule {}
