@@ -60,7 +60,8 @@ export class OcctaxFormParamDialog implements OnInit {
         id_nomenclature_obs_technique: null,
         observers: null,
         observers_txt: null,
-        id_nomenclature_grp_typ: null
+        id_nomenclature_grp_typ: null,
+        habitat: null
       }),
       occurrence: this.fb.group({
         id_nomenclature_obs_meth: null,
@@ -75,7 +76,8 @@ export class OcctaxFormParamDialog implements OnInit {
         determiner: null,
         id_nomenclature_determination_method: null,
         sample_number_proof: null,
-        comment: null
+        comment: null,
+        micro_habitat: null
       }),
       counting: this.fb.group({
         id_nomenclature_life_stage: null,
