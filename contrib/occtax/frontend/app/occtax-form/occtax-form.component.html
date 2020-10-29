@@ -2,6 +2,14 @@
   <div class="occtax-form">
     <div class="tab">
       <div class="tab-left">
+        <button mat-mini-fab
+          class="to-list-btn"
+          matTooltip="Retour vers la liste des relevés"
+          [class.active]="false"
+          (click)="leaveTheForm(['/occtax'])"
+        >
+          <mat-icon class="example-tab-icon">arrow_back</mat-icon>
+        </button>
         <a
           [routerLink]="releveUrl"
           class="tablinks"
