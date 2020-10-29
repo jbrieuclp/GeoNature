@@ -32,7 +32,7 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-xl-4 col-md-6 col-sm-8 col-11">
+  <div class="col-xl-8 col-lg-10">
     <!-- DATASET -->
     <ng-container
       *ngIf="dataset?.active === false || !isDatasetUser(dataset?.id_dataset); else elseblocDatasetForm"
@@ -322,7 +322,7 @@
 
 <div class="row">
   <!-- TECHNIQUE OBSERVATION -->
-  <div class="col-6">
+  <div class="col-12">
     <pnx-nomenclature
       *ngIf="occtaxConfig.form_fields.tech_collect"
       class="auto"
@@ -339,7 +339,7 @@
 
 
 <div class="row">
-  <div class="col-6">
+  <div class="col-12">
     <pnx-autocomplete
       *ngIf="occtaxConfig.form_fields.habitat"
       apiEndPoint="{{AppConfig.API_ENDPOINT}}/habref/habitats/autocomplete"
