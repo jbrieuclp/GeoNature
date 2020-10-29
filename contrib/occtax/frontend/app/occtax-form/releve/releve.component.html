@@ -7,34 +7,6 @@
 </div>
 
 <div class="row">
-  <div
-    *ngIf="occtaxConfig.form_fields.precision"
-    class="col-8"
-  >
-    <small>Précision du pointage (m)</small>
-    <input
-      type="number"
-      [formControl]="propertiesForm.get('precision')"
-      class="form-control form-control-sm"
-      placeholder="Précision du pointage"
-    >
-  </div>
-</div>
-
-<div class="row">
-  <div class="col-8">
-    <div *ngIf="occtaxConfig.form_fields.place_name">
-      <small> {{ 'Releve.PlaceName' | translate }} </small>
-      <input
-        class="form-control form-control-sm"
-        type="text"
-        [formControl]="propertiesForm.get('place_name')"
-        [disableControl]="propertiesForm.disabled"
-      >
-    </div>
-  </div>
-</div>
-<div class="row">
   <div class="col-xl-8 col-lg-10">
 
     <!-- OBSERVATEURS -->
@@ -275,6 +247,34 @@
   style="color:red; font-size: 80%; font-weight: 400;"
 >
   {{'Releve.Errors.DepthError' |translate}}
+</div>
+
+<div class="row">
+  <div class="col-lg-8 col-md-6">
+    <div *ngIf="occtaxConfig.form_fields.place_name">
+      <small> {{ 'Releve.PlaceName' | translate }} </small>
+      <input
+        class="form-control form-control-sm"
+        type="text"
+        [formControl]="propertiesForm.get('place_name')"
+        [disableControl]="propertiesForm.disabled"
+        placeholder="Lieu-dit, N° station..."
+      >
+    </div>
+  </div>
+
+  <div
+    *ngIf="occtaxConfig.form_fields.precision"
+    class="col-lg-4 col-md-6"
+  >
+    <small>Précision du pointage (m)</small>
+    <input
+      type="number"
+      [formControl]="propertiesForm.get('precision')"
+      class="form-control form-control-sm"
+      placeholder="Précision du pointage"
+    >
+  </div>
 </div>
 
 <div class="row">
