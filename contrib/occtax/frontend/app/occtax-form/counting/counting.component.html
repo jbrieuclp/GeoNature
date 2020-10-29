@@ -3,6 +3,7 @@
     *ngIf="occtaxConfig.form_fields.obj_count"
     class="col-lg-4 col-sm-6">
     <pnx-nomenclature 
+      class="auto"
       label="{{ 'Counting.CountingObject' | translate }}"
       codeNomenclatureType="OBJ_DENBR" 
       [parentFormControl]="countingForm.get('id_nomenclature_obj_count')"
@@ -15,6 +16,7 @@
     class="col-lg-4 col-sm-6">
     <pnx-nomenclature
       #typeDenombrement
+      class="auto"
       label="{{ 'Counting.CountingType' | translate }}"
       codeNomenclatureType="TYP_DENBR"
       [parentFormControl]="countingForm.get('id_nomenclature_type_count')"
@@ -67,6 +69,7 @@
     *ngIf="occtaxConfig.form_fields.life_stage"
     class="col-3">
     <pnx-nomenclature
+      class="auto"
       label="{{ 'Counting.LifeStage' | translate }}" 
       codeNomenclatureType="STADE_VIE" 
       [parentFormControl]="countingForm.get('id_nomenclature_life_stage')"
@@ -84,6 +87,7 @@
     *ngIf="occtaxConfig.form_fields.sex"
     class="col-3">
     <pnx-nomenclature
+      class="auto"
       label="{{ 'Counting.Sex' | translate }}"
       codeNomenclatureType="SEXE" 
       [parentFormControl]="countingForm.get('id_nomenclature_sex')"

@@ -42,7 +42,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
   @Input() id_synthese: any;
   @Output() modifiedStatus = new EventEmitter();
   @Output() valDate = new EventEmitter();
-
+ 
   constructor(
     public mapListService: MapListService,
     private _gnDataService: DataFormService,
@@ -58,7 +58,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
       comment: [""]
     });
   }
-
+ 
   ngOnInit() {
 
     // get all id_synthese of the filtered observations:
@@ -68,7 +68,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
     }
     this.isNextButtonValid = true;
     this.isPrevButtonValid = true;
-
+ 
     // disable nextButton if last observation selected
     if (
       this.filteredIds.indexOf(this.id_synthese) ==
@@ -78,14 +78,14 @@ export class ValidationModalInfoObsComponent implements OnInit {
     } else {
       this.isNextButtonValid = true;
     }
-
+ 
     // disable previousButton if first observation selected
     if (this.filteredIds.indexOf(this.id_synthese) == 0) {
       this.isPrevButtonValid = false;
     } else {
       this.isPrevButtonValid = true;
     }
-
+ 
     this.edit = false;
     this.showEmail = false;
   }
@@ -93,7 +93,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
   setCurrentCdNomenclature(item) {
     this.currentCdNomenclature = item.cd_nomenclature;
   }
-
+ 
   getStatusNames() {
     this._validatioDataService.getStatusNames().subscribe(
       result => {
@@ -174,7 +174,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
 
 
   }
-
+ 
   loadValidationHistory(uuid) {
     this._gnDataService.getValidationHistory(uuid).subscribe(
       data => {
@@ -232,7 +232,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
     } else {
       this.isNextButtonValid = true;
     }
-
+ 
     // array value (=id_synthese) of the new position
     this.id_synthese = this.filteredIds[
       this.filteredIds.indexOf(this.id_synthese) + 1
@@ -245,7 +245,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
     this.statusForm.reset();
     this.edit = false;
   }
-
+ 
   decreaseObs() {
     this.showEmail = false;
     // substract 1 to find new position
@@ -256,7 +256,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
     } else {
       this.isPrevButtonValid = true;
     }
-
+ 
     // array value (=id_synthese) of the new position
     this.id_synthese = this.filteredIds[
       this.filteredIds.indexOf(this.id_synthese) - 1
@@ -269,17 +269,17 @@ export class ValidationModalInfoObsComponent implements OnInit {
     this.statusForm.reset();
     this.edit = false;
   }
-
+ 
   isEmail() {
     this.showEmail = true;
     return this.showEmail;
   }
-
+ 
   closeModal() {
     this.showEmail = false;
     this.activeModal.close();
   }
-
+ 
   backToModule(url_source, id_pk_source) {
     const link = document.createElement("a");
     link.target = "_blank";
@@ -287,7 +287,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
     link.setAttribute("visibility", "hidden");
     link.click();
   }
-
+ 
   onSubmit(value) {
     // post validation status form ('statusForm') for the current observation
     return this._validatioDataService
@@ -336,7 +336,7 @@ export class ValidationModalInfoObsComponent implements OnInit {
         //console.log(data);
       });
   }
-
+ 
   update_status() {
     // send valstatus value to validation-synthese-list component
     this.modifiedStatus.emit({
@@ -344,12 +344,12 @@ export class ValidationModalInfoObsComponent implements OnInit {
       new_status: this.currentCdNomenclature
     });
   }
-
+ 
   cancel() {
     this.statusForm.reset();
     this.edit = false;
   }
-
+ 
   getValidationDate(uuid) {
     this._validatioDataService.getValidationDate(uuid).subscribe(
       result => {

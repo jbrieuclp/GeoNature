@@ -42,6 +42,7 @@
     *ngIf="occtaxConfig.form_fields.obs_tech"
     class="col-lg-4 col-sm-6">
     <pnx-nomenclature 
+      class="auto"
       label="{{ 'Taxon.ObsTech' | translate }}" 
       [parentFormControl]="occurrenceForm.get('id_nomenclature_obs_technique')"
       codeNomenclatureType="METH_OBS" 
@@ -107,6 +108,7 @@
       *ngIf="occtaxConfig.form_fields.determination_method"
       class="col-lg-4 col-sm-6">
       <pnx-nomenclature 
+        class="auto"
         label="{{ 'Taxon.DeterminationMethod' | translate }}" 
         [parentFormControl]="occurrenceForm.get('id_nomenclature_determination_method')"
         codeNomenclatureType="METH_DETERMIN" 
@@ -124,6 +126,7 @@
       *ngIf="occtaxConfig.form_fields.observation_status"
       class="col-lg-4 col-sm-6">
       <pnx-nomenclature 
+        class="auto"
         label="{{ 'Taxon.ObservationStatus' | translate }}" 
         [parentFormControl]="occurrenceForm.get('id_nomenclature_observation_status')"
         codeNomenclatureType="STATUT_OBS">
@@ -134,6 +137,7 @@
       *ngIf="occtaxConfig.form_fields.naturalness"
       class="col-lg-4 col-sm-6">
       <pnx-nomenclature 
+        class="auto"
         label="{{ 'Taxon.Naturalness' | translate }}" 
         [parentFormControl]="occurrenceForm.get('id_nomenclature_naturalness')"
         codeNomenclatureType="NATURALITE" 
@@ -146,6 +150,7 @@
       *ngIf="occtaxConfig.form_fields.bio_status"
       class="col-lg-4 col-sm-6">
       <pnx-nomenclature 
+        class="auto"
         label="{{ 'Taxon.BiologicalStatus' | translate }}" 
         [parentFormControl]="occurrenceForm.get('id_nomenclature_bio_status')"
         codeNomenclatureType="STATUT_BIO" 
@@ -158,6 +163,7 @@
       *ngIf="occtaxConfig.form_fields.behaviour"
       class="col-lg-4 col-sm-6">
       <pnx-nomenclature 
+        class="auto"
         label="{{ 'Taxon.OccBehaviour' | translate }}" 
         [parentFormControl]="occurrenceForm.get('id_nomenclature_behaviour')"
         codeNomenclatureType="OCC_COMPORTEMENT" 
@@ -169,6 +175,7 @@
       *ngIf="occtaxConfig.form_fields.source_status"
       class="col-lg-4 col-sm-6">
       <pnx-nomenclature 
+        class="auto"
         label="{{ 'Taxon.StatusSource' | translate }}" 
         [parentFormControl]="occurrenceForm.get('id_nomenclature_source_status')"
         codeNomenclatureType="STATUT_SOURCE">
@@ -179,6 +186,7 @@
       *ngIf="occtaxConfig.form_fields.blurring"
       class="col-lg-4 col-sm-6">
       <pnx-nomenclature 
+        class="auto"
         label="{{ 'Taxon.Blurring' | translate }}" 
         [parentFormControl]="occurrenceForm.get('id_nomenclature_blurring')"
         codeNomenclatureType="DEE_FLOU">
@@ -193,6 +201,7 @@
       class="col-lg-4 col-sm-6"
       style="margin-bottom: 1rem;">
       <pnx-nomenclature 
+        class="auto"
         label="{{ 'Taxon.ExistProof' | translate }}" 
         [parentFormControl]="occurrenceForm.get('id_nomenclature_exist_proof')"
         codeNomenclatureType="PREUVE_EXIST" 

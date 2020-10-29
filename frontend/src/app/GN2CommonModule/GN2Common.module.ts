@@ -31,6 +31,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/primeng';
+import { NgSelectModule } from '@ng-select/ng-select';
 import { TreeModule } from 'angular-tree-component';
 
 // Components
@@ -130,6 +131,7 @@ import { MultiSelectComponent } from './form/multiselect/multiselect.component';
     FormsModule,
     ReactiveFormsModule,
     NgxDatatableModule,
+    NgSelectModule,
     TranslateModule.forChild(),
     NgbModule.forRoot(),
     AutoCompleteModule,
@@ -235,6 +237,7 @@ import { MultiSelectComponent } from './form/multiselect/multiselect.component';
     MatExpansionModule,
     MatPaginatorModule,
     NgxDatatableModule,
+    NgSelectModule,
     MatStepperModule,
     MatProgressSpinnerModule,
     MatButtonModule,

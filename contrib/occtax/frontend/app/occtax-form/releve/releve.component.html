@@ -12,7 +12,9 @@
     <!-- OBSERVATEURS -->
     <pnx-observers
       *ngIf="!occtaxConfig.observers_txt; else elseBlock"
-      [parentFormControl]="propertiesForm.get('observers')"
+      class="auto" 
+      [parentFormControl]="propertiesForm.get('observers')" 
+      [multiSelect]="true"
       [idMenu]="occtaxConfig.id_observers_list"
       [disabled]="propertiesForm.disabled"
       label="{{ 'Releve.Observers' | translate }}"
@@ -48,6 +50,7 @@
     <ng-template #elseblocDatasetForm>
 
       <pnx-datasets
+        class="auto" 
         label="{{ 'MetaData.Datasets' | translate }}"
         [parentFormControl]="propertiesForm.get('id_dataset')"
         [disabled]="propertiesForm.disabled"
@@ -282,6 +285,7 @@
     <!-- TYPE REGROUPEMENT -->
     <pnx-nomenclature
       *ngIf="occtaxConfig.form_fields.group_type"
+      class="auto"
       label="{{ 'Releve.GroupType' | translate }}"
       [parentFormControl]="propertiesForm.get('id_nomenclature_grp_typ')"
       codeNomenclatureType="TYP_GRP"
@@ -321,6 +325,7 @@
   <div class="col-6">
     <pnx-nomenclature
       *ngIf="occtaxConfig.form_fields.tech_collect"
+      class="auto"
       label="{{ 'Releve.TechCollectCampanule' | translate }}"
       [parentFormControl]="propertiesForm.get('id_nomenclature_tech_collect_campanule')"
       codeNomenclatureType="TECHNIQUE_OBS"

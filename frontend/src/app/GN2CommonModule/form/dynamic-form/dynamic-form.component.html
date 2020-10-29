@@ -99,12 +99,13 @@
 
       <pnx-nomenclature
         *ngSwitchCase="'nomenclature'"
+        class="sm" 
         [label]=formDefComp.attribut_label
         [parentFormControl]="form.get(formDefComp.attribut_name)"
         [codeNomenclatureType]="formDefComp.code_nomenclature_type"
         [multiSelect]="formDefComp.multi_select"
         [keyValue]="formDefComp.key_value">
-        </pnx-nomenclature>
+      </pnx-nomenclature>
 
       <div *ngSwitchCase="'checkbox'">
             <div class="custom-control custom-checkbox" *ngIf="formDefComp.values.length == 1; else elseBlock">
@@ -184,6 +185,7 @@
 
       <pnx-datasets
         *ngSwitchCase="'dataset'"
+        class="sm" 
         [label]="formDef.attribut_label"
         [parentFormControl]="form.get(formDef.attribut_name)"
         [multiSelect]="formDef.multi_select"
@@ -192,6 +194,7 @@
 
       <pnx-observers
         *ngSwitchCase="'observers'"
+        class="sm" 
         [label]="formDefComp.attribut_label"
         [parentFormControl]="form.get(formDefComp.attribut_name)"
         [idMenu]="formDefComp.id_menu"
@@ -215,6 +218,7 @@
 
       <pnx-multiselect
         *ngSwitchCase="'multiselect'"
+        class="sm"
         [values]="formDefComp.values"
         [parentFormControl]="form.get(formDefComp.attribut_name)"
         keyLabel="value"
