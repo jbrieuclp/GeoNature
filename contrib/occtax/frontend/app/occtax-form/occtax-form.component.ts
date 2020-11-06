@@ -123,6 +123,34 @@ export class OcctaxFormComponent implements OnInit, AfterViewInit {
 
     const dialogRef = this.dialog.open(OcctaxFormParamDialog, dialogConfig);
   }
+  backToList() {
+    // si le formulair est en cour d'édition
+    if (
+      (this.currentTab === "releve" &&
+        this.occtaxFormReleveService.releveForm.dirty) ||
+      (this.currentTab === "taxons" &&
+        this.occtaxFormOccurrenceService.form.dirty)
+    ) {
+      //si un des 2 formulaires a été modifié mais non sauvegardé
+      const message =
+        "Êtes-vous sûr de vouloir fermer le formulaire ?<br>Des modifications non sauvegardées seront perdues.";
+      const dialogRef = this.dialog.open(ConfirmationDialog, {
+        width: "auto",
+        position: { top: "5%" },
+        data: { message: message },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          this.occtaxTaxaListService.cleanOccurrenceInProgress();
+          this._router.navigate(["/occtax"]);
+        }
+      });
+    } else {
+      this.occtaxTaxaListService.cleanOccurrenceInProgress();
+      this._router.navigate(["/occtax"]);
+    }
+  }
   /**
    *
    * @param cancel : boolean. Action vient du bouton annuler = true, sinon false
@@ -159,9 +187,9 @@ export class OcctaxFormComponent implements OnInit, AfterViewInit {
           if (this.occtaxFormService.chainRecording) {
             this.currentTab = "releve";
           }
-          if (cancel) {
-            this.deleteReleveIfNoOcc();
-          }
+          //if (cancel) {
+          //  this.deleteReleveIfNoOcc();
+          //}
           this._router.navigate(url);
           this.occtaxTaxaListService.cleanOccurrenceInProgress();
         }
@@ -170,9 +198,9 @@ export class OcctaxFormComponent implements OnInit, AfterViewInit {
       if (this.occtaxFormService.chainRecording) {
         this.currentTab = "releve";
       }
-      if (cancel) {
-        this.deleteReleveIfNoOcc();
-      }
+      //if (cancel) {
+      //  this.deleteReleveIfNoOcc();
+      //}
       this._router.navigate(url);
       this.occtaxTaxaListService.cleanOccurrenceInProgress();
     }
