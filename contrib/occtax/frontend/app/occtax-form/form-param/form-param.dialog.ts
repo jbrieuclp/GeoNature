@@ -111,6 +111,7 @@ export class OcctaxFormParamDialog implements OnInit {
         id_nomenclature_determination_method: null,
         sample_number_proof: null,
         comment: null,
+        micro_habitat: null
       }),
       counting: this.fb.group({
         id_nomenclature_life_stage: null,
