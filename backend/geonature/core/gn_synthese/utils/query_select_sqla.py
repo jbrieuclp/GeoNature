@@ -8,11 +8,12 @@ much more efficient
 import datetime
 
 from flask import current_app, request
-from sqlalchemy import func, or_, and_, select, join
+from sqlalchemy import func, or_, and_, select, join, not_
 from sqlalchemy.sql import text
 from sqlalchemy.orm import aliased
 from shapely.wkt import loads
 from geoalchemy2.shape import from_shape
+from geoalchemy2.functions import ST_Equals
 
 from utils_flask_sqla_geo.utilsgeometry import circle_from_point
 
@@ -245,7 +246,12 @@ class SyntheseQuery:
                 else:
                     wkt = loads(str_wkt)
                 geom_wkb = from_shape(wkt, srid=4326)
-                ors.append(self.model.the_geom_4326.ST_Intersects(geom_wkb))
+                ors.append(
+                    and_(
+                        self.model.the_geom_4326.ST_Intersects(geom_wkb), 
+                        not_(ST_Equals(geom_wkb, self.model.the_geom_4326.ST_Intersection(geom_wkb)))
+                    )
+                )
 
             self.query = self.query.where(or_(*ors))
             self.filters.pop("geoIntersection")
