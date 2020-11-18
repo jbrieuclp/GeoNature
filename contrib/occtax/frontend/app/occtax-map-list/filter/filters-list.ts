@@ -1,5 +1,11 @@
 export const FILTERSLIST = [
   {
+    type_widget: "text",
+    attribut_label: "ID Relevé",
+    attribut_name: "id_releve_occtax",
+    required: false,
+  },
+  {
     type_widget: "nomenclature",
     attribut_label: "Nature de l'objet géographique",
     attribut_name: "id_nomenclature_geo_object_nature",
