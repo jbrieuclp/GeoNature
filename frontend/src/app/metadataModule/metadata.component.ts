@@ -6,6 +6,7 @@ import { AppConfig } from '@geonature_config/app.config';
 import { Router, NavigationExtras } from "@angular/router";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
+import { tap, map } from 'rxjs/operators';
 
 import { CommonService } from "@geonature_common/service/common.service";
 import { SyntheseDataService } from '@geonature_common/form/synthese-form/synthese-data.service';
@@ -117,37 +118,43 @@ export class MetadataComponent implements OnInit {
   //recuperation cadres d'acquisition
   getAcquisitionFrameworksAndDatasets(formValue={}, expand=false) {
     this.isLoading = true;
-    this._dfs.getAfAndDatasetListMetadata(formValue).subscribe(
-      data => {
-        this.isLoading = false;
-        this.acquisitionFrameworks = data.data;
-        this.tempAF = this.acquisitionFrameworks;
-        this.datasets = [];
-        this.acquisitionFrameworks.forEach(af => {
-          af['datasetsTemp'] = af['datasets'];
-          this.datasets = this.datasets.concat(af['datasets']);
-        })
-      if(expand) {
-        this.expandAccordions = (this.searchFormService.form.value.selector == 'ds');
-
-      }
-      // load stat for ds
-      if (!this.datasetNbObs) {        
-        this._syntheseDataService.getObsCountByColumn('id_dataset').subscribe(count_ds => {
-          this.datasetNbObs = count_ds
-          this.setDsObservationCount(this.datasets, this.datasetNbObs);
+    this._dfs.getAfAndDatasetListMetadata(formValue)
+      .pipe(
+        tap(() => this.isLoading = false),
+        map(afs => {
+          return afs.forEach(af => {
+                    af['datasetsTemp'] = af['datasets'];
+                    this.datasets = this.datasets.concat(af['datasets']);
+                  })}
+        )
+      )
+      .subscribe(
+        data => {
+          this.acquisitionFrameworks = data.data;
+          this.tempAF = this.acquisitionFrameworks;
+          this.datasets = [];
           
-        })
-      } else {        
-        this.setDsObservationCount(this.datasets, this.datasetNbObs);
+        if(expand) {
+          this.expandAccordions = (this.searchFormService.form.value.selector == 'ds');
+
+        }
+        // load stat for ds
+        if (!this.datasetNbObs) {        
+          this._syntheseDataService.getObsCountByColumn('id_dataset').subscribe(count_ds => {
+            this.datasetNbObs = count_ds
+            this.setDsObservationCount(this.datasets, this.datasetNbObs);
+            
+          })
+        } else {        
+          this.setDsObservationCount(this.datasets, this.datasetNbObs);
+        }
+
+
+      },
+      err => {
+        this.isLoading = false;
       }
-
-
-    },
-    err => {
-      this.isLoading = false;
-    }
-    );
+      );
   }
 
 

@@ -1,8 +1,8 @@
 import logging
 import json
 
-from sqlalchemy import or_, String, Date
-from sqlalchemy.orm import joinedload
+from sqlalchemy import or_, String, Date, and_
+from sqlalchemy.orm import joinedload, contains_eager, aliased
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.functions import func
 from sqlalchemy.sql.expression import cast
@@ -48,6 +48,106 @@ def cruved_filter(q, model, info_role):
             or_filter.append(CorDatasetActor.id_organism == info_role.id_organisme)
         q = q.filter(or_(*or_filter))
     return q
+
+def cruved_ds_filter(model, info_role):
+    if info_role.value_filter in ("1", "2"):
+        sub_q = (
+            DB.session.query(TDatasets)
+            .join(CorDatasetActor, TDatasets.id_dataset == CorDatasetActor.id_dataset)
+        )
+
+        or_filter = [
+            TDatasets.id_digitizer == info_role.id_role,
+            CorDatasetActor.id_role == info_role.id_role,
+        ]
+
+        # if organism is None => do not filter on id_organism even if level = 2
+        if info_role.value_filter == "2" and info_role.id_organisme is not None:
+            or_filter.append(CorDatasetActor.id_organism == info_role.id_organisme)
+        sub_q = sub_q.filter(and_(or_(*or_filter), model.id_dataset == TDatasets.id_dataset))
+        return sub_q.exists()
+
+    return True
+
+def cruved_af_filter(model, info_role):
+    #if info_role.value_filter in ("1", "2"):
+    sub_q = (
+        DB.session.query(TAcquisitionFramework)
+        .join(CorAcquisitionFrameworkActor, TAcquisitionFramework.id_acquisition_framework == CorAcquisitionFrameworkActor.id_acquisition_framework)
+    )
+
+    or_filter = [
+        TAcquisitionFramework.id_digitizer == info_role.id_role,
+        CorAcquisitionFrameworkActor.id_role == info_role.id_role,
+    ]
+
+    # if organism is None => do not filter on id_organism even if level = 2
+    if info_role.value_filter == "2" and info_role.id_organisme is not None:
+        or_filter.append(CorAcquisitionFrameworkActor.id_organism == info_role.id_organisme)
+    sub_q = sub_q.filter(and_(or_(*or_filter), model.id_acquisition_framework == TAcquisitionFramework.id_acquisition_framework))
+    return sub_q.exists()
+
+    return True
+
+def filtered_metadata_query(info_role, args):
+
+    num = request.args.get("num")
+    uuid = args.get("uuid")
+    name = request.args.get("name")
+    date = request.args.get("date")
+    organisme = request.args.get("organism")
+    role = request.args.get("role")
+
+    t_af = aliased(TAcquisitionFramework)
+    t_dts = aliased(TDatasets)
+
+    query = (
+        DB.session.query(t_af)
+        .options(
+            joinedload(t_af.cor_af_actor)
+            .joinedload(CorAcquisitionFrameworkActor.organism)
+        )
+        .options(
+            joinedload(t_af.cor_af_actor)
+            .joinedload(CorAcquisitionFrameworkActor.role)
+        )
+        .options(
+            joinedload(t_af.creator)
+        )
+        .options(
+            joinedload(t_af.t_datasets.of_type(t_dts))
+            .joinedload(t_dts.creator)
+        )
+        .options(
+            joinedload(t_af.t_datasets.of_type(t_dts))
+            .joinedload(t_dts.cor_dataset_actor)
+            .joinedload(CorDatasetActor.organism)
+        )
+        .options(
+            joinedload(t_af.t_datasets.of_type(t_dts))
+            .joinedload(t_dts.cor_dataset_actor)
+            .joinedload(CorDatasetActor.role)
+        )        
+    )
+
+    query = query.filter(or_(cruved_af_filter(t_af, info_role), cruved_ds_filter(t_dts, info_role)))
+
+    if args.get("selector") == "af":
+        return query
+
+    if num is not None:
+        query = query.filter(TDatasets.id_dataset == num)
+    if uuid is not None:
+        query = query.filter(cast(TDatasets.unique_dataset_id, String).ilike(f"%{uuid.strip()}%"))
+    if name is not None:
+        query = query.filter(TDatasets.dataset_name.ilike(f"%{name}%"))
+    if date is not None:
+        query = query.filter(cast(TDatasets.meta_create_date, Date) == date)
+    if organisme is not None:
+        query = query.filter(BibOrganismes.id_organisme == 1)
+    if role is not None:
+        query = query.filter(CorDatasetActor.id_role == role)
+    return query
 
 
 def get_datasets_cruved(info_role, params=dict(), as_model=False, recursif=False, lazyloaded=[]):
@@ -122,10 +222,16 @@ def filtered_ds_query(info_role, args):
 
     query = (
         DB.session.query(TDatasets)
-        .outerjoin(CorDatasetActor, CorDatasetActor.id_dataset == TDatasets.id_dataset)
-        .outerjoin(BibOrganismes, BibOrganismes.id_organisme == CorDatasetActor.id_organism)
-        .options(joinedload("creator"))
-        .options(joinedload("cor_dataset_actor"))
+        .outerjoin(TDatasets.cor_dataset_actor)
+        .outerjoin(CorDatasetActor.organism)
+        .outerjoin(TDatasets.creator)
+        .options(
+            contains_eager(TDatasets.cor_dataset_actor)
+            .contains_eager(CorDatasetActor.organism)
+        )
+        .options(
+            contains_eager(TDatasets.creator)
+        )
     )
 
     query = cruved_filter(query, TDatasets, info_role)
@@ -141,7 +247,7 @@ def filtered_ds_query(info_role, args):
     if date is not None:
         query = query.filter(cast(TDatasets.meta_create_date, Date) == date)
     if organisme is not None:
-        query = query.filter(BibOrganismes.id_organisme == organisme)
+        query = query.filter(BibOrganismes.id_organisme == 1)
     if role is not None:
         query = query.filter(CorDatasetActor.id_role == role)
     return query

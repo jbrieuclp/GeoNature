@@ -196,9 +196,8 @@ class CruvedHelper(DB.Model):
 
     def user_is_allowed_to(
         self,
-        id_object: int,
-        id_object_users_actor: list,
-        id_object_organism_actor: list,
+        object_actors: list,
+        info_role: list,
         level: str,
     ):
         """
@@ -206,7 +205,6 @@ class CruvedHelper(DB.Model):
             peu ou non agir sur une donnée
 
             Params:
-                id_object: identifiant de l'objet duquel on contrôle l'accès à la donnée (id_dataset, id_ca)
                 id_role: identifiant de la personne qui demande la route
                 id_object_users_actor (list): identifiant des objects ou l'utilisateur est lui même acteur
                 id_object_organism_actor (list): identifiants des objects ou l'utilisateur ou son organisme sont acteurs
@@ -214,43 +212,48 @@ class CruvedHelper(DB.Model):
             Return: boolean
         """
         # Si l'utilisateur n'a pas de droit d'accès aux données
-        if level == "0" or level not in ("1", "2", "3"):
+        if level not in ("1", "2", "3"):
             return False
 
         # Si l'utilisateur à le droit d'accéder à toutes les données
         if level == "3":
             return True
 
-        # Si l'utilisateur est propriétaire de la données
-        if id_object in id_object_users_actor:
+        # Si l'utilisateur est createur de la données
+        if self.id_digitizer == info_role.id_role:
             return True
+        
+        for actor in object_actors :
+            # Si l'utilisateur est indiqué comme role dans la données
+            if actor.id_role == info_role.id_role :
+                return True
+            # Si l'utilisateur appartient à un organisme
+            # qui a un droit sur la données et
+            # que son niveau d'accès est 2 ou 3
+            if actor.id_organism == info_role.id_organisme and level == "2":
+                return True
 
-        # Si l'utilisateur appartient à un organisme
-        # qui a un droit sur la données et
-        # que son niveau d'accès est 2 ou 3
-        if id_object in id_object_organism_actor and level == "2":
-            return True
         return False
 
-    def get_object_cruved(
-        self, user_cruved, id_object: int, ids_object_user: list, ids_object_organism: list,
-    ):
-        """
-        Return the user's cruved for a Model instance.
-        Use in the map-list interface to allow or not an action
-        params:
-            - user_cruved: object retourner by cruved_for_user_in_app(user) {'C': '2', 'R':'3' etc...}
-            - id_object (int): id de l'objet sur lqurqul on veut vérifier le CRUVED (self.id_dataset/ self.id_ca)
-            - id_role: identifiant de la personne qui demande la route
-            - id_object_users_actor (list): identifiant des objects ou l'utilisateur est lui même acteur
-            - id_object_organism_actor (list): identifiants des objects ou l'utilisateur ou son organisme sont acteurs    
-
-        Return: dict {'C': True, 'R': False ...}
-        """
-        return {
-            action: self.user_is_allowed_to(id_object, ids_object_user, ids_object_organism, level)
-            for action, level in user_cruved.items()
-        }
+#    def get_object_cruved(
+#        self, user_cruved, id_object: int, ids_object_user: list, ids_object_organism: list,
+#    ):
+#        """
+#        Return the user's cruved for a Model instance.
+#        Use in the map-list interface to allow or not an action
+#        params:
+#            - user_cruved: object retourner by cruved_for_user_in_app(user) {'C': '2', 'R':'3' etc...}
+#            - id_object (int): id de l'objet sur lqurqul on veut vérifier le CRUVED (self.id_dataset/ self.id_ca)
+#            - id_role: identifiant de la personne qui demande la route
+#            - id_object_users_actor (list): identifiant des objects ou l'utilisateur est lui même acteur
+#            - id_object_organism_actor (list): identifiants des objects ou l'utilisateur ou son organisme sont acteurs    
+#
+#        Return: dict {'C': True, 'R': False ...}
+#        """
+#        return {
+#            action: self.user_is_allowed_to(id_object, ids_object_user, ids_object_organism, level)
+#            for action, level in user_cruved.items()
+#        }
 
 
 @serializable
@@ -316,6 +319,26 @@ class TDatasets(CruvedHelper):
     cor_dataset_actor = relationship(
         CorDatasetActor, lazy="select", cascade="save-update, merge, delete, delete-orphan",
     )
+
+    def get_object_cruved(
+        self, info_role, user_cruved
+    ):
+        """
+        Return the user's cruved for a Model instance.
+        Use in the map-list interface to allow or not an action
+        params:
+            - user_cruved: object retourner by cruved_for_user_in_app(user) {'C': '2', 'R':'3' etc...}
+            - id_object (int): id de l'objet sur lqurqul on veut vérifier le CRUVED (self.id_dataset/ self.id_ca)
+            - id_role: identifiant de la personne qui demande la route
+            - id_object_users_actor (list): identifiant des objects ou l'utilisateur est lui même acteur
+            - id_object_organism_actor (list): identifiants des objects ou l'utilisateur ou son organisme sont acteurs    
+
+        Return: dict {'C': True, 'R': False ...}
+        """
+        return {
+            action: self.user_is_allowed_to(self.cor_dataset_actor, info_role, level)
+            for action, level in user_cruved.items()
+        }
 
     @staticmethod
     def get_id(uuid_dataset):
@@ -447,6 +470,34 @@ class TAcquisitionFramework(CruvedHelper):
         ],
         lazy="select",
     )
+
+    t_datasets = relationship(
+        "TDatasets",
+        lazy="joined",
+        cascade="all,delete-orphan",
+        uselist=True,
+        backref=DB.backref("acquisition_framework", lazy="joined"),
+    )
+
+    def get_object_cruved(
+        self, info_role, user_cruved
+    ):
+        """
+        Return the user's cruved for a Model instance.
+        Use in the map-list interface to allow or not an action
+        params:
+            - user_cruved: object retourner by cruved_for_user_in_app(user) {'C': '2', 'R':'3' etc...}
+            - id_object (int): id de l'objet sur lqurqul on veut vérifier le CRUVED (self.id_dataset/ self.id_ca)
+            - id_role: identifiant de la personne qui demande la route
+            - id_object_users_actor (list): identifiant des objects ou l'utilisateur est lui même acteur
+            - id_object_organism_actor (list): identifiants des objects ou l'utilisateur ou son organisme sont acteurs    
+
+        Return: dict {'C': True, 'R': False ...}
+        """
+        return {
+            action: self.user_is_allowed_to(self.cor_af_actor, info_role, level)
+            for action, level in user_cruved.items()
+        }
 
     @staticmethod
     def get_id(uuid_af):

@@ -58,7 +58,9 @@ from geonature.core.gn_meta.repositories import (
     get_dataset_details_dict,
     filtered_af_query,
     filtered_ds_query,
+    filtered_metadata_query,
 )
+from .schemas import AcquisitionFrameworkSchema
 from utils_flask_sqla.response import json_resp, to_csv_resp, generate_csv_content
 from werkzeug.datastructures import Headers
 from geonature.core.gn_permissions import decorators as permissions
@@ -125,8 +127,7 @@ def get_datasets(info_role):
         return datasets_resp, 404
     return datasets_resp
 
-
-@routes.route("/af_datasets_metadata", methods=["GET"])
+@routes.route("/af_datasets_metadata_a", methods=["GET"])
 @permissions.check_cruved_scope("R", True, module_code="METADATA")
 @json_resp
 def get_af_and_ds_metadata(info_role):
@@ -138,7 +139,6 @@ def get_af_and_ds_metadata(info_role):
     Add the CRUVED permission for each row (Dataset and AD)
     
     .. :quickref: Metadata;
-
     :param info_role: add with kwargs
     :type info_role: TRole
     :returns:  `dict{'data':list<AF with Datasets>, 'with_erros': <boolean>}`
@@ -171,7 +171,7 @@ def get_af_and_ds_metadata(info_role):
     )[0]
 
 
-    #  get all af from the JDD filtered with cruved or af where users has rights
+    #  get all af from the JDD filtered with cruved or af where users has rights
     ids_afs_cruved = (
         [d.id_acquisition_framework for d in get_af_cruved(info_role, as_model=True)]
         if not params["selector"]
@@ -187,7 +187,7 @@ def get_af_and_ds_metadata(info_role):
     list_id_af = [af.id_acquisition_framework for af in afs]
 
     afs_dict = []
-    #  get cruved for each AF and prepare dataset
+    #  get cruved for each AF and prepare dataset
     for af in afs:
         af_dict = af.as_dict(
             True,
@@ -209,7 +209,7 @@ def get_af_and_ds_metadata(info_role):
         af_dict["deletable"] = is_af_deletable(af.id_acquisition_framework)
         afs_dict.append(af_dict)
 
-    #  get cruved for each ds and push them in the af
+    #  get cruved for each ds and push them in the af
     for d in datasets:
         dataset_dict = d.as_dict(
             recursif=True,
@@ -242,6 +242,136 @@ def get_af_and_ds_metadata(info_role):
     if not datasets:
         return afs_resp, 404
     return afs_resp
+
+
+@routes.route("/af_datasets_metadata", methods=["GET"])
+@permissions.check_cruved_scope("R", True, module_code="METADATA")
+#@json_resp
+def get_af_and_ds_metadata_bis(info_role):
+    """
+    Get all AF with their datasets 
+    The Cruved in only apply on dataset in order to see all the AF
+    where the user have rights with its dataset
+    Use in maplist
+    Add the CRUVED permission for each row (Dataset and AD)
+    
+    .. :quickref: Metadata;
+
+    :param info_role: add with kwargs
+    :type info_role: TRole
+    :returns:  `dict{'data':list<AF with Datasets>, 'with_erros': <boolean>}`
+    """
+    with_mtd_error = False
+    if current_app.config["CAS_PUBLIC"]["CAS_AUTHENTIFICATION"]:
+        # synchronise the CA and JDD from the MTD WS
+        try:
+            mtd_utils.post_jdd_from_user(
+                id_user=info_role.id_role, id_organism=info_role.id_organisme
+            )
+        except Exception as e:
+            gunicorn_error_logger.info(e)
+            log.error(e)
+            with_mtd_error = True
+    params = request.args.to_dict()
+    params["orderby"] = "dataset_name"
+    if "selector" not in params:
+        params["selector"] = None
+
+    user_cruved = cruved_scope_for_user_in_module(
+        id_role=info_role.id_role, module_code="METADATA",
+    )[0]
+
+    acquisitionFrameworkSchema = AcquisitionFrameworkSchema()
+    acquisitionFrameworkSchema.context = {'info_role': info_role, 'user_cruved': user_cruved}
+
+    #return [n.as_dict(True) for n in filtered_metadata_query(info_role, params).all()]
+
+    return acquisitionFrameworkSchema.dumps((filtered_metadata_query(info_role, params).all()), many=True)
+    
+#    datasets = filtered_ds_query(info_role, params).all()
+#    if len(datasets) == 0:
+#        return {"data": []}
+#    ids_dataset_user = TDatasets.get_user_datasets(info_role, only_user=True)
+#
+#    ids_dataset_organisms = TDatasets.get_user_datasets(info_role, only_user=False)
+#    ids_afs_user = TAcquisitionFramework.get_user_af(info_role, only_user=True)
+#    ids_afs_org = TAcquisitionFramework.get_user_af(info_role, only_user=False)
+#    user_cruved = cruved_scope_for_user_in_module(
+#        id_role=info_role.id_role, module_code="METADATA",
+#    )[0]
+#
+#
+#    #  get all af from the JDD filtered with cruved or af where users has rights
+#    ids_afs_cruved = (
+#        [d.id_acquisition_framework for d in get_af_cruved(info_role, as_model=True)]
+#        if not params["selector"]
+#        else []
+#    )
+#    list_id_af = [d.id_acquisition_framework for d in datasets] + ids_afs_cruved
+#    afs = (
+#        filtered_af_query(request.args)
+#        .filter(TAcquisitionFramework.id_acquisition_framework.in_(list_id_af))
+#        .order_by(TAcquisitionFramework.acquisition_framework_name)
+#        .all()
+#    )
+#    list_id_af = [af.id_acquisition_framework for af in afs]
+#
+#    afs_dict = []
+#    #  get cruved for each AF and prepare dataset
+#    for af in afs:
+#        af_dict = af.as_dict(
+#            True,
+#            relationships=[
+#                "creator",
+#                "cor_af_actor",
+#                "nomenclature_actor_role",
+#                "organism",
+#                "role",
+#            ],
+#        )
+#        af_dict["cruved"] = af.get_object_cruved(
+#            user_cruved=user_cruved,
+#            id_object=af.id_acquisition_framework,
+#            ids_object_user=ids_afs_user,
+#            ids_object_organism=ids_afs_org,
+#        )
+#        af_dict["datasets"] = []
+#        af_dict["deletable"] = is_af_deletable(af.id_acquisition_framework)
+#        afs_dict.append(af_dict)
+#
+#    #  get cruved for each ds and push them in the af
+#    for d in datasets:
+#        dataset_dict = d.as_dict(
+#            recursif=True,
+#            relationships=[
+#                "creator",
+#                "cor_dataset_actor",
+#                "nomenclature_actor_role",
+#                "organism",
+#                "role",
+#            ],
+#        )
+#        if d.id_acquisition_framework not in list_id_af:
+#            continue
+#        dataset_dict["cruved"] = d.get_object_cruved(
+#            user_cruved=user_cruved,
+#            id_object=d.id_dataset,
+#            ids_object_user=ids_dataset_user,
+#            ids_object_organism=ids_dataset_organisms,
+#        )
+#        # dataset_dict["observation_count"] = (
+#        #     DB.session.query(Synthese.cd_nom).filter(Synthese.id_dataset == d.id_dataset).count()
+#        # )
+#        dataset_dict["deletable"] = is_dataset_deletable(d.id_dataset)
+#        af_of_dataset = get_af_from_id(d.id_acquisition_framework, afs_dict)
+#        af_of_dataset["datasets"].append(dataset_dict)
+#
+#    afs_resp = {"data": afs_dict}
+#    if with_mtd_error:
+#        afs_resp["with_mtd_errors"] = True
+#    if not datasets:
+#        return afs_resp, 404
+#    return afs_resp
 
 
 def is_dataset_deletable(id_dataset):
