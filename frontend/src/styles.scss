@@ -456,6 +456,9 @@ li.no-bullet {
   animation: spin 0.8s linear infinite;
 }
 
+a.mat-raised-button:hover {
+  text-decoration: none!important;
+}
 
 // NG-SELECT
 .ng-select .ng-dropdown-panel {
