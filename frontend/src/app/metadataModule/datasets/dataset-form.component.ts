@@ -57,7 +57,10 @@ export class DatasetFormComponent implements OnInit {
     }
 
     //getAcquisitionFrameworksForSelect
-    this.acquisitionFrameworks = this._dfs.getAcquisitionFrameworks();
+    this.acquisitionFrameworks = this._dfs.getAcquisitionFrameworks()
+      .pipe(
+        map(afs=> afs.map(af=>{ af.disabled = !af.opened; return af})), //permet de désactiver les CA fermés
+      );
   }
 
   genericActorFormSubmit(result) {

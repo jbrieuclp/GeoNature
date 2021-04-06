@@ -24,8 +24,6 @@
               [items]="acquisitionFrameworks | async"
               bindLabel="acquisition_framework_name"
               bindValue="id_acquisition_framework"
-              [disabled]="!af.opened"
-              [title]="!af.opened ? 'Cadre cloturé' : af.acquisition_framework_name"
               placeholder="Cadres d'acquisition"
               [virtualScroll]="true"
               [formControl]="form.get('id_acquisition_framework')"
@@ -36,7 +34,7 @@
                 let-index="index" 
                 let-search="searchTerm"
               >
-                <div matTooltip="{{item.acquisition_framework_name}}">
+                <div [matTooltip]="!item.opened ? 'Cadre cloturé' : item.acquisition_framework_name">
                   <span class="pre-wrap">{{item.acquisition_framework_name}}</span>
                 </div>
               </ng-template>
