@@ -47,6 +47,7 @@ export class MultiSelectComponent implements OnInit {
   private _values: BehaviorSubject<Array<any>> = new BehaviorSubject([]);
   get values() { return this._values.getValue(); }
   @Input() set values(values: Array<any>) {
+    console.log(values);
     this._values.next(values);
   }
   /** Clé du dictionnaire de valeur que le composant doit prendre pour
@@ -116,8 +117,10 @@ export class MultiSelectComponent implements OnInit {
         map((values)=>values.map(value=>{
           if ( Number.isInteger(value) ) {
             return value;
-          } else if (value[this.keyValue] !== undefined) {
+          } else if (this.keyValue && value[this.keyValue] !== undefined) {
             return value[this.keyValue];
+          } else {
+            return value;
           }
         }))
       ).subscribe(formValues=>this.parentFormControl.patchValue(formValues));

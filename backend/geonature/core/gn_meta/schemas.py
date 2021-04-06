@@ -90,6 +90,12 @@ class NomenclatureSchema(MA.SQLAlchemyAutoSchema):
             "definition_it",
         )
 
+    @pre_load
+    def make_nomenclature(self, data, **kwargs):
+        if isinstance(data, int):
+            return dict({"id_nomenclature": data})
+        return data
+
 class DatasetActorSchema(MA.SQLAlchemyAutoSchema):
     class Meta:
         model = CorDatasetActor
@@ -119,12 +125,12 @@ class DatasetSchema(MetadataSchema):
     modules = MA.Nested("ModuleSchema", many=True)
 
     creator = MA.Nested(UserSchema, dump_only=True)
-    nomenclature_data_type = MA.Nested(UserSchema, dump_only=True)
-    nomenclature_dataset_objectif = MA.Nested(UserSchema, dump_only=True)
-    nomenclature_collecting_method = MA.Nested(UserSchema, dump_only=True)
-    nomenclature_data_origin = MA.Nested(UserSchema, dump_only=True)
-    nomenclature_source_status = MA.Nested(UserSchema, dump_only=True)
-    nomenclature_resource_type = MA.Nested(UserSchema, dump_only=True)
+    nomenclature_data_type = MA.Nested(NomenclatureSchema, dump_only=True)
+    nomenclature_dataset_objectif = MA.Nested(NomenclatureSchema, dump_only=True)
+    nomenclature_collecting_method = MA.Nested(NomenclatureSchema, dump_only=True)
+    nomenclature_data_origin = MA.Nested(NomenclatureSchema, dump_only=True)
+    nomenclature_source_status = MA.Nested(NomenclatureSchema, dump_only=True)
+    nomenclature_resource_type = MA.Nested(NomenclatureSchema, dump_only=True)
     cor_territories = MA.Nested(
         NomenclatureSchema,
         many=True

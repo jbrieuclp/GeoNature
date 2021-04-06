@@ -1,5 +1,5 @@
 <div class="container">
-
+{{form.value|json}}
   <div style="margin-bottom: 10px;">
     <a
       mat-raised-button
@@ -220,7 +220,6 @@
               [values]="moduleService.modules"
               [parentFormControl]="form.get('modules')"
               keyLabel="module_label"
-              keyValue="id_module"
               label="Module(s) GeoNature associé(s) au jeu de données"
               [bindAllItem]="true"
             >
