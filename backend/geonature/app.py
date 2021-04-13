@@ -16,7 +16,7 @@ from geonature.utils.module import import_backend_enabled_modules
 
 
 def create_app(with_external_mods=True, with_flask_admin=True):
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder="../static")
     app.config.update(config)
 
     # Bind app to DB
