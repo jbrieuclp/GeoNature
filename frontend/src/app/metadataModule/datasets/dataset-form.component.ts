@@ -26,6 +26,7 @@ export class DatasetFormComponent implements OnInit {
   public genericActorForm: FormGroup = this.actorFormS.createForm();
   //observable pour la liste déroulantes HTML des AF
   public acquisitionFrameworks: Observable<any>;
+  public value = 0;
 
   constructor(
     private _route: ActivatedRoute,

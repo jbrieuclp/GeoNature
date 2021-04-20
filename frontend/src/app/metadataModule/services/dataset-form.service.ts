@@ -63,6 +63,7 @@ export class DatasetFormService {
       id_nomenclature_data_origin: [null, Validators.required],
       id_nomenclature_source_status: [null, Validators.required],
       id_nomenclature_resource_type: [null, Validators.required],
+      id_nomenclature_level_diffusion: [null, Validators.required],
       validable: null,
       active: [null, Validators.required],
       modules: [[]],

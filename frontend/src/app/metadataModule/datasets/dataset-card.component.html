@@ -209,6 +209,10 @@
 
           <div class="b">Attribut additionnels</div>
           <div class="a">
+            <b> Niveau de diffusion :</b>
+            {{ dataset?.nomenclature_level_diffusion.definition_default || 'Non renseigné'}}
+          </div>
+          <div class="a">
             <b> Actif :</b>
             {{dataset.active ? 'Oui' : 'Non'}}
           </div>
@@ -216,7 +220,7 @@
             <b>Validable :</b>
             {{dataset.validable ? 'Oui' : 'Non'}}
           </div>
-
+          
           <br />
 
           <div *ngIf="dataset.modules.length">
