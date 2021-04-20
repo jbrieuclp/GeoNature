@@ -354,6 +354,11 @@ class TDatasets(CruvedHelper):
         ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature"),
         default=lambda: TNomenclatures.get_default_nomenclature("RESOURCE_TYP"),
     )
+    id_nomenclature_level_diffusion = DB.Column(
+        DB.Integer,
+        ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature"),
+        default=lambda: TNomenclatures.get_default_nomenclature("NIV_PRECIS"),
+    )
     meta_create_date = DB.Column(DB.DateTime)
     meta_update_date = DB.Column(DB.DateTime)
     active = DB.Column(DB.Boolean, default=True)
@@ -394,6 +399,11 @@ class TDatasets(CruvedHelper):
         TNomenclatures,
         lazy="select",
         primaryjoin=(TNomenclatures.id_nomenclature == id_nomenclature_resource_type),
+    )
+    nomenclature_level_diffusion = DB.relationship(
+        TNomenclatures,
+        lazy="select",
+        primaryjoin=(TNomenclatures.id_nomenclature == id_nomenclature_level_diffusion),
     )
 
     cor_territories = DB.relationship(

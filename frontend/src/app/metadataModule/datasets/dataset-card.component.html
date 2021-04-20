@@ -222,13 +222,20 @@
 
           <br />
 
-
           <div *ngIf="dataset.keywords">
             <div class="b">Mots-clés :</div>
             <div class="a"> {{dataset.keywords}} </div>
           </div>
 
           <br/>
+
+          <h4>Spécificités GRETIA</h4>
+          <div class="align"> 
+            <b> Niveau de diffusion :</b>
+            {{ dataset?.nomenclature_level_diffusion.definition_default || 'Non renseigné'}}
+          </div>
+
+          <br />
 
           <h4>Spécificités GeoNature</h4>
           <div class="align"> <b>Actif :  </b>  {{dataset.active ? 'Oui' : 'Non'}} </div>

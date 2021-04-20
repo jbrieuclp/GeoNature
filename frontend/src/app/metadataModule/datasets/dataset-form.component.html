@@ -1,5 +1,4 @@
 <div class="container">
-
   <div style="margin-bottom: 10px;">
     <a
       mat-raised-button
@@ -182,6 +181,11 @@
               </pnx-nomenclature>
             </div>
           </div>
+
+          <h5 style="margin-top: 10px;"> Spécifique GRETIA </h5>
+          <pnx-level-diffusion-form
+            [parentFormControl]="form.get('id_nomenclature_level_diffusion')"
+          ></pnx-level-diffusion-form>
 
           <h5 style="margin-top: 10px;"> Spécifique GeoNature </h5>
 

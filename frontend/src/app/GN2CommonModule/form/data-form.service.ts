@@ -61,16 +61,16 @@ export class DataFormService {
     });
   }
 
-  getDefaultNomenclatureValue(path, mnemoniques: Array<string> = [], kwargs: ParamsDict = {}) {
+  getDefaultNomenclatureValue(mnemoniques: Array<string> = [], kwargs: ParamsDict = {}) {
     let queryString: HttpParams = new HttpParams();
     // tslint:disable-next-line:forin
     for (const key in kwargs) {
       queryString = queryString.set(key, kwargs[key].toString());
     }
     mnemoniques.forEach(mnem => {
-      queryString = queryString.append('mnemonique', mnem);
+      queryString = queryString.append('mnemonique_type', mnem);
     });
-    return this._http.get<any>(`${AppConfig.API_ENDPOINT}/${path}/defaultNomenclatures`, {
+    return this._http.get<any>(`${AppConfig.API_ENDPOINT}/synthese/defaultsNomenclatures`, {
       params: queryString
     });
   }

@@ -25,6 +25,7 @@ import {
   MatTabsModule,
   MatToolbarModule,
   MatTooltipModule,
+  MatSliderModule,
 } from '@angular/material';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -83,6 +84,7 @@ import { TaxaComponent } from '@geonature_common/form/taxa/taxa.component';
 import { TaxonAdvancedModalComponent } from '@geonature_common/form/synthese-form/advanced-form/synthese-advanced-form-component';
 import { TaxonomyComponent } from './form/taxonomy/taxonomy.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LevelDiffusionFormComponent } from '@geonature_common/form/level-diffusion-form/level-diffusion-form.component';
 
 // Directives
 import { DisableControlDirective } from './form/disable-control.directive';
@@ -129,6 +131,7 @@ import { SyntheseDataService } from '@geonature_common/form/synthese-form/synthe
     MatSelectModule,
     MatSidenavModule,
     MatSlideToggleModule,
+    MatSliderModule,
     MatStepperModule,
     MatTabsModule,
     MatToolbarModule,
@@ -196,6 +199,7 @@ import { SyntheseDataService } from '@geonature_common/form/synthese-form/synthe
     TaxaComponent,
     TaxonAdvancedModalComponent,
     TaxonomyComponent,
+    LevelDiffusionFormComponent,
   ],
   providers: [
     CommonService,
@@ -268,6 +272,7 @@ import { SyntheseDataService } from '@geonature_common/form/synthese-form/synthe
     MatSelectModule,
     MatSidenavModule,
     MatSlideToggleModule,
+    MatSliderModule,
     MatStepperModule,
     MatTabsModule,
     MatToolbarModule,
@@ -306,6 +311,7 @@ import { SyntheseDataService } from '@geonature_common/form/synthese-form/synthe
     TaxonAdvancedModalComponent,
     TaxonomyComponent,
     TranslateModule,
+    LevelDiffusionFormComponent,
   ]
 })
 export class GN2CommonModule {
