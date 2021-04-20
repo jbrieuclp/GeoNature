@@ -47,7 +47,6 @@ export class MultiSelectComponent implements OnInit {
   private _values: BehaviorSubject<Array<any>> = new BehaviorSubject([]);
   get values() { return this._values.getValue(); }
   @Input() set values(values: Array<any>) {
-    console.log(values);
     this._values.next(values);
   }
   /** Clé du dictionnaire de valeur que le composant doit prendre pour
