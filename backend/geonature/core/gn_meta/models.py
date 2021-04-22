@@ -385,7 +385,7 @@ class TDatasets(CruvedHelper):
         ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature"),
         default=lambda: TNomenclatures.get_default_nomenclature("RESOURCE_TYP"),
     )
-    id_nomenclature_level_diffusion = DB.Column(
+    id_nomenclature_diffusion_level = DB.Column(
         DB.Integer,
         ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature"),
         default=lambda: TNomenclatures.get_default_nomenclature("NIV_PRECIS"),
@@ -429,10 +429,10 @@ class TDatasets(CruvedHelper):
         lazy="select",
         primaryjoin=(TNomenclatures.id_nomenclature == id_nomenclature_resource_type),
     )
-    nomenclature_level_diffusion = DB.relationship(
+    nomenclature_diffusion_level = DB.relationship(
         TNomenclatures,
         lazy="select",
-        primaryjoin=(TNomenclatures.id_nomenclature == id_nomenclature_level_diffusion),
+        primaryjoin=(TNomenclatures.id_nomenclature == id_nomenclature_diffusion_level),
     )
 
     modules = DB.relationship(

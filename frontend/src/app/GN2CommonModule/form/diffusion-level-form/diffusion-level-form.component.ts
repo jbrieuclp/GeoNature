@@ -13,11 +13,11 @@ import { DataFormService } from '../data-form.service';
  * </pnx-level-diffusion>
  */
 @Component({
-  selector: 'pnx-level-diffusion-form',
-  templateUrl: 'level-diffusion-form.component.html',
-  styleUrls: ['./level-diffusion-form.component.scss'],
+  selector: 'pnx-diffusion-level-form',
+  templateUrl: 'diffusion-level-form.component.html',
+  styleUrls: ['./diffusion-level-form.component.scss'],
 })
-export class LevelDiffusionFormComponent implements OnInit, OnDestroy {
+export class DiffusionLevelFormComponent implements OnInit, OnDestroy {
   
   @Input() parentFormControl: FormControl;
   public levels: any[] = [];
