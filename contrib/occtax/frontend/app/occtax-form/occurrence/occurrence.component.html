@@ -88,19 +88,7 @@
 
 </div>
 
-<div style="margin-top: 10px;">
-  <button 
-    type="button" 
-    class="btn btn-outline-shadow btn-sm" 
-    (click)='collapse()'
-  >
-    <i class="fa fa-cog" aria-hidden="true"></i>
-    {{ 'Taxon.Advanced' | translate }}
-  </button>
-
-</div>
-
-<div [@detailExpand]='advanced'>
+<div>
   <div class="row">
     <div 
       *ngIf="occtaxConfig.form_fields.determiner" 
