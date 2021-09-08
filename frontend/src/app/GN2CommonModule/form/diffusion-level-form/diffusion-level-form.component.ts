@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Observable, combineLatest, Subscription, of } from 'rxjs';
-import { map, startWith, switchMap, tap } from 'rxjs/operators';
+import { map, startWith, switchMap, tap, distinctUntilChanged } from 'rxjs/operators';
 import { DataFormService } from '../data-form.service';
 
 /**
@@ -37,7 +37,10 @@ export class DiffusionLevelFormComponent implements OnInit, OnDestroy {
       combineLatest(
         this.getLevels(),
         this.parentFormControl.valueChanges
-          .pipe(startWith(null))
+          .pipe(
+            startWith(null),
+            distinctUntilChanged()
+          )
       )
         .pipe(
           switchMap(([levels, formValue]) => {
@@ -49,6 +52,7 @@ export class DiffusionLevelFormComponent implements OnInit, OnDestroy {
             }
             return of(formValue);
           }),
+          tap((id_nomenclature: number) => this.parentFormControl.setValue(id_nomenclature)),
           map((id_nomenclature: number): number => this.levels.findIndex(e => e.id_nomenclature === id_nomenclature)),
         )
         .subscribe((index: number) => this.levelSelected = index)
