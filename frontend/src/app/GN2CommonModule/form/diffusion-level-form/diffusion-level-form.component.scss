@@ -1,0 +1,30 @@
+.mat-slider {
+    width: 100%;
+}
+ 
+table {
+    width: 100%;
+    margin-top: -10px;
+}
+ 
+::ng-deep .mat-slider .mat-slider-ticks {
+    opacity: 1!important;
+}
+ 
+tbody tr td {
+    text-align: center;
+    font-size: .7em;
+}
+ 
+tbody tr td:first-child {
+    text-align: left;
+}
+ 
+tbody tr td:last-child {
+    text-align: right;
+}
+ 
+.description {
+    font-size: .9em;
+    font-style: italic;
+}

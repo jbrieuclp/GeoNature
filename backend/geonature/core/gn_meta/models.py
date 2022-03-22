@@ -457,6 +457,11 @@ class TDatasets(CruvedMixin, FilterMixin, db.Model):
         ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature"),
         default=lambda: TNomenclatures.get_default_nomenclature("RESOURCE_TYP"),
     )
+    id_nomenclature_diffusion_level = DB.Column(
+        DB.Integer,
+        ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature"),
+        default=lambda: TNomenclatures.get_default_nomenclature("NIV_PRECIS"),
+    )
     meta_create_date = DB.Column(DB.DateTime)
     meta_update_date = DB.Column(DB.DateTime)
     active = DB.Column(DB.Boolean, default=True)
@@ -496,6 +501,11 @@ class TDatasets(CruvedMixin, FilterMixin, db.Model):
         TNomenclatures,
         lazy="select",
         foreign_keys=[id_nomenclature_resource_type],
+    )
+    nomenclature_diffusion_level = DB.relationship(
+        TNomenclatures,
+        lazy="select",
+        primaryjoin=(TNomenclatures.id_nomenclature == id_nomenclature_diffusion_level),
     )
 
     cor_territories = DB.relationship(

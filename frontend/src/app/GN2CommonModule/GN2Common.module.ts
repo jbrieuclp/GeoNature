@@ -25,6 +25,7 @@ import {
   MatTabsModule,
   MatToolbarModule,
   MatTooltipModule,
+  MatSliderModule,
   MAT_HAMMER_OPTIONS
 } from '@angular/material';
 
@@ -85,6 +86,7 @@ import { TaxaComponent } from '@geonature_common/form/taxa/taxa.component';
 import { TaxonAdvancedModalComponent } from '@geonature_common/form/synthese-form/advanced-form/synthese-advanced-form-component';
 import { TaxonomyComponent } from './form/taxonomy/taxonomy.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { DiffusionLevelFormComponent } from '@geonature_common/form/diffusion-level-form/diffusion-level-form.component';
 
 // Directives
 import { DisableControlDirective } from './form/disable-control.directive';
@@ -135,6 +137,7 @@ import { SyntheseDataService } from '@geonature_common/form/synthese-form/synthe
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
+    MatSliderModule,
     NgbModule.forRoot(),
     NgxDatatableModule,
     NgxMatSelectSearchModule,
@@ -198,6 +201,7 @@ import { SyntheseDataService } from '@geonature_common/form/synthese-form/synthe
     TaxaComponent,
     TaxonAdvancedModalComponent,
     TaxonomyComponent,
+    DiffusionLevelFormComponent,
   ],
   providers: [
     CommonService,
@@ -278,6 +282,7 @@ import { SyntheseDataService } from '@geonature_common/form/synthese-form/synthe
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
+    MatSliderModule,
     MediaDialog,
     MediasComponent,
     ModalDownloadComponent,
@@ -312,6 +317,7 @@ import { SyntheseDataService } from '@geonature_common/form/synthese-form/synthe
     TaxonAdvancedModalComponent,
     TaxonomyComponent,
     TranslateModule,
+    DiffusionLevelFormComponent,
   ]
 })
 export class GN2CommonModule {
