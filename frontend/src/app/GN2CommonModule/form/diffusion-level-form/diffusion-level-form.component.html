@@ -1,0 +1,34 @@
+<div>
+  <small>Niveau de diffusion souhaité</small>
+  <mat-slider
+    color="primary"
+    [max]="levels.length-1"
+    min="0"
+    step="1"
+    tickInterval="1"
+    [(ngModel)]="levelSelected"
+    (change)="onChange($event)"
+  >
+  </mat-slider>
+
+  <table>
+    <tbody>
+      <tr>
+        <ng-container *ngFor="let level of levels; let first = first; let last = last;">
+          <td [ngStyle]="{'width': (!first && !last) ? 100 / (levels.length-1) + '%' : (100 / (levels.length-1))/2 + '%' }">{{ level.label_default }}</td>
+        </ng-container>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td 
+          [attr.colspan]="levels.length" 
+          class="description"
+        >
+          {{ getDescription() }}
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+
+</div>

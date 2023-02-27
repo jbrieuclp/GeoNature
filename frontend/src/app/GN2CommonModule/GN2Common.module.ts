@@ -25,6 +25,7 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSliderModule } from '@angular/material/slider';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
@@ -82,6 +83,7 @@ import { TaxaComponent } from '@geonature_common/form/taxa/taxa.component';
 import { TaxonAdvancedModalComponent } from '@geonature_common/form/synthese-form/advanced-form/synthese-advanced-form-component';
 import { TaxonomyComponent } from './form/taxonomy/taxonomy.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { DiffusionLevelFormComponent } from '@geonature_common/form/diffusion-level-form/diffusion-level-form.component';
 
 // Directives
 import { DisableControlDirective } from './form/disable-control.directive';
@@ -128,6 +130,7 @@ import { TaxonTreeComponent } from './form/taxon-tree/taxon-tree.component';
     MatSelectModule,
     MatSidenavModule,
     MatSlideToggleModule,
+    MatSliderModule,
     MatStepperModule,
     MatTabsModule,
     MatToolbarModule,
@@ -196,6 +199,7 @@ import { TaxonTreeComponent } from './form/taxon-tree/taxon-tree.component';
     TaxonAdvancedModalComponent,
     TaxonomyComponent,
     TaxonTreeComponent,
+    DiffusionLevelFormComponent,
   ],
   providers: [
     CommonService,
@@ -307,6 +311,7 @@ import { TaxonTreeComponent } from './form/taxon-tree/taxon-tree.component';
     TaxonomyComponent,
     TaxonTreeComponent,
     TranslateModule,
+    DiffusionLevelFormComponent,
   ],
 })
 export class GN2CommonModule {
