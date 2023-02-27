@@ -178,6 +178,7 @@ def get_dataset(scope, id_dataset):
             "nomenclature_data_origin",
             "nomenclature_source_status",
             "nomenclature_resource_type",
+            "nomenclature_diffusion_level",
             "cor_territories",
             "acquisition_framework",
             "acquisition_framework.creator",
