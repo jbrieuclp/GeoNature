@@ -226,6 +226,14 @@
 
           <br />
 
+          <h4>Spécificités GRETIA</h4>
+          <div class="align"> 
+            <b> Niveau de diffusion :</b>
+            {{ dataset?.nomenclature_diffusion_level?.definition_default || 'Non renseigné'}}
+          </div>
+
+          <br />
+
           <h4>Spécificités GeoNature</h4>
           <div class="align" data-qa='pnx-metadata-dataset-status'> <b>Actif :  </b>  {{dataset.active ? 'Oui' : 'Non'}} </div>
           <div class="align"> <b> Validable :</b>  {{dataset.validable ? 'Oui' : 'Non'}} </div>
