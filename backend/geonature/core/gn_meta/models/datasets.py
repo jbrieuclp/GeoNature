@@ -79,6 +79,11 @@ class TDatasets(db.Model):
         ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature"),
         default=lambda: TNomenclatures.get_default_nomenclature("RESOURCE_TYP"),
     )
+    id_nomenclature_diffusion_level = DB.Column(
+        DB.Integer,
+        ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature"),
+        default=lambda: TNomenclatures.get_default_nomenclature("NIV_PRECIS"),
+    )
     meta_create_date = DB.Column(DB.DateTime, server_default=FetchedValue())
     meta_update_date = DB.Column(DB.DateTime, server_default=FetchedValue())
     active = DB.Column(DB.Boolean, default=True)
@@ -121,6 +126,10 @@ class TDatasets(db.Model):
     nomenclature_resource_type = DB.relationship(
         TNomenclatures,
         foreign_keys=[id_nomenclature_resource_type],
+    )
+    nomenclature_diffusion_level = DB.relationship(
+        TNomenclatures,
+        foreign_keys=[id_nomenclature_diffusion_level],
     )
 
     cor_territories = DB.relationship(

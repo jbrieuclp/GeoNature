@@ -219,6 +219,24 @@
             </div>
           </div>
 
+          <h5 style="margin-top: 10px;"> Spécifique GRETIA </h5>
+          
+          <div class="row">
+            <div class="col-md-6 col-lg-4">
+              <pnx-nomenclature
+                label="Niveau de diffusion souhaité"
+                [parentFormControl]="form.get('id_nomenclature_diffusion_level')"
+                codeNomenclatureType="NIV_PRECIS"
+                data-qa="pnx-dataset-form-datatype"
+                (labelsLoaded)="nivPrecisLoaded($event)"
+              >
+              </pnx-nomenclature>
+            </div>
+            <div class="col-md-6 col-lg-8">
+              <div class="niv-diff-info">{{ NIV_PRECIS_INFO.value }}</div>
+            </div>
+          </div>
+
           <h5 style="margin-top: 10px">
             {{ 'MetaData.DatasetForm.SpecificGeonature' | translate }}
           </h5>
