@@ -1,0 +1,14 @@
+/* Insert your custom override CSS in this file */
+/*
+$gretia-color: #C84B52;
+$navbar-color: #7ab95a;
+$navbar-text-button-color: #fff;
+*/
+
+#app-toolbar, #app-toolbar .toolbar-button {
+	background-color: #7ab95a!important;
+}
+
+#app-toolbar .toolbar-button {
+	color: #fff!important;
+}
