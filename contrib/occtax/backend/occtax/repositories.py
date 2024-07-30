@@ -138,13 +138,7 @@ def get_query_occtax_filters(
             TOccurrencesOccurrence.id_releve_occtax == mappedView.id_releve_occtax,
         ).where(TOccurrencesOccurrence.cd_nom == int(params.pop("cd_nom")))
     if "observers" in params:
-        if not is_already_joined(corRoleRelevesOccurrence, q):
-            q = q.join(
-                corRoleRelevesOccurrence,
-                corRoleRelevesOccurrence.id_releve_occtax == mappedView.id_releve_occtax,
-            )
-
-        q = q.where(corRoleRelevesOccurrence.id_role.in_(args.getlist("observers")))
+        q = q.join(mappedView.observers).where(User.id_role.in_(args.getlist("observers")))
         params.pop("observers")
 
     if "date_up" in params:
