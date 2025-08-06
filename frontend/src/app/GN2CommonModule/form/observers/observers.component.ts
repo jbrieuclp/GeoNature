@@ -3,6 +3,7 @@ import { DataFormService } from '../data-form.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { GenericFormComponent } from '@geonature_common/form/genericForm.component';
+import { customSearchFn } from '@geonature/utils/ng-select-searchFn';
 
 /**
  * Ce composant permet d'afficher un input de type "autocomplete" sur un liste d'observateur définit dans le schéma ``utilisateur.t_menus`` et ``utilisateurs.cor_role_menu``.
@@ -68,4 +69,9 @@ export class ObserversComponent extends GenericFormComponent {
   formatobs(obs: string): string {
     return obs.toLowerCase().replace(' ', '');
   }
+
+  //upgrade la fonction de recherche de ng-select
+  searchFn(term, item) {
+    return customSearchFn(term, item, 'nom_complet');
+  };
 }

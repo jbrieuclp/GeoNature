@@ -10,6 +10,7 @@
   [formControl]="parentFormControl"
   [attr.qa-test]="label"
   appendTo="body"
+  [searchFn]="searchFn.bind(this)"
 >
   <ng-template
     ng-option-tmp

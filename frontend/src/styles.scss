@@ -519,7 +519,8 @@ pnx-root:empty + #cover-spin-removable {
   height: auto;
 }
 .ng-select.sm .ng-option,
-.ng-select.auto .ng-option {
+.ng-select.auto .ng-option,
+.ng-dropdown-panel-items .ng-option {
   font-size: 12px;
 }
 .ng-select.sm .ng-placeholder,
@@ -560,6 +561,9 @@ pnx-root:empty + #cover-spin-removable {
   .ng-value
   .ng-value-icon.left {
   border-right: none;
+}
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+  white-space: normal!important;
 }
 a.mat-raised-button:hover {
   text-decoration: none !important;
