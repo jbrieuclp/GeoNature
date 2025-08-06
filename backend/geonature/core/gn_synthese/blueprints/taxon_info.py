@@ -25,7 +25,7 @@ from utils_flask_sqla.generic import GenericTable
 from utils_flask_sqla.response import json_resp
 
 
-from sqlalchemy import desc, distinct, func, select, join, exists
+from sqlalchemy import desc, distinct, func, select, join, exists, or_
 from sqlalchemy.orm import Query
 from werkzeug.exceptions import BadRequest, Forbidden
 
@@ -147,7 +147,8 @@ def get_autocomplete_taxons_synthese():
             ),
         )
         .distinct()
-        .join(Synthese, Synthese.cd_nom == VMTaxrefListForautocomplete.cd_nom)
+        .join(Taxref, or_(Taxref.cd_nom == VMTaxrefListForautocomplete.cd_nom, Taxref.cd_ref == VMTaxrefListForautocomplete.cd_nom))
+        .join(Synthese, Synthese.cd_nom == Taxref.cd_nom)
     )
     search_name = search_name.replace(" ", "%")
     query = query.where(
