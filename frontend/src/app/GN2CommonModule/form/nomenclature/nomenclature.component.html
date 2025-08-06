@@ -9,6 +9,7 @@
   [virtualScroll]="true"
   [formControl]="parentFormControl"
   [attr.qa-test]="label"
+  [searchFn]="searchFn.bind(this)"
 >
   <ng-template
     ng-option-tmp
