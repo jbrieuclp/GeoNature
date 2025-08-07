@@ -133,6 +133,7 @@
           <a
             class="Link"
             [routerLink]="getTaxonSheetUrl(row.cd_nom)"
+            target="_blank"
             data-qa="synthese-list-taxon-sheet-link"
             *ngIf="
               config.SYNTHESE.ENABLE_TAXON_SHEETS && row.hasOwnProperty('cd_nom');
@@ -147,6 +148,7 @@
           <a
             class="Link"
             [routerLink]="['/metadata/dataset_detail/' + row.id_dataset]"
+            target="_blank"
             *ngIf="row.hasOwnProperty('id_dataset'); else cellDefault"
             matTooltip="Afficher la fiche du jeu de données"
           >
