@@ -82,11 +82,16 @@ export class ValidationSyntheseListComponent implements OnInit, OnChanges, After
     this.onMapClick();
     this.onTableClick();
     this.npage = 1;
+
+    const message_id = this.idSynthese
+      ? 'Validation.Messages.NoIdFound'
+      : 'Validation.Messages.NoData';
     this.messages = {
-      emptyMessage: this.idSynthese
-        ? this.translate.instant('Validation.Messages.NoIdFound')
-        : this.translate.instant('Validation.Messages.NoData'),
+      emptyMessage: 'No data found',
     };
+    this.translate.get(message_id).subscribe((translation) => {
+      this.messages.emptyMessage = translation;
+    });
   }
 
   onMapClick() {

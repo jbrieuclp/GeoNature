@@ -24,7 +24,8 @@ CREATE TABLE gn_meta.t_datasets (
     id_digitizer integer,
     id_taxa_list integer,
     meta_create_date timestamp without time zone NOT NULL,
-    meta_update_date timestamp without time zone
+    meta_update_date timestamp without time zone,
+    additional_data jsonb DEFAULT '{}'::jsonb
 );
 
 COMMENT ON TABLE gn_meta.t_datasets IS 'A dataset is a dataset or a survey and each observation is attached to a dataset. A lot allows to qualify datas to which it is attached (producer, owner, manager, gestionnaire, financer, public data yes/no). A dataset can be attached to a program. GeoNature V2 backoffice allows to manage datasets.';
@@ -105,8 +106,6 @@ ALTER TABLE ONLY gn_meta.t_datasets
     ADD CONSTRAINT unique_dataset_uuid UNIQUE (unique_dataset_id);
 
 CREATE INDEX i_t_datasets_id_acquisition_framework ON gn_meta.t_datasets USING btree (id_acquisition_framework);
-
-CREATE UNIQUE INDEX i_unique_t_datasets_unique_id ON gn_meta.t_datasets USING btree (unique_dataset_id);
 
 CREATE TRIGGER tri_meta_dates_change_t_datasets BEFORE INSERT OR UPDATE ON gn_meta.t_datasets FOR EACH ROW EXECUTE FUNCTION public.fct_trg_meta_dates_change();
 

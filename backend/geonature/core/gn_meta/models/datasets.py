@@ -35,7 +35,9 @@ class TDatasets(db.Model):
         ForeignKey("gn_meta.t_acquisition_frameworks.id_acquisition_framework"),
     )
     acquisition_framework = DB.relationship(
-        "TAcquisitionFramework", back_populates="datasets", lazy="joined"
+        "TAcquisitionFramework",
+        back_populates="datasets",
+        #   lazy="joined"
     )  # join AF as required for permissions checks
     dataset_name = DB.Column(DB.Unicode)
     dataset_shortname = DB.Column(DB.Unicode)
@@ -77,14 +79,24 @@ class TDatasets(db.Model):
         ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature"),
         default=lambda: TNomenclatures.get_default_nomenclature("RESOURCE_TYP"),
     )
+    id_nomenclature_diffusion_level = DB.Column(
+        DB.Integer,
+        ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature"),
+        default=lambda: TNomenclatures.get_default_nomenclature("NIV_PRECIS"),
+    )
     meta_create_date = DB.Column(DB.DateTime, server_default=FetchedValue())
     meta_update_date = DB.Column(DB.DateTime, server_default=FetchedValue())
     active = DB.Column(DB.Boolean, default=True)
     validable = DB.Column(DB.Boolean, server_default=FetchedValue())
     id_digitizer = DB.Column(DB.Integer, ForeignKey(User.id_role))
-    digitizer = DB.relationship(User, lazy="joined")  # joined for permission check
+    digitizer = DB.relationship(
+        User,
+        # lazy="joined",
+    )  # joined for permission check
     creator = DB.relationship(
-        User, lazy="joined", overlaps="digitizer"
+        User,
+        # lazy="joined",
+        overlaps="digitizer",
     )  # overlaps as alias of digitizer
     id_taxa_list = DB.Column(DB.Integer)
     modules = DB.relationship("TModules", secondary=cor_module_dataset, backref="datasets")
@@ -115,6 +127,10 @@ class TDatasets(db.Model):
         TNomenclatures,
         foreign_keys=[id_nomenclature_resource_type],
     )
+    nomenclature_diffusion_level = DB.relationship(
+        TNomenclatures,
+        foreign_keys=[id_nomenclature_diffusion_level],
+    )
 
     cor_territories = DB.relationship(
         TNomenclatures,
@@ -125,7 +141,7 @@ class TDatasets(db.Model):
     # because CorDatasetActor could be an User or an Organisme object...
     cor_dataset_actor = relationship(
         CorDatasetActor,
-        lazy="joined",
+        # lazy="joined",
         cascade="save-update, merge, delete, delete-orphan",
         backref=DB.backref("actor_dataset"),
     )

@@ -12,6 +12,7 @@ import { GenericFormComponent } from '@geonature_common/form/genericForm.compone
 import { CommonService } from '../../service/common.service';
 import { ConfigService } from '@geonature/services/config.service';
 import { AbstractControl, Validators } from '@angular/forms';
+import { customSearchFn } from '@geonature/utils/ng-select-searchFn';
 
 /**
  *  Ce composant permet de créer un "input" de type "select" ou "multiselect" affichant l'ensemble des jeux de données sur lesquels l'utilisateur connecté a des droits (table ``gn_meta.t_datasets`` et ``gn_meta.cor_dataset_actor``)
@@ -101,6 +102,11 @@ export class DatasetsComponent extends GenericFormComponent implements OnInit, O
       }
     });
   }
+
+  //upgrade la fonction de recherche de ng-select
+  searchFn(term, item) {
+    return customSearchFn(term, item, 'dataset_name');
+  };
 
   ngOnChanges(changes) {
     super.ngOnChanges(changes);

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of, Observable } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { of, Observable, BehaviorSubject, combineLatest } from 'rxjs';
+import { switchMap, tap, startWith, map, filter } from 'rxjs/operators';
 
 import { CommonService } from '@geonature_common/service/common.service';
 import { DataFormService } from '@geonature_common/form/data-form.service';
@@ -23,6 +23,8 @@ export class DatasetFormComponent implements OnInit {
   //observable pour la liste déroulantes HTML des AF
   public acquisitionFrameworks: Observable<any>;
   public taxaBibList: number;
+  public NIV_PRECIS_DATA = new BehaviorSubject<any[]>([]);
+  public NIV_PRECIS_INFO = new BehaviorSubject<string>(null);
 
   constructor(
     private _route: ActivatedRoute,
@@ -35,6 +37,15 @@ export class DatasetFormComponent implements OnInit {
     private metadataS: MetadataService,
     private metadataDataS: MetadataDataService
   ) {}
+
+  /** 
+   * gestion du form de niveau de diffusion
+   */
+  nivPrecisLoaded(data) {
+    this.NIV_PRECIS_DATA.next(data);
+  }
+
+  /** Fin **/
 
   ngOnInit() {
     // get the id from the route
@@ -51,6 +62,20 @@ export class DatasetFormComponent implements OnInit {
     this._dfs.getTaxaBibList().subscribe((d) => (this.taxaBibList = d));
 
     this.acquisitionFrameworks = this._dfs.getAcquisitionFrameworksList();
+
+    combineLatest(
+      this.form.get('id_nomenclature_diffusion_level').valueChanges
+        .pipe(
+          startWith(this.form.get('id_nomenclature_diffusion_level').value),
+          filter(val => val !== null)
+        ),
+      this.NIV_PRECIS_DATA.asObservable()
+    )
+      .pipe(
+        map(([value, labels]: [any, any[]]) => labels.find((e) => e.id_nomenclature == value)),
+        map((res) => res != null ? res.definition_default : null)
+      )
+      .subscribe(val => this.NIV_PRECIS_INFO.next(val))
   }
 
   genericActorFormSubmit(result) {

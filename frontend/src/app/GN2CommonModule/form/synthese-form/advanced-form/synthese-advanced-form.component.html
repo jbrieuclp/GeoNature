@@ -71,7 +71,7 @@
       </button>
 
       <div [(ngbCollapse)]="isCollapseTree">
-        <small>Selectionner un ou plusieurs taxons à partir de la hierarchie taxonomique</small>
+        <small>Sélectionner un ou plusieurs taxons à partir de la hiérarchie taxonomique</small>
         <br />
         <div class="card">
           <div class="card-body tree-wrapper">
@@ -142,6 +142,7 @@
             class="custom-control-input"
             [formControl]="status.control"
             [value]="status.status_types[0]"
+            [checked]="formService.selectedStatus.includes(status.status_types[0])"
             (change)="onStatusCheckboxChanged($event)"
           />
           <label

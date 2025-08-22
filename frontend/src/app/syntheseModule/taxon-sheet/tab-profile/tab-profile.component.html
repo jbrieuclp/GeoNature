@@ -3,7 +3,7 @@
   *ngIf="profile; else noProfile"
 >
   <small class="Profile__disclaimer text-muted">
-    {{ 'FicheTaxon.MessageProfil' | translate }}
+    {{ 'Synthese.FicheTaxon.Messages.MessageProfil' | translate }}
   </small>
   <div class="Profile__indicators">
     <indicator
@@ -22,5 +22,7 @@
   </div>
 </div>
 <ng-template #noProfile>
-  <div class="Profile text-muted text-center">{{ 'FicheTaxon.MessageNoProfil' | translate }}</div>
+  <div class="Profile text-muted text-center">
+    {{ 'Synthese.FicheTaxon.Messages.MessageNoProfil' | translate }}
+  </div>
 </ng-template>

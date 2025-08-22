@@ -1,14 +1,118 @@
 # CHANGELOG
 
+## 2.16.2 (2025-08-11)
+
+### 🐛 Corrections
+
+- [Synthèse] Correction de la navigation avec les flèches dans les fiches taxon (#3639 par @edelclaux)
+- [Général] Correction de l'affichage du bouton de suppression d'un média (#3641 par @amandine-sahl)
+- [Général] Correction de la détection de changement de fichier dans les _dynamic-forms_ (#3660 par @Pierre-Narcisi)
+- [Monitoring] Correction du filtre de portée de permission pour les individus (#3647 par @amandine-sahl)
+- [Synthèse] Correction de l'affichage des dates max dans la Synthèse (#3655 par @jbrieuclp)
+
+## 2.16.1 (2025-07-22)
+
+### 🚀 Nouveautés
+
+- [Métadonnées] Amélioration des performances du chargement des informations des jeux de données et des cadres d'acquisitions (#3617 par @TheoLechemia)
+- [Synthèse] Ajout d'un lien vers les détails d'une observation dans l'onglet "Observations" de la fiche Taxon (#3610 par @jacquesfize)
+
+### 🐛 Corrections
+
+- [Occtax] Correction du filtre "Observateurs" avec un R=2 (#3616 par @TheoLechemia)
+- [Occtax] Correction d'un lien vers la page d’accueil dans le contexte d'un module dupliqué de Occtax (#3610 @ch-cbna)
+- [Discussion] Correction de l'affichage des auteurs dans le bloc de la page d'accueil (#3618 par @TheoLechemia)
+- [Synthèse] Correction des statistiques calculées dans les fiches taxon si une observation n'est pas associée à une commune (#3631 par @Pierre-Narcisi)
+- [Synthèse] Les filtres de statut avec une seul valeur ne sont plus cochés par défaut (#3624 par @jacquesfize)
+- [Validation] Correction du lien généré dans la notification par mail (#3623 par @jacquesfize)
+- [Général] Correction permettant un chargement des médias asynchrones dans le composant `pnx-medias` (#3636 par @amandine-sahl)
+
+## 2.16.0 - [Bombina variegata](https://inpn.mnhn.fr/espece/cd_nom/212) 🐸 (2025-07-08)
+
+### ⏩ En bref
+
+- Multilingue étendu, par module et surcouchable
+- Enrichissement des fiches taxon
+- Enrichissement des permissions avec des filtres géographiques, taxonomiques et temporels
+- Gestion des individus pour les protocoles de suivi
+- Nouvelle section "Dernières validations" sur la page d'accueil
+
+### 🚀 Nouveautés
+
+- [Synthèse] Enrichissement des fiches taxon (#3479 par @edelclaux et @jules-jean-louis1)
+  - Ajout d'un onglet "Observateurs" (#3203 par @edelclaux) et d'un onglet "Medias" (#3229 par @edelclaux)
+  - Ajout d'un fil d'ariane permettant de naviguer entre les rangs taxonomiques
+  - Ajout du mode maille et d'un filtre temporel dans l'onglet "Observations" (anciennement "Synthèse géographique")
+- [Synthèse, Validation] Ajout de filtres de permission géographique et taxonomique (par @jpm-cbna, complété par @bouttier dans #3097)
+- [Permissions] Ajout de filtres temporels sur toutes les permissions (#3099 par @jpm-cbna et @bouttier)
+- [Multilingue] Amélioration et enrichissement de la gestion du multilingue (#1551)
+  - Enrichissement des traductions existantes dans différents modules (#1921 par @MathildeNS, complété dans #3484 par @jpm-cbna et @jacquesfize)
+  - Possibilité de définir des fichiers de traduction pour chaque module (#1570 par @mvergez et @jpm-cbna)
+  - Ajout de la possibilité de surcoucher les fichiers par défaut de traduction (#3415 par @jpm-cbna et @mvergez)
+- [Général] Ajout de la possibilité de paramétrer le titre affiché dans l'onglet GeoNature (#3420 par @Christophe-Ramet)
+- [Accueil] Ajout d'une section "Dernières validations" désactivable (#3226 par @edelclaux et @20cents)
+- [Monitoring] Ajout de la gestion des individus pour les protocoles de suivi, avec l'ajout des tables `t_base_individuals` et `t_marking_events` dans le schéma `gn_monitoring` ainsi qu'un composant d'édition d'individus (#2740 par @mvergez, #3056 par @andriacap, complété dans #3299 par @amandine-sahl)
+- [Base de données] Ajout d'un paramètre pour customiser la connexion SQLAlchemy à la base de données PostgreSQL (#3438 par @jacquesfize)
+- [Occhab] Ajout du champ TypeSol (#3379 par @Pierre-Narcisi)
+- [Occhab] Affiche de l'UUID des habitats dans les fiches détail des stations (#3467 par @Pierre-Narcisi)
+- [Notifications] Masquer certaines catégories de notifications de la liste des souscriptions selon les permissions de l'utilisateur (#3262 par @bouttier)
+- [Général] Mise à jour des dépendances
+  - TaxHub : [2.2.2](https://github.com/PnX-SI/TaxHub/releases/2.2.2), incluant notamment la migration vers Taxref v18
+  - Utils-Flask-SQLAlchemy [0.4.2](https://github.com/PnX-SI/Utils-Flask-SQLAlchemy/releases/0.4.2)
+  - Utils-Flask-SQLAlchemy-Geo [0.3.3](https://github.com/PnX-SI/Utils-Flask-SQLAlchemy-Geo/releases/tag/0.3.3)
+  - RefGeo [1.5.5](https://github.com/PnX-SI/RefGeo/releases/1.5.5)
+  - Habref-api-module [0.4.2](https://github.com/PnX-SI/Habref-api-module/releases/0.4.2)
+  - Nomenclature-api-module [1.6.5](https://github.com/PnX-SI/Nomenclature-api-module/releases/1.6.5)
+  - UsersHub-authentification-module [3.0.3](https://github.com/PnX-SI/UsersHub-authentification-module/releases/3.0.3)
+- [Système] Ajout d'une route `/healthz` pour surveiller le statut de la connexion avec la BDD et avec le worker Celery (#3417 par @TheoLechemia et @jacquesfize)
+- [Installation] Amélioration de la commande d'installation d'un module GeoNature (#3261 par @bouttier)
+- [CI/CD] Utilisation d'[images Docker](https://github.com/PnX-SI/geonature_db) pré-peuplées pour accélérer les tests unitaires (#3369 par @jacquesfize)
+- [Benchmark] Ajout de nouveaux tests automatisés de performance (#3392 par @Christophe-Ramet)
+- [Accueil] Amélioration du _responsive_ de la page d'accueil (#3426 et #3428 par @Christophe-Ramet)
+- [Développement] Modification du `JSONProvider` prenant en compte les objets `Paginate` de `flask-sqlalchemy` (#3463 par @bouttier)
+- [Développement] Utilisation de la nouvelle méthode générique de tri de données `ordered` dans le module Métadonnées (#3465 par @bouttier)
+- [Développement] Réorganisation du code des _blueprints_ Flask de la Synthèse (#3301 par @jacquesfize)
+- [Développement] Ajout de nouveaux champs dans la vue `gn_synthese.v_synthese_for_web_app` : `id_statut`, `id_rang`, `regne`, `phylum`, `classe`, `ordre`, `famille` et `sous_famille` (#3373 par @Pierre-Narcisi)
+- [Général] Suppression de la page intermédiaire pour l'accès au panneau d'administration de GeoNature (par @jacquesfize)
+- [Métadonnées] Ajout des champs `additional_data` dans les tables des JDD et des CA (#3422 par @lpofredc)
+
+### 🐛 Corrections
+
+- [Synthèse] Correction de l'affichage des observations sensibles floutées lorsqu'un filtre par zonage est appliqué (#3566 par @jpm-cbna,#3324)
+- [Synthèse] Correction de l'apparition de doublons dans l'export des observations sensibles (#3375 par @Pierre-Narcisi)
+- [Occhab] Diverses corrections sur l'interface de saisie (#3471 par @Pierre-Narcisi)
+- [Occhab] Le champs `nom_cite` est maintenant obligatoire dans l'import (#3434 par @edelclaux)
+- [Validation] Correction du tri dans la liste des observations (#3340 par @Pierre-Narcisi)
+- [Développement] Correction des champs additionnels de type "checkbox" dans les formulaires dynamiques (#3529 par @jacquesfize)
+- [Carte] Correction du problème de chargement des fichiers GeoJSON (#3532 par @jacquesfize)
+- [Import] Correction de l'export PDF (#3443 par @jacquesfize)
+- [Import] Correction de la disparition de mapping par défaut après la sélection d'un autre mapping (#3398 par @Christophe-Ramet)
+- [Import] Correction du retour d'erreur quand le WKT donnée est malformé (#3433 par @jacquesfize)
+- [Documentation] Clarification du paramètre `ID_AREA_RESTRICTION` (#3382 par @jacquesfize)
+- [BDD] Suppression d'index redondant dans les schémas `gn_meta` et `gn_synthese` (#3562 par @PaulLabruyere)
+- [Développement] Correction de l'affichage des valeurs dans le form `datalist` avec le thème bootstrap (#3590 par @Pierre-Narcisi)
+
+### 📊 Suivi de l'évolution de la base de données
+
+Des fichiers SQL pour documenter et améliorer la lisibilité des modifications apportées à la base de données entre deux versions de GeoNature sont automatiquement créés à chaque _release_, depuis la version 2.15.4. Ils sont disponibles dans le dossier `docs/data_model` du dépôt.
+
+Pour observer les différences entre la 2.15.4 et la 2.16.0, il suffit d'utiliser la commande `git diff 2.15.4..2.16.0 docs/data_model/` ou consulter directement sur [GitHub](https://github.com/PnX-SI/GeoNature/compare/ce84b2743bcb09db850f8cfd30c0b3343d1131e0..74a1637665f34ef357f685249969998beca5179e).
+
+Plus de détails sur la génération des fichiers SQL sur [#1569](https://github.com/PnX-SI/GeoNature/issues/1569).
+
+### ⚠️ Note de version
+
+Cette version de GeoNature est incompatible avec les versions du module Export inférieures à la 1.8.0 !
+
 ## 2.15.4 (2025-02-25)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - [Import] Accélération du temps de suppression d'un import avec l'ajout d'un index sur les colonnes `id_import` des tables `pr_occhab.t_stations`, `pr_occhab.t_habitats` et `gn_synthese.synthese` (#3390 par @jacquesfize et @dba-sig-sfepm).
 - [Synthese] La mise à jour de la date de validation dans la synthèse est effective (#3371, #1040 par @jacquesfize)
 - [Import] Le paramètre `CHECK_PRIVATE_JDD_BLURING` est maintenant désactivé par défaut (#3391 par @camillemonchicourt)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - [Synthese] Correction de la prise en compte de `size_hierarchy` dans le mode maille de la Synthèse lorsque le floutage est activé (#3380 par @Pierre-Narcisi)
 - [Benchmark] Correction des _fixtures_ de benchmark des routes de la Synthèse avec floutage (#3381 par @jacquesfize)
@@ -17,7 +121,7 @@
 
 ## 2.15.3 (2025-02-14)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - [Synthese] Affichage des `cd_nom`, `cd_ref` et du `nom_cite` dans les fiches d'observation et les fiches taxon (#3334 par @edelclaux).
 - [Documentation] La compilation de documentation est effectuée à chaque merge dans la branche principale (`master`) (#3338 par @jacquesfize)
@@ -25,7 +129,7 @@
 - [TaxHub] Mise à jour de TaxHub en version 2.1.2
 - [Authentification] Mise à jour UsersHub-autentification-module en version 3.0.2
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - [TaxHub] Correction de la synchonisation avec Occtax-mobile (https://github.com/PnX-SI/TaxHub/pull/599 par @amandine-sahl)
 - [TaxHub] Ajout d'un bouton TaxHub dans le menu latéral (#3368 par @jacquesfize)
@@ -41,13 +145,13 @@
 - [Documentation] Réintégration de la documentation sur l'authentification avec un fournisseur d'identité externe (#3338 par @jacquesfize)
 - [Développement] Correction des modèles SQLAlchemy pour pouvoir utiliser le mode debug (#3346 par @jacquesfize)
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous les aviez défini, enlevez les paramètres `INSTANCE_BOUNDING_BOX`, `ENABLE_BOUNDING_BOX_CHECK`, `ALLOW_FIELD_MAPPING`, `DEFAULT_FIELD_MAPPING_ID`, `DISPLAY_CHECK_BOX_MAPPED_FIELD` de votre fichier de configuration `geonature_config.toml`. Ces derniers ne sont plus pris en compte depuis la version 2.15.x.
 
 ## 2.15.2 (2025-01-16)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - [Accueil] Optimisation du calcul des statistiques (#3309, par @dba-sig-sfepm et @jacquesfize)
 - [Profils de taxon] Amélioration, homogénéisation et mise en cohérence des paramètres d'activation ou non des profils de taxons (#3311, par @edelclaux)
@@ -55,7 +159,7 @@ Si vous les aviez défini, enlevez les paramètres `INSTANCE_BOUNDING_BOX`, `ENA
 - [Documentation] Compléments de la documentation du module Validation et de la sensibilité (#3317, par @camillemonchicourt)
 - [Développement] Redémarrage automatique du backend quand un fichier de configuration `.toml` est modifié (#3316, par @jacquesfize)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - [Accueil] Correction de la prise en compte de la portée des permissions dans le calcul des statistiques (#3166, par @jacquesfize et @edelclaux)
 - [Sensibilité] Correction du comptage du nombre de règles supprimées dans la commande `geonature sensitivity remove-referential` (#3323, par @jacquesfize)
@@ -67,7 +171,7 @@ Si vous les aviez défini, enlevez les paramètres `INSTANCE_BOUNDING_BOX`, `ENA
 
 ## 2.15.1 (2025-01-10)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - [Métadonnées] Amélioration de la recherche libre des métadonnées en cherchant chaque mot indépendamment (#3295, par @jbrieuclp)
 - [FicheTaxon] Amélioration de l'affichage de la photo du taxon sur les fiches taxon (#3287, par @edelclaux)
@@ -76,7 +180,7 @@ Si vous les aviez défini, enlevez les paramètres `INSTANCE_BOUNDING_BOX`, `ENA
 - [Développement] Ajout d'un fichier `Makefile` pour faciliter l'usage des commandes de développement (#3300, par @jacquesfize & @edelclaux)
 - [Installation] Ajout des nouvelles mailles INPN lors de l'installation de GeoNature (#3293, par @jacquesfize)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - [Discussions] Correction de la pagination quand on filtre les discussions de la page d'accueil sur "Mes discussions" (#3288, par @edelclaux)
 - [Discussions] Correction des performances de la requête de récupération des discussions (#3307, par @jacquesfize)
@@ -90,7 +194,7 @@ Si vous les aviez défini, enlevez les paramètres `INSTANCE_BOUNDING_BOX`, `ENA
 
 ## 2.15.0 - Pavo cristatus 🦚 (2025-12-11)
 
-**⏩ En bref**
+### ⏩ En bref
 
 - Nouvelle version de TaxHub (2.0.0) intégrée à GeoNature
 - Fiche de taxon enrichie intégrant l'actuel profil mais aussi une synthèse géographique, les informations taxonomiques ainsi qu'une liste des statuts de protection
@@ -98,7 +202,7 @@ Si vous les aviez défini, enlevez les paramètres `INSTANCE_BOUNDING_BOX`, `ENA
 - Import de données vers le module Occhab
 - Dernières discussions listées sur la page d'accueil
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - [TaxHub] Intégration de TaxHub ([2.0.0 Release Note](https://github.com/PnX-SI/TaxHub/releases/tag/2.0.0)) à GeoNature (#3280)
   - La gestion des taxons est maintenant intégrée dans le module Admin de GeoNature.
@@ -129,7 +233,7 @@ Si vous les aviez défini, enlevez les paramètres `INSTANCE_BOUNDING_BOX`, `ENA
 - [Monitoring] Ajout de la gestion de la table `gn_monitoring.t_observations` directement dans GeoNature (#2824)
 - La synchronisation avec le service MTD de l'INPN n'est plus intégrée dans le code de GeoNature, elle a été déplacée dans un module externe (https://github.com/PnX-SI/mtd_sync)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction de l'URL des modules externes dans le menu latéral (#3093)
 - Correction des erreurs d'exécution de la commande `geonature sensitivity info` (#3216)
@@ -152,7 +256,7 @@ Si vous les aviez défini, enlevez les paramètres `INSTANCE_BOUNDING_BOX`, `ENA
 - Ajout d'un action Github permettant de lancer les tests depuis des modules externes (#3232)
 - Lancement de `pytest` sans _benchmark_ ne nécessite plus l'ajout de `--benchmark-skip` (#3183)
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 - Si vous utilisez GeoNature-citizen, attendez qu'une version de celui-ci compatible avec TaxHub 2.x soit disponible.
 - Si vous mettez à jour GeoNature :
@@ -199,12 +303,12 @@ Si vous les aviez défini, enlevez les paramètres `INSTANCE_BOUNDING_BOX`, `ENA
 
 ## 2.14.2 (2024-05-28)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Mise à jour de dépendances critiques (#3054)
 - Mise à jour de NodeJS en version 20 (#2997)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction d'erreurs dans les fichiers de traductions du frontend (#3026)
 - Correction de la fermeture des sessions SQLAlchemy lancées par Celery (#3050, #3062 )
@@ -215,7 +319,7 @@ Si vous les aviez défini, enlevez les paramètres `INSTANCE_BOUNDING_BOX`, `ENA
 
 ## 2.14.1 (2024-04-29)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - [Synthèse] Possibilité d'ajouter des colonnes supplémentaires à la liste de résultats via le paramètre `ADDITIONAL_COLUMNS_FRONTEND`. Ces champs sont masqués par défaut et controlables depuis l'interface (#2946)
 - [Synthèse] Possiblité d'ajouter des exports personnalisés basés sur des vues SQL via le paramètre `EXPORT_OBSERVATIONS_CUSTOM_VIEWS` (#2955)
@@ -224,7 +328,7 @@ Si vous les aviez défini, enlevez les paramètres `INSTANCE_BOUNDING_BOX`, `ENA
 - [Configuration] Enrichissement des URI autorisés de connexion à la BDD PostgreSQL (#2947)
 - [TaxHub] Mise à jour de TaxHub en version 1.14.0, incluant par défaut Taxref v17, BDC statuts v17 et référentiel de sensibilité v17
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - [Occtax] Correction de l'inversion des valeurs par défaut de 2 nomenclatures (#2822)
 - [Synthèse] Correction du lien de renvoi vers le module de saisie d'une observation (#2907)
@@ -237,7 +341,7 @@ Si vous les aviez défini, enlevez les paramètres `INSTANCE_BOUNDING_BOX`, `ENA
 - Correction de la connexion avec le CAS de l'INPN (#2866)
 - Correction d'une mauvaise synchronisation du cookie et du JWT via une MAJ de pypnusershub (PnX-SI/UsersHub-authentification-module#94)
 
-**💻 Développement**
+### 💻 Développement
 
 - Suppression de l'utilisation du composant `ngx-mat-select-search` (#2826 & #2827)
 - [Occtax] Il n'est plus obligatoire de poster le champs `additionnal_fields` au niveau de l'API des relevés, taxons et dénombrements (#2937)
@@ -247,7 +351,7 @@ Si vous les aviez défini, enlevez les paramètres `INSTANCE_BOUNDING_BOX`, `ENA
 - Utilisation de `pytest-benchmark` pour l'évaluation automatique de performances des routes (#2896)
 - Utilisation de `marshmallow` pour la validation des données renvoyées par la route `get_observations_for_web` et ajout du contrôle de la présence des champs obligatoires (#2950)
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -261,7 +365,7 @@ Si vous mettez à jour GeoNature :
 Cette nouvelle version de GeoNature propose de nouvelles fonctionnalités comme le floutage de données sensibles dans le module Synthèse ainsi qu'un système de validation automatique des données basé sur les profils de taxons.  
 Elle intégre aussi plusieurs mises à jour des versions des librairies python utilisées comme Flask (3.0) et SQLAlchemy (1.4).
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -272,7 +376,7 @@ Si vous mettez à jour GeoNature :
 - Suivez la procédure de mise à jour classique de GeoNature (<https://docs.geonature.fr/installation.html#mise-a-jour-de-l-application>)
 - Si vous utilisez les fonds IGN, mettez à jour les URL des flux dans votre fichier de configuration `geonature_config.toml` (#2789)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - [Synthèse] Floutage des données sensibles (#2558)
   - Il est désormais possible de définir un filtre "Flouter les données sensibles" sur les actions _Lire_ et _Exporter_ du module Synthèse
@@ -290,7 +394,7 @@ Si vous mettez à jour GeoNature :
 - [RefGeo] Répercussion du remplacement du champs `geojson_4326` par `geom_4326` dans la table `l_areas` (#2809)
 - [Documentation] Ajout de diagrammes d'architecture dans la documentation (#2760)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction de l'affichage du nom du module quand on revient à la page d'accueil (#2795)
 - [Synthèse] Correction de l'affichage du nom du taxon observé quand les profils de taxons sont désactivés (#2820)
@@ -299,7 +403,7 @@ Si vous mettez à jour GeoNature :
 - [Occhab] Correction des permissions avec portée limitée (#2909)
 - [Occtax] Correction de la suppression d'un champ additionnel (#2923)
 
-**💻 Développement**
+### 💻 Développement
 
 - Mise à jour vers SQLAlchemy 1.4 (#1812)
 - Mise à jour vers Flask 3 (#2751)
@@ -321,11 +425,11 @@ Si vous mettez à jour GeoNature :
 
 ## 2.13.4 (2023-12-15)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - [Synthèse] Ajout des colonnes `group[1,2,3]_inpn` à la vue `gn_synthese.v_synthese_for_web_app` (#2798, par @andriacap)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - [Métadonnées] Masquage des références bibliograhpiques dans le formulaire des cadres d'acquisition en attendant la finalisation du développement du backend (#2562, par @DonovanMaillard)
 - [Occtax] Correction du problème de chargement de la liste de JDD lors de la création d'un relevé (#2815, par @andriacap)
@@ -340,14 +444,14 @@ Si vous mettez à jour GeoNature :
 
 ## 2.13.3 (2023-10-17)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - [Métadonnées] Correction de l'affichage des descriptions dans les fiches des cadres d'acquisition (#2716, par @mvergez)
 - [Admin] Correction de la modification des permissions sensibles (#2697, par @Pierre-Narcisi)
 - [Synthèse] Correction de la documentation du paramètre `AREA_FILTERS` (#1892, par @camillemonchicourt)
 - [Médias] Conservation de la rotation des images des vignettes (#2742, par @MathRdt)
 
-**💻 Développement**
+### 💻 Développement
 
 - Utilisation du fichier `requirements.txt` pour les tests automatiques des contributions dans la branche `master` (#2739, par @Pierre-Narcisi)
 - Déplacement des dépendances de développement des types Leaflet vers les dépendances de production (#2744, par @TheoLechemia)
@@ -355,11 +459,11 @@ Si vous mettez à jour GeoNature :
 
 ## 2.13.2 (2023-09-28)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - [Synthèse] Ajout d'un filtre par module de provenance (#2670, par @andriacap)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction des déconnexions non effectives dans les versions 2.13.0 et 2.13.1 (#2682, par @TheoLechemia)
 - Correction des permissions vérifiées pour pouvoir supprimer un signalement en prenant en compte le C du module Validation, et non pas le R qui n'existe pas sur ce module (#2710, par @Pierre-Narcisi)
@@ -369,14 +473,14 @@ Si vous mettez à jour GeoNature :
 - Fermeture des connexions à la BDD à la fin des taches Celery (#2724, par @bouttier)
 - Correction de l'affichage du bouton permettant d'importer directement depuis la fiche d'un JDD, nécessitant la version 2.2.3 du module Import (#2713, par @bouttier)
 
-**💻 Développement**
+### 💻 Développement
 
 - Ajout du thème Bootstrap au composant `datalist` (#2727, par @TheoLechemia)
 - Docker : utilisation de python 3.11 (#2728, par @bouttier)
 - Déplacement du `DispatcherMiddleware` après les fichiers statiques customisés (#2720, par @bouttier)
 - Suppression du script `03b_populate_db_for_test.sh` (#2726, par @bouttier)
 
-**📝 Documentation**
+### 📝 Documentation
 
 - Mise à jour de la documentation suite aux évolutions des permissions dans la 2.13.0 (par @camillemonchicourt)
 
@@ -385,7 +489,7 @@ Si vous mettez à jour GeoNature :
 L'installation de GeoNature (ainsi que ses 4 modules externes principaux, TaxHub et UsersHub) avec Docker est désormais complet et fonctionnel. Voir la documentation sur https://docs.geonature.fr/installation.html#docker.  
 C'est la manière la plus simple de déployer GeoNature avec ses 4 modules externes principaux (Import, Export, Dashboard, Monitoring) mais aussi de les mettre à jour, avec seulement quelques lignes de commandes, à partir des images construites automatiquement et du fichier `docker-compose` global, fourni dans le dépôt [GeoNature-Docker-services](https://github.com/PnX-SI/GeoNature-Docker-services).
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Amélioration de l'affichage des taxons en passant à la ligne quand ils sont trop longs (#2690, par @JulienCorny)
 - Amélioration du `Dockerfile` de GeoNature (#2623, par @joelclems et @bouttier)
@@ -394,7 +498,7 @@ C'est la manière la plus simple de déployer GeoNature avec ses 4 modules exter
 - Mise à jour de Utils-Flask-SQLAlchemy en version 0.3.6 et UsersHub-authentification-module en version 1.6.10 (#2704, par @TheoLechemia)
 - Mise à jour de différentes dépendances Python (#2704, par @TheoLechemia)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction des déconnexions non effectives sur la 2.13.0 (#2682, par @TheoLechemia)
 - Correction de la configuration NGINX des préfixes quand GeoNature est déployé avec Docker (#2698, par @bouttier)
@@ -403,7 +507,7 @@ C'est la manière la plus simple de déployer GeoNature avec ses 4 modules exter
 - [Synthèse] Correction de la recherche de taxons avec des accents (#2676, par @Pierre-Narcisi)
 - [Synthèse] Correction des couleurs des mailles quand on clique sur différentes mailles successivement en mode maille (#2677, par @Pierre-Narcisi)
 
-**📝 Documentation**
+### 📝 Documentation
 
 - Documentation de la nouvelle interface d'administration des permissions (#2605, par @camillemonchicourt), disponible sur https://docs.geonature.fr/user-manual.html#admin
 - Mise à jour de la documentation d'installation Docker suite à la sortie d'un Docker Compose complet et fonctionnel sur [GeoNature-Docker-services](https://github.com/PnX-SI/GeoNature-Docker-services/) (#2703)
@@ -417,7 +521,7 @@ C'est la manière la plus simple de déployer GeoNature avec ses 4 modules exter
 - Vérifiez que vos modules soient compatibles avec le nouveau mécanisme de déclaration des permissions disponibles. C'est le cas pour les modules Import, Export, Dashboard, Monitorings et Zones humides.
 - Cette nouvelle version est compatible avec Debian 12. Le support de Debian 10 sera arrêté prochainement.
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Refonte complète des permissions (#2487)
   - Suppression de l'héritage des permissions du module "GeoNature" vers les autres modules, et de l'objet "All" vers les éventuels autres objets des modules. Chaque permission dans un module doit désormais être définie explicitement. Cela entraine de devoir définir plus de permissions (à l'installation d'un nouveau module notamment) mais aussi de les rendre plus lisibles, additives et explicites (#2474)
@@ -442,7 +546,7 @@ C'est la manière la plus simple de déployer GeoNature avec ses 4 modules exter
 - Suppression des médias orphelins basculée dans une tache Celery Beat lancée automatiquement toutes les nuits (`clean_attachments`), et non plus à l'ajout ou suppression d'un autre média (#2436)
 - Ajout d'une documentation utilisateur sur le module Métadonnées - https://docs.geonature.fr/user-manual.html#metadonnees (#2662)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - [Occtax] Correction du déplacement du marqueur de localisation poncutelle d'un relevé (#2554 et #2552)
 - [Occtax] Correction du centrage sur la carte quand on modifie un relevé
@@ -458,7 +562,7 @@ C'est la manière la plus simple de déployer GeoNature avec ses 4 modules exter
 - [Synthèse] Correction des filtres géographiques multiples (#2639)
 - [Métadonnées] Correction de l'affichage du formulaire de filtres avancés (#2649)
 
-**💻 Développement**
+### 💻 Développement
 
 - Découpage du script `install/03_create_db.sh` en 2 (avec la création du fichier `install/03b_populate_db.sh`) notamment pour améliorer la dockerisation de GeoNature (#2544)
 - Ajout d'un script `install/03b_populate_db_for_test.sh` pouvant être utilisé par la CI de test des modules GeoNature (#2544)
@@ -470,7 +574,7 @@ C'est la manière la plus simple de déployer GeoNature avec ses 4 modules exter
 - Mise à jour des dépendances Python (#2596)
 - Documentation de développement des permissions (#2585)
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -489,7 +593,7 @@ Si vous mettez à jour GeoNature :
 
 ## 2.12.3 (2023-05-09)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - [Synthèse] Correction du filtre des observations épinglées pour ne remonter que celles de l'utilisateur connecté (#2507 par @mvergez)
 - [Synthèse] Correction de la recherche géographique avec chargement d'un fichier local (#2522 par @bouttier et @mvergez)
@@ -501,11 +605,11 @@ Si vous mettez à jour GeoNature :
 - Correction et ation de la page de maintenance (#2535)
 - Correction de la synchronisation des JDD et de l’association aux modules (#2532 par @VincentCauchois)
 
-**💻 Développement**
+### 💻 Développement
 
 - La fonction `geonature.core.gn_permissions.tools.cruved_scope_for_user_in_module` est remplacée par `geonature.core.gn_permissions.tools.get_scopes_by_action`
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous utilisez la page de maintenance, celle-ci a été revue, [référez vous à la documentation](https://docs.geonature.fr/installation.html#configuration-apache) afin de la mettre à jour.
 
@@ -513,11 +617,11 @@ Si vous utilisiez des champs additionnels avec des checkbox, lors de leur change
 
 ## 2.12.2 (2023-04-18)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Synthèse : ajout d’un filtre sur les observations avec ou sans commentaire (#2469, par @mvergez)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Synthèse - mode maille : récupération des observations hors référentiel de mailles pour affichage dans la liste, garantissant ainsi un nombre d’observations indentique entre le mode point et le mode maille (#2495, par @TheoLechemia)
 - Synthèse : correction des filtres médias / épinglage / signalement / commentaires pour fonctionner également de manière négative (#2469)
@@ -535,12 +639,12 @@ Si vous utilisiez des champs additionnels avec des checkbox, lors de leur change
 
 ## 2.12.1 (2023-04-11)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Mise à jour de quelques dépendances python (#2438, par @MathRdt)
 - Mise à jour de Utils-Flask-SQLAlchemy en version 0.3.3
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction et ations des performances des recherches par statut de protection, notamment quand elles sont associées à une recherche géographique (#2450, par @amandine-sahl)
 - Correction d’une régression des performances lors de la récupération des JDD (#2462, par @mvergez)
@@ -552,7 +656,7 @@ Si vous utilisiez des champs additionnels avec des checkbox, lors de leur change
 
 ## 2.12.0 - Cyathea borbonica 🌴 (2023-03-27)
 
-**⏩ En bref**
+### ⏩ En bref
 
 - Affichage agrégé des observations dans la Synthèse (performances et lisibilité) (#1847 et #1878)
 - Filtres par défaut dans la Synthèse (#2261)
@@ -569,7 +673,7 @@ Si vous utilisiez des champs additionnels avec des checkbox, lors de leur change
 - Refactorisation des permissions (simplification, optimisation, centralisation, performances, tests)
 - Mise à jour d'Angular en version 15 (#2154)
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -599,7 +703,7 @@ Si vous mettez à jour GeoNature :
 
 ✅ Exemple de procédure de mise à jour depuis une version 2.11 : https://geonature.fr/documents/procedures/2023-04-GN-211to212.txt
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Configuration dynamique du frontend : le frontend récupère dynamiquement sa configuration depuis le backend. Pour cela, il nécessite uniquement l’adresse de l’`API_ENDPOINT` qui doit être renseignée dans le fichier `frontend/src/assets/config.json`. En conséquence, il n’est plus nécessaire de rebuilder le frontend lors d’une modification de la configuration de GeoNature ou de ses modules (#2205)
 - Personnalisation de la page d’accueil : ajout d’une section `[HOME]` contenant les paramètres `TITLE`, `INTRODUCTION` et `FOOTER`. Ceux-ci peuvent contenir du code HTML qui est chargé dynamiquement avec la configuration, évitant ainsi la nécessité d’un rebuild du frontend (#2300)
@@ -678,7 +782,7 @@ Si vous mettez à jour GeoNature :
 - Amélioration du message renvoyé à l'utilisateur en cas de Timout (#2417)
 - Amélioration du composant générique de selection d'un jeu de données, en selectionnant automatiquement le JDD si la liste n'en contient qu'un et que le champs est obligatoire (#1049)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Synthèse : changement du type de `entity_source_pk_value` de `Integer` à `Unicode` dans le modèle pour correspondre à la base de données
 - Correction de l’accès public automatique activable avec `?access=public` dans l’URL (#1650)
@@ -699,7 +803,7 @@ Si vous mettez à jour GeoNature :
 - Correction du chargement des dates début et date fin quand on modifie un relevé dans Occtax ou une station dans OCchab (#2071)
 - Correction de la récupération des emails dans l'interface "Mon compte" (#2346)
 
-**💻 Développement**
+### 💻 Développement
 
 - Suppression du support du paramètre `get_role` du décorateur `check_cruved_scope` (#2162)
 - Suppression des paramètres `redirect_on_expiration` et `redirect_on_invalid_token` du décorateur `check_cruved_scope` (#2360)
@@ -733,14 +837,14 @@ Si vous mettez à jour GeoNature :
 
 ## 2.11.2 (2023-01-19)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction d'un import manquant dans un fichier de migration des données d'exemple d'Occtax (#2285)
 - Correction d'un problème de l'installation globale en mode développement
 
 ## 2.11.1 (2023-01-18)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction de la documentation de la sensibilité (#2234)
 - Correction de l’accès aux notifications lorsque la gestion des comptes utilisateurs est activée
@@ -749,7 +853,7 @@ Si vous mettez à jour GeoNature :
 
 ## 2.11.0 - Ilex aquifolium 🎄 (2022-12-21)
 
-**⏩ En bref**
+### ⏩ En bref
 
 - Utilisation de la BDC statuts dans la Synthèse pour les filtres et infos sur les statuts des espèces
 - Mise à jour des règles de sensibilité du SINP
@@ -761,7 +865,7 @@ Si vous mettez à jour GeoNature :
 - Amélioration du script `migration.sh` de mise à jour de GeoNature
 - Nettoyage du frontend et amélioration de la séparation backend/frontend
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -822,7 +926,7 @@ Si vous mettez à jour GeoNature :
 
 ✅ Exemple de procédure de mise à jour depuis une version 2.9 : https://geonature.fr/documents/procedures/2023-01-GN-29to211.txt
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - [Synthèse] Ajout de filtres sur les statuts de protection et les listes rouges dans le fenêtre de recherche avancée basés sur la [BDC Statuts](https://inpn.mnhn.fr/programme/base-de-connaissance-statuts/presentation).
   Ajout des paramètres de configuration `STATUS_FILTERS` et `RED_LISTS_FILTERS` dans la section `SYNTHESE`. Il est possible de modifier les listes et statuts affichés comme indiqué dans la documentation de la configuration du module SYNTHESE. (#1492)
@@ -878,7 +982,7 @@ Si vous mettez à jour GeoNature :
     Il n'est pas nécessaire de lancer cette commande manuellement pour les modules installés avec la commande `install-gn-module` sauf lorsque cette dernière est appelée avec le paramètre `--upgrade-db=false`.
   - Les assets frontend ne sont plus collectés dans un dossier portant le nom du module. Le mainteneur du module doit donc créer cette arborescence lui-même.
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Installation d'une dépendance Debian manquante pour Cypress (#2125)
 - Les fichiers de service systemd ont été corrigés pour fonctionner sur une machine sans PostgreSQL (BDD sur un autre hôte)
@@ -889,7 +993,7 @@ Si vous mettez à jour GeoNature :
 - Correction de la gestion du protocole (http / https) lors des redirections automatique de Flask (redirection en cas de slash manquant en fin d’URL)
 - Rafraîchissement du cache des règles de sensibilité en fin d’installation
 
-**💻 Développement**
+### 💻 Développement
 
 - Nettoyage du frontend : dépendances, configuration Angular
 - Révision importante de la documentation, de développement notamment
@@ -907,7 +1011,7 @@ Si vous mettez à jour GeoNature :
 
 ## 2.10.4 (2022-11-30)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Mise à jour du RefGeo en version 1.2.1 afin de corriger une
   régression des performances dans la synthèse
@@ -923,12 +1027,12 @@ Si vous mettez à jour GeoNature :
 
 ## 2.10.3 (2022-11-15)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Optimisation d'une migration Occtax particulièrement lente en
   désactivant temporairement les triggers (#2138)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction de la fonctionnalité d'inscription des utilisateurs
   (#1874)
@@ -937,11 +1041,11 @@ Si vous mettez à jour GeoNature :
 
 ## 2.10.2 (2022-11-09)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Documentation de la fonctionnalité de duplication d'Occtax
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction du script de migration pour générer la configuration
   frontend des modules
@@ -950,13 +1054,13 @@ Si vous mettez à jour GeoNature :
 
 ## 2.10.1 (2022-11-08)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Ajout du paramètre de configuration `DISABLED_MODULES`
 - Installation des dépendances frontend des modules dans le dossier
   frontend des modules eux-mêmes
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - La commande `geonature` ignore les modules dont le chargement a
   rencontré une erreur (#2109)
@@ -969,7 +1073,7 @@ Si vous mettez à jour GeoNature :
 - Correction d'une régression de la 2.10.0 sur la route de
   récupération des jeux de données impactant Occtax-mobile
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 - Passez directement à cette version plutôt que la 2.10.0, mais en
   suivant les notes de version de la 2.10.0, en vous aidant
@@ -993,7 +1097,7 @@ GeoNature :
 - Dashboard
 - Monitoring
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 - **Avant** de mettre à jour GeoNature :
 
@@ -1036,7 +1140,7 @@ GeoNature :
 dépendances et ses modules principaux est disponible](https://geonature.fr/documents/procedures/2022-11-GN-210-Migrate.txt)
 (pour information et à adapter à votre contexte).
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Possibilité de dupliquer le module Occtax (#621)
 - Amélioration des fiches des observations dans les modules Synthèse
@@ -1120,7 +1224,7 @@ dépendances et ses modules principaux est disponible](https://geonature.fr/docu
 - [Accueil] Amélioration du formatage des nombres dans le bloc de
   statistiques (#2085)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Remise en place de la rotation automatique des fichiers de logs
   (#1627)
@@ -1178,7 +1282,7 @@ dépendances et ses modules principaux est disponible](https://geonature.fr/docu
   d’un JDD et d’un CA seulement si l’utilisateur en a les droits
   (#1822)
 
-**💻 Développement**
+### 💻 Développement
 
 - Mise à jour d’Angular de la version 7 à 12 à répercuter dans les
   modules spécifiques (<https://update.angular.io/?v=7.2-12.0>)
@@ -1238,7 +1342,7 @@ dépendances et ses modules principaux est disponible](https://geonature.fr/docu
 
 ## 2.9.2 (2022-02-15)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Optimisation du nombre d'informations renvoyées par l'API pour les
   utilisateurs et les organismes
@@ -1256,7 +1360,7 @@ dépendances et ses modules principaux est disponible](https://geonature.fr/docu
 - Ajout de tests unitaires sur les fonctions de calcul de la
   sensibilité
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction d'une régression sur la récupération de la liste des
   taxons (#1672)
@@ -1267,7 +1371,7 @@ dépendances et ses modules principaux est disponible](https://geonature.fr/docu
   - Utilisation de la règle la plus sensible quand plusieurs règles
     s'appliquent
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 - La correction de la fonction de calcul de la sensibilité est suivie
   d'un recalcul automatique du niveau de sensibilité des données
@@ -1297,7 +1401,7 @@ dépendances et ses modules principaux est disponible](https://geonature.fr/docu
 
 ## 2.9.1 (2022-01-27)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Utilisation du paramètre `page` de Flask à la place du paramètre
   maison `offset` pour la pagination des routes (rétro-compatible)
@@ -1306,7 +1410,7 @@ dépendances et ses modules principaux est disponible](https://geonature.fr/docu
 - Ajout du paramètre de configuration `CODE_APPLICATION` (par défaut
   `GN`) (#1635)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction de l’URL de réinitialisation de mot passe envoyée par
   email (#1620)
@@ -1330,7 +1434,7 @@ dépendances et ses modules principaux est disponible](https://geonature.fr/docu
 
 **Profils de taxons**
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Construction automatique d’une fiche d’identité (profil) par taxon
   grâce aux observations validées présentes dans la base de données
@@ -1395,7 +1499,7 @@ dépendances et ses modules principaux est disponible](https://geonature.fr/docu
   différents modules (et non plus le R du CRUVED sur GeoNature)
   (#659)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - [OCCTAX] Correction de l’enregistrement des dénombrements lors de
   l’enchainement des relevés (#1479 par \@jbrieuclp)
@@ -1425,7 +1529,7 @@ dépendances et ses modules principaux est disponible](https://geonature.fr/docu
 - Mise à jour du module Habref-api-module pour corrections de
   certaines données d’Habref
 
-**💻 Développement**
+### 💻 Développement
 
 - Migration vers la librairie `gn-select2` pour les listes déroulantes
   des formulaires (#616 / #1285 par \@jbrieuclp)
@@ -1451,7 +1555,7 @@ dépendances et ses modules principaux est disponible](https://geonature.fr/docu
   `pnx-municipalities`.
 - Mise à jour de nombreuses dépendances
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 - La liste des JDD dans les modules de saisie (Occtax, Occhab,
   Monitoring et Import) se base désormais sur le C du CRUVED de
@@ -1534,14 +1638,14 @@ dépendances et ses modules principaux est disponible](https://geonature.fr/docu
 
 ## 2.8.1 (2021-10-17)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Ajout de l'indication du département au formulaire des communes
   (#1480)
 - Ajout des champs `group2inpn` et `regne` au formulaire des
   nomenclatures (#1481)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction de la commande `geonature db autoupgrade`
 - Mise-à-jour corrective de [UsersHub-authentification-module
@@ -1555,7 +1659,7 @@ dépendances et ses modules principaux est disponible](https://geonature.fr/docu
 utilisez disposent d’une version compatible avec la 2.8.0, suite au
 passage à la version 3 de Marshmallow.
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Support de Debian 11 / Python 3.9
 - Passage de `supervisor` à `systemd`
@@ -1583,7 +1687,7 @@ passage à la version 3 de Marshmallow.
   - [Utils-Flask-SQLAlchemy-Geo
     0.2.1](https://github.com/PnX-SI/Utils-Flask-SQLAlchemy-Geo/releases/tag/0.2.1)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Corrections et améliorations des formulaires dynamiques et des
   champs additionnels
@@ -1628,7 +1732,7 @@ passage à la version 3 de Marshmallow.
   module packagé
 - Correction d'un bug lors de l'ajout d'un cadre d'acquisition
 
-**💻 Développement**
+### 💻 Développement
 
 - Mise à jour de plusieurs dépendances
 - Packetage des modules fournis avec GeoNature
@@ -1636,7 +1740,7 @@ passage à la version 3 de Marshmallow.
   `g.current_user`
 - Nettoyage et refactoring divers
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 - Mettre à jour [UsersHub en version
   2.2.1](https://github.com/PnX-SI/UsersHub/releases/tag/2.2.1) et
@@ -1736,13 +1840,13 @@ passage à la version 3 de Marshmallow.
 
 ## 2.7.5 (2021-07-28)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Compatibilité avec Occtax-mobile 1.3. Possibilité d’ajouter la
   query string `fields` sur la route `meta/datasets` pour choisir les
   champs renvoyés par l’API
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -1751,12 +1855,12 @@ Si vous mettez à jour GeoNature :
 
 ## 2.7.4 (2021-07-23)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction d’un import manquant entrainant un problème de
   compilation du frontend (#1424)
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -1765,7 +1869,7 @@ Si vous mettez à jour GeoNature :
 
 ## 2.7.3 (2021-07-22)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Métadonnées : ajout des paramètres `CD_NOMENCLATURE_ROLE_TYPE_DS` et
   `CD_NOMENCLATURE_ROLE_TYPE_AF` pour limiter les rôles utilisables au
@@ -1773,21 +1877,21 @@ Si vous mettez à jour GeoNature :
 - Ajout de la commande `mtd_sync` qui permet de synchroniser les
   métadonnées de toute une instance depuis le flux MTD du SINP
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction de l’affichage des jeux de données sur les fiches des
   cadres d’acquisition (#1410)
 - Doc : Précision des OS supportés (Debian 10 uniquement en
   production)
 
-**💻 Développement**
+### 💻 Développement
 
 - Support des commandes Flask au niveau de la commande `geonature`
   (`run`, `db`, `routes`, `shell`\...)
 - Ajout des sous-modules en tant que dépendances
 - Ajout d’une commande `install_packaged_gn_module`
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -1796,7 +1900,7 @@ Si vous mettez à jour GeoNature :
 
 ## 2.7.2 (2021-07-05)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - OCCTAX : correction de la vérification du CRUVED (#1413)
 - OCCTAX : correction du dégrisement du formulaire au chargement de la
@@ -1806,7 +1910,7 @@ Si vous mettez à jour GeoNature :
 - Suppression des champs additionnels de type "taxonomy" qui
   n’étaient pas supportés
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -1817,7 +1921,7 @@ Si vous mettez à jour GeoNature :
 
 ## 2.7.1 (2021-07-02)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Installation des dépendances javascript des modules lors de la
   migration de version de GeoNature (#1252)
@@ -1826,7 +1930,7 @@ Si vous mettez à jour GeoNature :
 - Intégration de la documentation permettant de mettre en place
   l’accès public à GeoNature
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -1837,7 +1941,7 @@ Si vous mettez à jour GeoNature :
 
 Nécessite la version 1.8.x de TaxHub.
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Compatible avec TaxHub 1.8.x qui inclut notamment la migration
   (optionnelle) vers Taxref version 14 et l’ajout de la BDC statuts
@@ -1922,7 +2026,7 @@ Nécessite la version 1.8.x de TaxHub.
   nommé `COLUMN_LIST`. Voir le fichier
   `contrib/gn_module_validation/config/conf_gn_module.toml.example`
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Occtax : Correction d’un bug sur le champs observateur lors de la
   modification d’un relevé (#1177)
@@ -1959,7 +2063,7 @@ Nécessite la version 1.8.x de TaxHub.
 - Résolution des problèmes de permission sur le fichier
   `gn_errors.log` (#1003)
 
-**💻 Développement**
+### 💻 Développement
 
 - Possibilité d’utiliser la commande `flask` (eg `flask shell`)
 - Préparation de l’utilisation d’Alembic pour la gestion des
@@ -1977,7 +2081,7 @@ Nécessite la version 1.8.x de TaxHub.
   table `gn_commons.t_modules`
 - Diverses améliorations mineures de l’architecture du code
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -2029,7 +2133,7 @@ Si vous mettez à jour GeoNature :
 
 ## 2.6.2 (2021-02-15)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Metadonnées : correction d’un bug sur la fiche JDD si le module
   d’import n’est pas installé
@@ -2040,7 +2144,7 @@ Si vous mettez à jour GeoNature :
 
 ## 2.6.1 (2021-02-11)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction de la fonction
   `gn_synthese.fct_tri_cal_sensi_diff_level_on_each_statement()` non
@@ -2055,7 +2159,7 @@ Si vous mettez à jour GeoNature :
 - Sécurité : suppression d’une route inutile
 - Correction de l’URL de la doc sur la page d’accueil
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -2075,7 +2179,7 @@ Nécessite Debian 10, car cette nouvelle version nécessite PostgreSQL 10
 minimum (qui n’est pas fourni par défaut avec Debian 9) pour les
 triggers déclenchés "on each statement", plus performants.
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Sensibilité : Ajout d’un trigger sur la synthèse déclenchant
   automatiquement le calcul de la sensibilité des observations et
@@ -2173,7 +2277,7 @@ triggers déclenchés "on each statement", plus performants.
 - Création d’un script permettant d’importer les régions dans le
   référentiel géographique (`data/migrations/insert_reg.sh`)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Occhab : Export SIG (GPKG ou SHP) corrigé (#898)
 - Meilleur nettoyage des sessions enregistrées dans le navigateur
@@ -2206,7 +2310,7 @@ triggers déclenchés "on each statement", plus performants.
   la table `gn_synthese.synthese` (de 255 à 5000 caractères)
 - Sensibilité : Corrections des contraintes NOT VALID (#1245)
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -2241,7 +2345,7 @@ Si vous mettez à jour GeoNature :
 
 ## 2.5.5 (2020-11-19)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Ajout d’un composant fil d’ariane (#1143)
 - Ajout de la possiblité de désactiver les composants `pnx-taxa` et
@@ -2249,7 +2353,7 @@ Si vous mettez à jour GeoNature :
 - Ajout de tests sur les routes pour assurer la compatibilité avec les
   applications mobiles
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction d’un bug de récupération du CRUVED sur les modules
   (#1146)
@@ -2261,14 +2365,14 @@ Si vous mettez à jour GeoNature :
 
 ## 2.5.4 (2020-11-17)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Ajout de scripts `sql` et `sh` de restauration des medias dans
   `data/medias` (#1148)
 - Ajout d’un service pour pouvoir récupérer les informations sur
   l’utilisateur connecté
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction des médias qui sont actuellement tous supprimés
   automatiquement après 24h, et non pas seulement ceux orphelins
@@ -2277,7 +2381,7 @@ Si vous mettez à jour GeoNature :
   Occtax avec la désactivation du bouton de modification du relevé
   quand l’utilisateur n’en a pas les droits
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 - Si vous aviez associé des médias à des observations dans Occtax ou
   autre et qu’ils ont été supprimés, vous pouvez les retrouver dans
@@ -2294,7 +2398,7 @@ Si vous mettez à jour GeoNature :
 
 ## 2.5.3 (2020-11-04)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Mise en place de l’héritage du CRUVED au niveau des objets des
   modules (#1028)
@@ -2330,7 +2434,7 @@ Si vous mettez à jour GeoNature :
 - Homogénéisation du style du code et documentation des pratiques de
   développement
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction de l’affichage des noms des validateurs sur la liste
   dans le module validation (#1091 par \@lpofredc)
@@ -2356,7 +2460,7 @@ Si vous mettez à jour GeoNature :
 - Annulation de l’insertion du module lorsqu’une erreur est levée à
   l’installation d’un module
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 - Désormais les objets des modules (par exemple les objets
   ’Permissions’ et ’Nomenclatures’ du module ’ADMIN’) héritent
@@ -2389,7 +2493,7 @@ Si vous mettez à jour GeoNature :
 
 ## 2.5.2 (2020-10-13)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Occtax : correction du problème d’installation du module dans le
   fichier `schemas.py`
@@ -2397,7 +2501,7 @@ Si vous mettez à jour GeoNature :
   `gn_synthese.import_row_from_table` et répercussion dans le fichier
   `gn_synthese/process.py`
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -2408,7 +2512,7 @@ Si vous mettez à jour GeoNature :
 
 ## 2.5.1 (2020-10-06)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Ajout d’un paramètre `DISPLAY_EMAIL_INFO_OBS` définissant si les
   adresses email des observateurs sont affichées ou non dans les
@@ -2429,7 +2533,7 @@ Si vous mettez à jour GeoNature :
   `observers_as_txt`
 - Verification des UUID : autoriser toutes les versions (#1063)
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -2440,7 +2544,7 @@ Si vous mettez à jour GeoNature :
 
 Occtax v2 et médias
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Refonte de l’ergonomie et du fonctionnement du module de saisie
   Occtax (#758 et #860 par \@jbrieuclp et \@TheoLechemia)
@@ -2555,7 +2659,7 @@ Occtax v2 et médias
 - Documentation administrateur : Précisions sur les labels, pictos et
   ordres des modules dans le menu de navigation latéral
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Module Validation : Affichage des commentaires du relevé et de
   l’observation (#978 et #854)
@@ -2585,7 +2689,7 @@ Occtax v2 et médias
   `gn_sensitivity.get_id_nomenclature_sensitivity` (#284)
 - Typo sur le terme "Preuve d’existence" (par \@RomainBaghi)
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -2631,7 +2735,7 @@ Si vous mettez à jour GeoNature :
 
 ## 2.4.1 (2020-06-25)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Occurrences sans géométrie précise : Ajout d’un champs
   `id_area_attachment` dans la table `gn_synthese.synthese` permettant
@@ -2646,7 +2750,7 @@ Si vous mettez à jour GeoNature :
 - Mise à jour des communes importées sur la version de février 2020
   d’Admin express IGN pour les nouvelles installations
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction d’un bug d’affichage des fonds de carte WMTS de l’IGN,
   apparu dans la version 2.4.0 avec l’ajout du support des fonds WMS
@@ -2654,7 +2758,7 @@ Si vous mettez à jour GeoNature :
 - Gestion des exceptions de type `FileNotFoundError` lors de l’import
   des commandes d’un module
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature :
 
@@ -2672,7 +2776,7 @@ Si vous mettez à jour GeoNature :
 
 ## 2.4.0 - Fiches de métadonnées (2020-06-22)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Métadonnées : Ajout d’une fiche pour chaque jeu de données et
   cadres d’acquisition, incluant une carte de l’étendue des
@@ -2756,7 +2860,7 @@ Si vous mettez à jour GeoNature :
   de mettre en place les exports au format GeoPackage et corrigeant
   les exports de SHP contenant des géométries multiples
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Mise à jour des URL de la documentation utilisateur des modules,
   renvoyant vers <http://docs.geonature.fr>
@@ -2780,7 +2884,7 @@ Si vous mettez à jour GeoNature :
   (#861)
 - Correction de l’utilisation des paramètres du proxy (#944)
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Si vous mettez à jour GeoNature.
 
@@ -2842,14 +2946,14 @@ Si vous mettez à jour GeoNature.
 
 ## 2.3.2 (2020-02-24)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Possibilité de charger les commandes d’un module dans les commandes
   de GeoNature
 - Ajout de commentaires dans le fichier d’exemple de configuration
   `config/default_config.toml.example`
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction d’une incohérence dans le décompte des JDD sur la page
   d’accueil en leur appliquant le CRUVED (#752)
@@ -2858,7 +2962,7 @@ Si vous mettez à jour GeoNature.
 
 ## 2.3.1 (2020-02-18)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Installation globale : Compatibilité Debian 10 (PostgreSQL 11,
   PostGIS 2.5)
@@ -2875,7 +2979,7 @@ Si vous mettez à jour GeoNature.
 - Ajout du nom vernaculaire dans les fiches d’information des relevés
   d’Occtax (par \@FloVollmer / #826)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction de l’installation de Node.js et npm par l’utilisation
   généralisée de nvm (#832 et #837)
@@ -2888,7 +2992,7 @@ Si vous mettez à jour GeoNature.
 - Corrections de typos dans la documentation d’administration
   (#840 - par \@sogalgeeko)
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 - Vous pouvez passer directement à cette version depuis la 2.2.x, mais
   en suivant les notes des versions intermédiaires (NB : il n’est pas
@@ -2910,7 +3014,7 @@ Si vous mettez à jour GeoNature.
 
 ## 2.3.0 - Occhab de Noël (2019-12-27)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Développement du module Occhab (Occurrences d’habitats) basé sur
   une version minimale du standard SINP du même nom et s’appuyant sur
@@ -3004,7 +3108,7 @@ Si vous mettez à jour GeoNature.
 - Ajout d’une route permettant de récupérer la liste des rôles d’une
   liste à partir de son code (par \@joelclems)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - MENU Side nav : Correction pour ne pas afficher les modules pour
   lesquels le paramètre `active_frontend` est False (#822)
@@ -3045,7 +3149,7 @@ Si vous mettez à jour GeoNature.
 - Migration des données GeoNature V1 vers V2
   (`data/migrations/v1tov2/`) : ajustements mineurs
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 NB: La version 2.3.0 n’est pas compatible avec le module Dashboard. Si
 vous avez le module Dashboard installé, ne passez pas à cette nouvelle
@@ -3084,7 +3188,7 @@ Vérifier que la migration s’est bien déroulée dans le fichier
 
 ## 2.2.1 (2019-10-09)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - La route de changement de mot de passe était désactivée par le
   mauvais paramètre (`ENABLE_SIGN_UP` au lieu de
@@ -3099,7 +3203,7 @@ Vérifier que la migration s’est bien déroulée dans le fichier
 
 ## 2.2.0 - Module utilisateurs (2019-09-18)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Ajout d’interfaces et de paramètres de création de compte, de
   récupération de son mot de passe et d’administration de son profil,
@@ -3123,7 +3227,7 @@ Vérifier que la migration s’est bien déroulée dans le fichier
 - Ajout d’une tutoriel vidéo d’installation dans la documentation
   (<https://www.youtube.com/watch?v=JYgH7cV9AjE>, par \@olivier8064)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Correction d’un bug sur les export CSV en utilisant la librairie
   Python standard `csv` (#733)
@@ -3148,7 +3252,7 @@ Vérifier que la migration s’est bien déroulée dans le fichier
   (par \@lpofredc)
 - Correction de la rotation des logs
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 - Passer le script de migration suivant:
   <https://github.com/PnX-SI/GeoNature/blob/master/data/migrations/2.1.2to2.2.0.sql>
@@ -3163,7 +3267,7 @@ Vérifier que la migration s’est bien déroulée dans le fichier
 
 ## 2.1.2 (2019-07-25)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - SYNTHESE : Correction d’une URL en dur pour la recherche de rangs
   taxonomiques
@@ -3177,7 +3281,7 @@ Vérifier que la migration s’est bien déroulée dans le fichier
   suppression d’un paramètre inutile
 - BACKOFFICE : Correction d’une URL incorrecte et customisation
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 Ceci est une version corrective mineure. Si vous migrez depuis la 2.1.0,
 passez directement à cette version en suivant les notes de version de la
@@ -3185,7 +3289,7 @@ passez directement à cette version en suivant les notes de version de la
 
 ## 2.1.1 (2019-07-18)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - SYNTHESE: Factorisation du formulaire de recherche (utilisé dans le
   module synthese et validation)
@@ -3227,7 +3331,7 @@ passez directement à cette version en suivant les notes de version de la
 - Complément, correction et compatibilité 2.1.0 des scripts de
   migration `data/migrations/v1tov2`
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Nombreuses corrections du module de validation (non utilisation des
   id_nomenclature, simplification des vues et de la table
@@ -3262,7 +3366,7 @@ passez directement à cette version en suivant les notes de version de la
 - L’ancien module export du coeur est enlevé en vue de la sortie du
   nouveau module export
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 - Passer TaxHub en version 1.6.3
   (<https://github.com/PnX-SI/TaxHub/releases/tag/1.6.3>)
@@ -3276,7 +3380,7 @@ passez directement à cette version en suivant les notes de version de la
 
 ## 2.1.0 - Module validation (2019-06-01)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Intégration du module Validation dans GeoNature (développé par
   \@JulienCorny, financé par \@sig-pnrnm)
@@ -3301,7 +3405,7 @@ passez directement à cette version en suivant les notes de version de la
 - Synthese - Affichage des zonages intersectés dans un onglet séparé
   (#579)
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Révision complète des scripts de migration de GeoNature v1 à v2
   (`data/migrations/v1tov2`)
@@ -3322,7 +3426,7 @@ passez directement à cette version en suivant les notes de version de la
   (#654, par \@DonovanMaillard)
 - Mise à jour de sécurité de Jinja2 et SQLAlchemy
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 - Vous pouvez passer directement à cette version, mais en suivant les
   notes des versions intermédiaires
@@ -3358,14 +3462,14 @@ passez directement à cette version en suivant les notes de version de la
 
 ## 2.0.1 (2019-03-18)
 
-**🚀 Nouveautés**
+### 🚀 Nouveautés
 
 - Développement : ajout d’une fonction de génération dynamique de
   requête SQL (avec vérification et cast des types)
 - Synthese : Ajout d’un message indiquant que le module affiche les
   dernières observations par défaut
 
-**🐛 Corrections**
+### 🐛 Corrections
 
 - Synthese : correction du filtre CRUVED pour les portées 1 et 2 sur
   la route `synthese/for_web` (#584)
@@ -3394,7 +3498,7 @@ passez directement à cette version en suivant les notes de version de la
   d’acquisition imbriqués
 - Ajouts de tests automatisés complémentaires
 
-**⚠️ Notes de version**
+### ⚠️ Notes de version
 
 - Vous pouvez passer directement à cette version, mais en suivant les
   notes des versions intermédiaires

@@ -2,6 +2,8 @@
 Models of gn_permissions schema
 """
 
+from flask import current_app
+
 from packaging import version
 from datetime import datetime
 
@@ -180,7 +182,12 @@ class PermFilter:
                 return """<i class="fa fa-user-circle" aria-hidden="true"></i> de mon organisme"""
         elif self.name == "SENSITIVITY":
             if self.value:
-                return """<i class="fa fa-low-vision" aria-hidden="true"></i>  non sensible"""
+                statut = (
+                    "floutées"
+                    if current_app.config["SYNTHESE"]["BLUR_SENSITIVE_OBSERVATIONS"]
+                    else "exclues"
+                )
+                return f"""<i class="fa fa-low-vision" aria-hidden="true"></i> sensibles {statut}"""
             else:
                 return """<i class="fa fa-eye" aria-hidden="true"></i>  sensible et non sensible"""
         elif self.name == "GEOGRAPHIC":
@@ -277,6 +284,18 @@ class Permission(db.Model):
         "GEOGRAPHIC": "areas_filter",
         "TAXONOMIC": "taxons_filter",
     }
+
+    def __repr__(self):
+        return f"""Permission {self.id_permission} 
+        - Role: {self.role.nom_complet or self.role.identifiant} 
+        - Module: {self.module.module_label} 
+        - Action : {self.action.code_action}
+        - Scope : {self.scope_value}
+        - Taxons Filter : {self.taxons_filter}
+        - Areas Filter : {self.areas_filter}
+        - Object: {self.object}
+        - Floutage : {"Oui" if self.sensitivity_filter else "Non"}
+        - Expire le : {self.expire_on}\n"""
 
     @staticmethod
     def __SCOPE_le__(a, b):
