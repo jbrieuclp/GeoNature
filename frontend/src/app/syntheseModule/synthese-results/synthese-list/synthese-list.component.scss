@@ -2,6 +2,10 @@
   background-color: red;
 }
 
+:host ::ng-deep .datatable-header-cell {
+  padding-left: 10px!important;
+}
+
 :host ::ng-deep .datatable-body-row.active .datatable-row-group {
   background-color: rgb(117, 227, 118) !important;
 }
@@ -12,39 +16,88 @@
 
 :host ::ng-deep .datatable-body-cell {
   font-size: 12px !important;
-  padding-bottom: 15px !important;
-  padding-top: 8px !important;
-  padding-left: 15px !important;
+  // padding-bottom: 15px !important;
+  // padding-top: 8px !important;
+  // padding-left: 15px !important;
+  align-items: center;
+  display: inline-flex !important;
+  padding: 0 !important;
+  padding-left: 10px!important;
 }
 :host ::ng-deep .datatable-body-cell i {
   font-size: 12px;
-}
-
-:host ::ng-deep .datatable-body-cell .btn-map-criteria {
-  display: inline-block;
-  height: 20px;
-  width: 20px;
-  text-align: center;
-  vertical-align: baseline;
-  padding: 0;
-}
-
-:host ::ng-deep .datatable-body-cell .btn-map-criteria i {
-  vertical-align: text-top;
 }
 
 :host ::ng-deep .datatable-body {
   overflow-x: scroll;
 }
 
+:host ::ng-deep .datatable-body-cell:first-child {
+  padding: 0 !important;
+  padding-left: 10px !important;
+}
+
+:host ::ng-deep .datatable-body-cell:first-child > *,
+.container,
+.box {
+  height: 100%
+}
+
+:host ::ng-deep .datatable-body-cell:first-child .container {
+  display: flex;           /* active flexbox */
+  align-items: center;     /* aligne verticalement au centre */
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  gap: 10px;
+}
+
+:host ::ng-deep .datatable-body-cell:first-child .box {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  text-align: center;
+}
+
+:host ::ng-deep .datatable-body-cell:first-child .box > * {
+  display: inline-flex;
+  // vertical-align: middle;
+  // height: 100%;
+  // display: flex;
+  align-items: center;
+}
+
+:host ::ng-deep .datatable-body-cell .btn-map-criteria {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  border: 1px solid rgb(100, 100, 100);
+  font: 15px Arial, sans-serif;
+  color: 'black';
+  text-align: center;
+  // vertical-align: baseline;
+  padding: 0;
+}
+
+:host ::ng-deep .datatable-body-cell .btn-map-criteria i {
+  // vertical-align: text-top;
+  font-size: 10px;
+}
+
+
 ngx-datatable {
   box-shadow: none !important;
 }
 
 .actions-btns {
-  display: flex;
+  display: inline-flex;
+  align-items: center;
   margin: 5px 15px 15px 15px;
-  justify-content: end;
+  justify-content: center;
+  color: #444;
 }
 
 button[disabled] {

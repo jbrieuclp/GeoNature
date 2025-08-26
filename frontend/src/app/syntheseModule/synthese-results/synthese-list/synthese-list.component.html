@@ -19,7 +19,7 @@
   (select)="mapListService.onRowSelect($event)"
 >
   <ngx-datatable-column
-    [maxWidth]="5"
+    [maxWidth]="65"
     [sortable]="false"
   >
     <ng-template ngx-datatable-header-template>
@@ -39,73 +39,68 @@
       let-row="row"
       ngx-datatable-cell-template
     >
-      <ng-container *ngIf="criteriaService.isCriteriaDisplay(); else defaultInfoBtn">
-        <ng-template
-          #infoBtnWithCriteria
-          [ngTemplateOutlet]="infoBtnWithCriteria"
-          let-criteria
-          [ngTemplateOutletContext]="{ $implicit: criteriaService.getCriteriaStyle(row) }"
-        >
+      <div class="container">
+        <div class="box">
+          <ng-container *ngIf="criteriaService.isCriteriaDisplay(); else defaultInfoBtn">
+            <ng-template
+              #infoBtnWithCriteria
+              [ngTemplateOutlet]="infoBtnWithCriteria"
+              let-criteria
+              [ngTemplateOutletContext]="{ $implicit: criteriaService.getCriteriaStyle(row) }"
+            >
+              <button
+                [routerLink]="['occurrence', row['id_synthese'], 'details']"
+                [matTooltip]="
+                  criteriaService.buildCriteriaTxt(criteria) +
+                  '\n' +
+                  'Id : ' +
+                  row[mapListService.idName]
+                "
+                matTooltipPosition="before"
+                class="btn btn-light btn-map-criteria"
+                [style.background-color]="criteria.color"
+                [style.color]="criteria.icon?.color + '!important'"
+                [aria-label]="criteria.label"
+              >
+                <i
+                  class="fa fa-info"
+                  aria-hidden="true"
+                  data-qa="synthese-info-btn"
+                ></i>
+              </button>
+            </ng-template>
+          </ng-container>
+
+          <ng-template #defaultInfoBtn>
+            <a
+              class="link-dark"
+              style="color: black"
+              [routerLink]="['occurrence', row['id_synthese'], 'details']"
+            >
+              <i
+                matTooltip="{{ row[mapListService.idName] }}"
+                class="fa fa-info-circle"
+                aria-hidden="true"
+                data-qa="synthese-info-btn"
+              ></i>
+            </a>
+          </ng-template>
+        </div>
+
+        <div class="box">
           <a
-            [routerLink]="['occurrence', row['id_synthese'], 'details']"
-            [matTooltip]="
-              criteriaService.buildCriteriaTxt(criteria) +
-              '\n' +
-              'Id : ' +
-              row[mapListService.idName]
-            "
-            class="btn btn-light btn-map-criteria"
-            style="
-              background-color: {{ criteria.color }};
-              color: {{ criteria.icon?.color }} !important;
-            "
-            [aria-label]="criteria.label"
+            *ngIf="row.url_source"
+            class="link-dark"
+            (click)="backToModule(row.url_source, row.entity_source_pk_value)"
           >
             <i
-              class="fa fa-info"
+              matTooltip="Voir l'observation dans le module de saisie"
+              class="fa fa-file-text"
               aria-hidden="true"
-              data-qa="synthese-info-btn"
             ></i>
           </a>
-        </ng-template>
-      </ng-container>
-
-      <ng-template #defaultInfoBtn>
-        <a
-          class="link-dark"
-          style="color: black"
-          [routerLink]="['occurrence', row['id_synthese'], 'details']"
-        >
-          <i
-            matTooltip="{{ row[mapListService.idName] }}"
-            class="fa fa-info-circle"
-            aria-hidden="true"
-            data-qa="synthese-info-btn"
-          ></i>
-        </a>
-      </ng-template>
-    </ng-template>
-  </ngx-datatable-column>
-
-  <ngx-datatable-column
-    [maxWidth]="5"
-    [sortable]="false"
-  >
-    <ng-template
-      let-row="row"
-      ngx-datatable-cell-template
-    >
-      <a
-        *ngIf="row.url_source"
-        class="link-dark"
-        (click)="backToModule(row.url_source, row.entity_source_pk_value)"
-      >
-        <i
-          matTooltip="Voir l'observation dans le module de saisie"
-          class="fa fa-file-text"
-          aria-hidden="true"
-        ></i>
-      </a>
+        </div>
+      </div>
     </ng-template>
   </ngx-datatable-column>
 
@@ -129,7 +124,7 @@
         <div *ngSwitchCase="['date_min', 'date_max'].includes(col.prop) ? col.prop : false">
           {{ getDate(row[col.prop]) }}
         </div>
-        <div *ngSwitchCase="'nom_vern_or_lb_nom'">
+        <div *ngSwitchCase="'nom_valide'">
           <a
             class="Link"
             [routerLink]="['taxon/' + row.cd_nom]"
