@@ -544,17 +544,18 @@ pnx-root:empty + #cover-spin-removable {
   height: auto;
 }
 .ng-select.sm .ng-option,
-.ng-select.auto .ng-option {
-  font-size: 12px;
+.ng-select.auto .ng-option,
+.ng-dropdown-panel-items .ng-option {
+  font-size: .875rem;
 }
 .ng-select.sm .ng-placeholder,
 .ng-select.auto .ng-placeholder {
-  font-size: 12px;
+  font-size: .875rem;
   top: initial !important;
 }
 .ng-select.sm .ng-value,
 .ng-select.auto .ng-value {
-  font-size: 12px;
+  font-size: .875rem;
 }
 .ng-select.sm.ng-select-single .ng-select-container .ng-value-container .ng-input,
 .ng-select.auto.ng-select-single .ng-select-container .ng-value-container .ng-input {
@@ -563,7 +564,7 @@ pnx-root:empty + #cover-spin-removable {
 }
 .ng-select.sm .ng-input input,
 .ng-select.auto .ng-input input {
-  font-size: 13px;
+  font-size: .875rem;
 }
 .ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-value {
   background-color: #64b5f6;
@@ -585,6 +586,9 @@ pnx-root:empty + #cover-spin-removable {
   .ng-value
   .ng-value-icon.left {
   border-right: none;
+}
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+  white-space: normal!important;
 }
 a.mat-raised-button:hover {
   text-decoration: none !important;
