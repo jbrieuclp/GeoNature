@@ -90,15 +90,19 @@ export class GenericFormGeneratorComponent implements OnInit, OnChanges {
       // (on affiche tous les champs sans les filtrer au préalable)
       this.formsSelected = this.formsDefinition;
       this.formsDefinition.forEach((formDef) => {
-        if (formDef.type_widget) {
-          this._dynformService.addNewControl(formDef, this.myFormGroup);
-        }
-        // attribution de la valeur par defaut
-        if (this.defaults && this.defaults[formDef.atribute_name] != null) {
-          const value = {};
-          value[formDef.atribute_name] = this.defaults[formDef.atribute_name];
-          this.myFormGroup.patchValue(value);
-        }
+        // un élément de formsDefinition peut être un tableau de formDef :
+        // ces champs seront affichés groupés sur une même ligne
+        (this.isFormDefGroup(formDef) ? formDef : [formDef]).forEach((groupedFormDef) => {
+          if (formDef.type_widget) {
+            this._dynformService.addNewControl(formDef, this.myFormGroup);
+          }
+          // attribution de la valeur par defaut
+          if (this.defaults && this.defaults[formDef.atribute_name] != null) {
+            const value = {};
+            value[formDef.atribute_name] = this.defaults[formDef.atribute_name];
+            this.myFormGroup.patchValue(value);
+          }
+        });
       });
     } else {
       // dans le cas non auto-généré
@@ -141,13 +145,39 @@ export class GenericFormGeneratorComponent implements OnInit, OnChanges {
     return !equal(newValue, this.oldValue);
   }
 
+  /**
+   * Teste si l'item du formulaire est un tableau de définitions ou une définition unique;
+   */
+  protected isFormDefGroup(formDef): boolean {
+    return Array.isArray(formDef);
+  }
+
+  private isFormDefHidden(formDef) {
+    return !!this._dynformService.getFormDefValue(formDef, 'hidden', this.myFormGroup.value);
+  }
+
   setForms() {
-    this.formsDisplayed = this.formsSelected.filter(
-      (formDef) => !this._dynformService.getFormDefValue(formDef, 'hidden', this.myFormGroup.value)
-    );
-    this.formsHidden = this.formsSelected.filter((formDef) =>
-      this._dynformService.getFormDefValue(formDef, 'hidden', this.myFormGroup.value)
-    );
+    // un élément de formsSelected peut être un tableau de formDef (groupe de champs
+    // affichés sur une même ligne) : on ne garde, dans chaque groupe, que les champs
+    // non masqués ; le groupe disparaît entièrement s'il ne reste plus aucun champ.
+    this.formsDisplayed = [];
+    this.formsHidden = [];
+    this.formsSelected.forEach((formDef) => {
+      if (this.isFormDefGroup(formDef)) {
+        const displayedGroup = formDef.filter((item) => !this.isFormDefHidden(item));
+        const hiddenGroup = formDef.filter((item) => this.isFormDefHidden(item));
+        if (displayedGroup.length) {
+          this.formsDisplayed.push(displayedGroup);
+        }
+        if (hiddenGroup.length) {
+          this.formsHidden.push(hiddenGroup);
+        }
+      } else if (this.isFormDefHidden(formDef)) {
+        this.formsHidden.push(formDef);
+      } else {
+        this.formsDisplayed.push(formDef);
+      }
+    });
   }
 
   onFormsChange(newValue) {

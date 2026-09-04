@@ -2,3 +2,16 @@
   padding-right: 0px !important;
   padding-left: 0px !important;
 }
+
+// Groupe de champs affichés sur une même ligne (élément de formsDefinition
+// étant lui-même un tableau de formDef)
+.dynamic-form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  > .dynamic-form-wrapper {
+    flex: 1 1 200px;
+    min-width: 0;
+  }
+}
