@@ -39,7 +39,7 @@
   class="full-wrapper"
   *ngIf="formControlBuilded"
 >
-  <ng-container *ngFor="let formDef of formsDisplayed; let i = index">
+  <ng-container *ngFor="let formDef of formsDisplayed; let i = index; trackBy: trackByFormDef">
     <div
       class="dynamic-form-row"
       *ngIf="isFormDefGroup(formDef); else displayedField"
@@ -61,7 +61,7 @@
       </div>
     </ng-template>
   </ng-container>
-  <ng-container *ngFor="let formDef of formsHidden; let i = index">
+  <ng-container *ngFor="let formDef of formsHidden; let i = index; trackBy: trackByFormDef">
     <div
       hidden
       class="dynamic-form-row"

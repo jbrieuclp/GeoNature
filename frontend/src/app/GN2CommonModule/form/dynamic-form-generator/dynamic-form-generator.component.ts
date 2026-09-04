@@ -93,13 +93,13 @@ export class GenericFormGeneratorComponent implements OnInit, OnChanges {
         // un élément de formsDefinition peut être un tableau de formDef :
         // ces champs seront affichés groupés sur une même ligne
         (this.isFormDefGroup(formDef) ? formDef : [formDef]).forEach((groupedFormDef) => {
-          if (formDef.type_widget) {
-            this._dynformService.addNewControl(formDef, this.myFormGroup);
+          if (groupedFormDef.type_widget) {
+            this._dynformService.addNewControl(groupedFormDef, this.myFormGroup);
           }
           // attribution de la valeur par defaut
-          if (this.defaults && this.defaults[formDef.atribute_name] != null) {
+          if (this.defaults && this.defaults[groupedFormDef.atribute_name] != null) {
             const value = {};
-            value[formDef.atribute_name] = this.defaults[formDef.atribute_name];
+            value[groupedFormDef.atribute_name] = this.defaults[groupedFormDef.atribute_name];
             this.myFormGroup.patchValue(value);
           }
         });
@@ -151,6 +151,19 @@ export class GenericFormGeneratorComponent implements OnInit, OnChanges {
   protected isFormDefGroup(formDef): boolean {
     return Array.isArray(formDef);
   }
+
+  /**
+   * trackBy pour formsDisplayed/formsHidden : setForms() recrée un nouveau
+   * tableau à chaque changement de valeur du formulaire, y compris pour les
+   * groupes de champs dont le contenu réel est inchangé. Sans clé stable,
+   * Angular détruirait/recréerait les pnx-dynamic-form correspondants à
+   * chaque frappe.
+   */
+  trackByFormDef = (_index: number, formDef: any): string => {
+    return this.isFormDefGroup(formDef)
+      ? formDef.map((item) => item.attribut_name).join(',')
+      : formDef.attribut_name;
+  };
 
   private isFormDefHidden(formDef) {
     return !!this._dynformService.getFormDefValue(formDef, 'hidden', this.myFormGroup.value);
