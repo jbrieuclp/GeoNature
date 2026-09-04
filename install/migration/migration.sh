@@ -231,11 +231,11 @@ echo "Mise à jour de la base de données…"
 # Si occtax est installé, alors il faut le mettre à jour en version 4c97453a2d1a (min.)
 # *avant* de mettre à jour GeoNature (contrainte NOT NULL sur id_source dans la synthèse)
 # Voir https://github.com/PnX-SI/GeoNature/issues/2186#issuecomment-1337684933
-geonature db heads | grep "(occtax)" > /dev/null && geonature db upgrade occtax@4c97453a2d1a
-geonature db autoupgrade || exit 1
-geonature upgrade-modules-db || exit 1
-# Mise à jour manuel de validation, la branche Alambic ayant été rajouté avec GN 2.13
-geonature db heads | grep "(validation)" > /dev/null && geonature db upgrade validation@head
+# geonature db heads | grep "(occtax)" > /dev/null && geonature db upgrade occtax@4c97453a2d1a
+# geonature db autoupgrade || exit 1
+# geonature upgrade-modules-db || exit 1
+# # Mise à jour manuel de validation, la branche Alambic ayant été rajouté avec GN 2.13
+# geonature db heads | grep "(validation)" > /dev/null && geonature db upgrade validation@head
 
 # On déplace les médias à la fin de la migration, pour ne pas se retrouver avec une nouvelle installation
 # GeoNature cassé mais les médias déjà déplacé de l’ancien GN au nouveau GN non fonctionnel.
