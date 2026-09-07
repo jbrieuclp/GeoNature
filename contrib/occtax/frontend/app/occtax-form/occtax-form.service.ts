@@ -128,6 +128,7 @@ export class OcctaxFormService {
       occtaxData.releve.properties.t_occurrences_occtax = [];
     }
     occtaxData.releve.properties.t_occurrences_occtax.push(occurrence);
+    this.occtaxData.next(occtaxData);
   }
 
   removeOccurrenceData(id_occurrence): void {
@@ -143,6 +144,7 @@ export class OcctaxFormService {
         }
       }
     }
+    this.occtaxData.next(occtaxData);
   }
 
   replaceOccurrenceData(occurrence): void {

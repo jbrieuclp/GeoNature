@@ -9,7 +9,16 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { BehaviorSubject, Observable, of, forkJoin, combineLatest } from 'rxjs';
-import { map, filter, switchMap, tap, pairwise, retry, catchError } from 'rxjs/operators';
+import {
+  map,
+  filter,
+  switchMap,
+  tap,
+  pairwise,
+  retry,
+  catchError,
+  distinctUntilChanged,
+} from 'rxjs/operators';
 import * as cloneDeep from 'lodash/cloneDeep';
 import { CommonService } from '@geonature_common/service/common.service';
 import { OcctaxFormService } from '../occtax-form.service';
@@ -108,6 +117,7 @@ export class OcctaxFormOccurrenceService {
     const $_datasetSub = this.occtaxFormService.occtaxData.asObservable().pipe(
       map((data) => (((data || {}).releve || {}).properties || {}).id_dataset),
       filter((id_dataset) => id_dataset !== undefined && id_dataset !== null),
+      distinctUntilChanged(),
       switchMap((id_dataset): Observable<any[]> => {
         return this.occtaxFormService
           .getAdditionnalFields(['OCCTAX_OCCURENCE'], id_dataset)

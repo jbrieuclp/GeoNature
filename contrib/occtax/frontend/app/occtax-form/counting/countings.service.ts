@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, combineLatest, BehaviorSubject, of } from 'rxjs';
-import { catchError, map, filter, switchMap } from 'rxjs/operators';
+import { catchError, map, filter, switchMap, distinctUntilChanged } from 'rxjs/operators';
 
 import { OcctaxFormService } from '../occtax-form.service';
 
@@ -30,6 +30,7 @@ export class OcctaxFormCountingsService {
     this.$_datasetAdditionalFields = this.occtaxFormService.occtaxData.asObservable().pipe(
       map((data) => (((data || {}).releve || {}).properties || {}).id_dataset),
       filter((id_dataset) => id_dataset !== undefined && id_dataset !== null),
+      distinctUntilChanged(),
       switchMap((id_dataset): Observable<any[]> => {
         return this.occtaxFormService
           .getAdditionnalFields(['OCCTAX_DENOMBREMENT'], id_dataset)
