@@ -188,7 +188,7 @@
               let-row="row"
               ngx-datatable-cell-template
             >
-              <button
+              <a
                 class="btn btn-row"
                 [routerLink]="['form/releve', row.id_releve_occtax]"
                 [disabled]="!isActionAllowed(row, 'U')"
@@ -200,7 +200,7 @@
                   [ngClass]="{ disabled: !isActionAllowed(row, 'U') }"
                   aria-hidden="true"
                 ></i>
-              </button>
+              </a>
             </ng-template>
           </ngx-datatable-column>
           <ngx-datatable-column maxWidth="10">
